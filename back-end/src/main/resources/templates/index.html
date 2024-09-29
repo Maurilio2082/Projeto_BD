@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Produtos</title>
+</head>
+<body>
+    <h1>Lista de Produtos</h1>
+
+    <!-- Verificando se a lista de produtos está vazia -->
+    <p th:text="${produtos != null ? 'Lista de produtos carregada!' : 'Nenhum produto carregado!'}"></p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Marca</th>
+                <th>Nome</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="produto : ${produtos}">
+                <td th:text="${produto.codigo}"></td>
+                <td th:text="${produto.marca}"></td>
+                <td th:text="${produto.nome}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
