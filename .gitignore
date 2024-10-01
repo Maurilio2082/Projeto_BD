@@ -4,3 +4,6 @@ back-end/target/classes/controller/EspecialidadeController.class
 back-end/target/classes/model/Especialidade.class
 back-end/target/classes/principal/Principal.class
 back-end/target/classes/reports/RelatorioEspecialidade.class
+back-end/target/classes/principal/Main.class
+back-end/target/classes/utils/Config.class
+back-end/target/classes/utils/SplashScreen.class
