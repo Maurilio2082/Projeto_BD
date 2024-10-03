@@ -20,7 +20,7 @@ public class Principal {
             switch (opcao) {
                 case 1:
 
-                    controller.listarProdutos().forEach(
+                    controller.listarEspecialidades().forEach(
                             especialidade -> System.out.println("Código: " + especialidade.getIdEspecialidade() +
                                     ", Nome: " + especialidade.getNomeEspecialidade()));
                     break;
@@ -28,7 +28,7 @@ public class Principal {
                     // Buscar produto por código
                     System.out.print("Digite o código da especialidade: ");
                     int codigo = scanner.nextInt();
-                    Especialidade especialidade = controller.buscarPorCodigo(codigo);
+                    Especialidade especialidade = controller.buscarPorCodigoEspecialidade(codigo);
                     if (especialidade != null) {
                         System.out.println("Código: " + especialidade.getIdEspecialidade() +
                                 ", Nome: " + especialidade.getNomeEspecialidade());

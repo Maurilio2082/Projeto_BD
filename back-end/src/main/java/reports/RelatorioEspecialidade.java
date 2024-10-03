@@ -9,7 +9,7 @@ public class RelatorioEspecialidade {
 
     public static void gerarRelatorio() {
         EspecialidadeController controller = new EspecialidadeController();
-        List<Especialidade> especialidades = controller.listarProdutos();
+        List<Especialidade> especialidades = controller.listarEspecialidades();
 
         System.out.println("Relatório de Produtos:");
         for (Especialidade especialidade : especialidades) {

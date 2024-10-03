@@ -1,5 +1,11 @@
 package model;
 
+/*
+ * ##########################################################################
+ * # Classe basica do objeto Especialidade.
+ * ##########################################################################
+ */
+
 public class Especialidade {
     private int idEspecialidade;
     private String nomeEspecialidade;

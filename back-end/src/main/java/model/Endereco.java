@@ -1,5 +1,11 @@
 package model;
 
+/*
+ * ##########################################################################
+ * # Classe basica do objeto Endereco.
+ * ##########################################################################
+ */
+
 public class Endereco {
 
     private int id_endereco;
@@ -11,12 +17,14 @@ public class Endereco {
     private String estado;
     private String cep;
 
-    public Endereco(int id_endereco, String longradouro, String numero, String bairro, String cidade,
+    public Endereco(int id_endereco, String longradouro, String numero, String complemento, String bairro,
+            String cidade,
             String estado,
             String cep) {
         this.id_endereco = id_endereco;
         this.longradouro = longradouro;
         this.numero = numero;
+        this.complemento = complemento;
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
@@ -81,6 +89,12 @@ public class Endereco {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    @Override
+    public String toString() {
+
+        return super.toString();
     }
 
 }
