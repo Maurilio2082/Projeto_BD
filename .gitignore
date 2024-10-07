@@ -18,3 +18,8 @@ back-end/target/classes/utils/Config.class
 back-end/target/classes/utils/SplashScreen.class
 back-end/target/classes/utils/MenuUtils.class
 
+back-end/target/classes/controller/HemocentroController.class
+back-end/target/classes/model/BancoSangue.class
+back-end/target/classes/model/Consulta.class
+back-end/target/classes/model/Hemocentro.class
+back-end/target/classes/model/TipoSanguineo.class
