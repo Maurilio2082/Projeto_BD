@@ -16,7 +16,8 @@ public class Doador {
     private String tipoSanguineo;
     private String dataNascimento;
     private int quantidadeDoada;
-    private Endereco id_endereco;
+    private Endereco idEndereco;
+    private TipoSanguineo idTipoSanguineo;
 
     public Doador(int idDoador, String nome, String cpf, String email, String telefone, String tipoSanguineo,
             String dataNascimento) {
@@ -29,15 +30,16 @@ public class Doador {
         this.tipoSanguineo = tipoSanguineo;
         this.dataNascimento = dataNascimento;
         this.quantidadeDoada = 0;
+        this.idTipoSanguineo = null;
 
     }
 
-    public Endereco getId_endereco() {
-        return id_endereco;
+    public Endereco getIdEndereco() {
+        return idEndereco;
     }
 
-    public void setId_endereco(Endereco id_endereco) {
-        this.id_endereco = id_endereco;
+    public void setIdEndereco(Endereco id_endereco) {
+        this.idEndereco = id_endereco;
     }
 
     public String getCpf() {
@@ -99,6 +101,16 @@ public class Doador {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+
+    public TipoSanguineo getIdTipoSanguineo() {
+        return idTipoSanguineo;
+    }
+
+    public void setIdTipoSanguineo(TipoSanguineo idTipoSanguineo) {
+        this.idTipoSanguineo = idTipoSanguineo;
+    }
+
+    
 
     @Override
     public String toString() {
