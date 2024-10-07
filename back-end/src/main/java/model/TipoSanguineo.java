@@ -11,6 +11,12 @@ public class TipoSanguineo {
     private String tipoSanguineo;
     private String fatorRh;
 
+    public TipoSanguineo(int idTipoSanguineo, String tipoSanguineo, String fatorRh) {
+        this.idTipoSanguineo = idTipoSanguineo;
+        this.tipoSanguineo = tipoSanguineo;
+        this.fatorRh = fatorRh;
+    }
+
     public String getFatorRh() {
         return fatorRh;
     }

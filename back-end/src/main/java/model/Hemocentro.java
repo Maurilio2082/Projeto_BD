@@ -1,7 +1,5 @@
 package model;
 
-
-
 /*
  * ##########################################################################
  * # Classe basica do objeto Hemocentro.
@@ -14,16 +12,23 @@ public class Hemocentro {
     private String email;
     private String telefone;
     private String cnpj;
-    private Endereco endereco;
+    private Endereco idEndereco;
 
-    public Hemocentro(int idHemocentro, String razaoSocial, String cnpj, String email, String telefone,
-            Endereco endereco) {
+    public Hemocentro(int idHemocentro, String razaoSocial, String cnpj, String email, String telefone) {
         this.idHemocentro = idHemocentro;
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
         this.email = email;
         this.telefone = telefone;
-        this.endereco = endereco;
+        this.idEndereco = null;
+    }
+
+    public Endereco getIdEndereco() {
+        return idEndereco;
+    }
+
+    public void setIdEndereco(Endereco id_endereco) {
+        this.idEndereco = id_endereco;
     }
 
     public int getIdHemocentro() {
@@ -38,10 +43,6 @@ public class Hemocentro {
         return email;
     }
 
-    public Endereco getEndereco() {
-        return endereco;
-    }
-
     public String getRazaoSocial() {
         return razaoSocial;
     }
@@ -52,10 +53,6 @@ public class Hemocentro {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
     }
 
     public void setIdHemocentro(int idHemocentro) {

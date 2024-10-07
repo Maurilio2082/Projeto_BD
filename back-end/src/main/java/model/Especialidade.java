@@ -11,8 +11,10 @@ public class Especialidade {
     private String nomeEspecialidade;
 
     public Especialidade(int idEspecialidade, String nomeEspecialidade) {
-        this.nomeEspecialidade = nomeEspecialidade;
+
         this.idEspecialidade = idEspecialidade;
+        this.nomeEspecialidade = nomeEspecialidade;
+
     }
 
     public int getIdEspecialidade() {
@@ -27,4 +29,7 @@ public class Especialidade {
         this.nomeEspecialidade = nomeEspecialidade;
     }
 
+    public void setIdEspecialidade(int idEspecialidade) {
+        this.idEspecialidade = idEspecialidade;
+    }
 }

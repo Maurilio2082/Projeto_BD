@@ -1,7 +1,5 @@
 package model;
 
-
-
 /*
  * ##########################################################################
  * # Classe basica do objeto Banco de Sangue.
@@ -13,6 +11,14 @@ public class BancoSangue {
     private String quantidadeDisponivel;
     private TipoSanguineo idTipoSanguineo;
     private Hemocentro idHemocentro;
+
+    public BancoSangue(int idBancoSangue, String quantidadeDisponivel) {
+        this.idBancoSangue = idBancoSangue;
+        this.quantidadeDisponivel = quantidadeDisponivel;
+        this.idTipoSanguineo = null;
+        this.idHemocentro = null;
+
+    }
 
     public int getIdBancoSangue() {
         return idBancoSangue;

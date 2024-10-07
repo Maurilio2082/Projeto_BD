@@ -30,6 +30,7 @@ public class Doador {
         this.tipoSanguineo = tipoSanguineo;
         this.dataNascimento = dataNascimento;
         this.quantidadeDoada = 0;
+        this.idEndereco = null;
         this.idTipoSanguineo = null;
 
     }
