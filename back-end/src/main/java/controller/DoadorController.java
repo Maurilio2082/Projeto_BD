@@ -3,7 +3,7 @@ package controller;
 import conexion.DatabaseConfig;
 import model.Doador;
 import model.Endereco;
-
+import model.TipoSanguineo;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +17,17 @@ import java.util.List;
 public class DoadorController {
 
     public List<Doador> listarDoadores() {
-        ArrayList<Doador> doadores = new ArrayList<Doador>();
-        String query = "SELECT d.id_doador, d.nome, d.cpf, d.email, d.telefone, d.tipo_sanguineo, d.data_nascimento, "
-                + "e.id_endereco, e.longradouro, e.numero, e.complemento, e.bairro, e.cidade, e.estado, e.cep "
-                + "FROM doador d "
-                + "JOIN endereco e ON d.id_endereco = e.id_endereco";
+        ArrayList<Doador> doadores = new ArrayList<>();
+        EnderecoController enderecoController = new EnderecoController();
+        TipoSanguineoController tipoSanguineoController = new TipoSanguineoController();
+
+        String query = "SELECT d.id_doador, d.nome, d.cpf, d.email, d.telefone, d.tipo_sanguineo, d.data_nascimento, " +
+                "d.id_endereco,d.id_tipo_sanguineo " +
+                "FROM doador d";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                Statement doador = conexao.createStatement();
-                ResultSet resultado = doador.executeQuery(query)) {
+                Statement stmt = conexao.createStatement();
+                ResultSet resultado = stmt.executeQuery(query)) {
 
             while (resultado.next()) {
                 int idDoador = resultado.getInt("id_doador");
@@ -33,26 +35,20 @@ public class DoadorController {
                 String cpf = resultado.getString("cpf");
                 String email = resultado.getString("email");
                 String telefone = resultado.getString("telefone");
-                String tipoSanguineo = resultado.getString("tipo_sanguineo");
+                String tipoSangue = resultado.getString("tipo_sanguineo");
                 String dataNascimento = resultado.getString("data_nascimento");
-
                 int idEndereco = resultado.getInt("id_endereco");
-                String logradouro = resultado.getString("longradouro");
-                String numero = resultado.getString("numero");
-                String complemento = resultado.getString("complemento");
-                String bairro = resultado.getString("bairro");
-                String cidade = resultado.getString("cidade");
-                String estado = resultado.getString("estado");
-                String cep = resultado.getString("cep");
+                int idTipoSanguineo = resultado.getInt("id_tipo_sanguineo");
 
-                Endereco endereco = new Endereco(idEndereco, logradouro, numero, complemento, bairro, cidade, estado,
-                        cep);
+                Endereco endereco = enderecoController.buscarEnderecoPorCodigo(idEndereco);
 
-                Doador doadorObj = new Doador(idDoador, nome, cpf, email, telefone, tipoSanguineo, dataNascimento);
+                TipoSanguineo tipoSanguineo = tipoSanguineoController.buscarPorCodigTipoSanguineo(idTipoSanguineo);
 
-                doadorObj.setId_endereco(endereco);
+                Doador doador = new Doador(idDoador, nome, cpf, email, telefone, tipoSangue, dataNascimento);
 
-                doadores.add(doadorObj);
+                doador.setIdEndereco(endereco);
+                doador.setIdTipoSanguineo(tipoSanguineo);
+                doadores.add(doador);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,12 +57,15 @@ public class DoadorController {
         return doadores;
     }
 
+    // Buscar doador por código, usando EnderecoController para manipular endereços
     public Doador buscarPorCodigoDoador(int codigo) {
         Doador doador = null;
+        EnderecoController enderecoController = new EnderecoController();
+        TipoSanguineoController tipoSanguineoController = new TipoSanguineoController();
+
         String query = "SELECT d.id_doador, d.nome, d.cpf, d.email, d.telefone, d.tipo_sanguineo, d.data_nascimento, " +
-                "e.id_endereco, e.logradouro, e.numero, e.bairro, e.cidade, e.estado, e.cep " +
+                "d.id_endereco " +
                 "FROM doador d " +
-                "JOIN endereco e ON d.id_endereco = e.id_endereco " +
                 "WHERE d.id_doador = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
@@ -83,50 +82,51 @@ public class DoadorController {
                 String telefone = resultado.getString("telefone");
                 String tipoSanguineo = resultado.getString("tipo_sanguineo");
                 String dataNascimento = resultado.getString("data_nascimento");
-
                 int idEndereco = resultado.getInt("id_endereco");
-                String logradouro = resultado.getString("logradouro");
-                String numero = resultado.getString("numero");
-                String bairro = resultado.getString("bairro");
-                String cidade = resultado.getString("cidade");
-                String estado = resultado.getString("estado");
-                String cep = resultado.getString("cep");
+                int idTipoSanguineo = resultado.getInt("id_tipo_sanguineo");
 
-                Endereco endereco = new Endereco(idEndereco, logradouro, numero, null, bairro, cidade, estado, cep);
+                // Usar EnderecoController para buscar o endereço
+                Endereco endereco = enderecoController.buscarEnderecoPorCodigo(idEndereco);
+                TipoSanguineo tipoSangui = tipoSanguineoController.buscarPorCodigTipoSanguineo(idTipoSanguineo);
                 doador = new Doador(idDoador, nome, cpf, email, telefone, tipoSanguineo, dataNascimento);
-                doador.setId_endereco(endereco);
+                doador.setIdEndereco(endereco);
+                doador.setIdTipoSanguineo(tipoSangui);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return doador;
     }
 
-    public void cadastrarDoador(String logradouro, String numero, String bairro, String cidade, String estado,
-            String cep, String nome, String cpf, String email, String telefone, String tipoSanguineo,
-            String dataNascimento) {
+    public void cadastrarDoador(String logradouro, String numero, String complemento, String bairro, String cidade,
+            String estado, String cep,
+            String nome, String cpf, String email, String telefone,
+            String tipoSanguineo, String dataNascimento, String tipoSangue, String fatorRh) {
 
         EnderecoController enderecoController = new EnderecoController();
+        TipoSanguineoController tipoSanguineoController = new TipoSanguineoController();
 
-        // Cadastrar o endereço e obter o ID gerado
-        int idEndereco = enderecoController.cadastrarEndereco(logradouro, numero, bairro, cidade, estado, cep);
+        int idTipoSanguineo = tipoSanguineoController.cadastrarTipoSanguineo(tipoSangue, fatorRh);
+        int idEndereco = enderecoController.cadastrarEndereco(logradouro, numero, complemento, bairro, cidade, estado,
+                cep);
 
-        if (idEndereco != -1) { // Verifica se o endereço foi cadastrado com sucesso
-            String queryDoador = "INSERT INTO doador (nome, cpf, email, telefone, tipo_sanguineo, data_nascimento, id_endereco) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        if (idEndereco != -1) {
+            String queryDoador = "INSERT INTO doador (nome, cpf, email, telefone, tipo_sanguineo, data_nascimento, id_endereco,id_tipo_sanguineo) VALUES (?,?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement doador = conexao.prepareStatement(queryDoador)) {
+                    PreparedStatement stmt = conexao.prepareStatement(queryDoador)) {
 
-                // Inserir o doador com o id_endereco recuperado
-                doador.setString(1, nome);
-                doador.setString(2, cpf);
-                doador.setString(3, email);
-                doador.setString(4, telefone);
-                doador.setString(5, tipoSanguineo);
-                doador.setString(6, dataNascimento);
-                doador.setInt(7, idEndereco);
+                stmt.setString(1, nome);
+                stmt.setString(2, cpf);
+                stmt.setString(3, email);
+                stmt.setString(4, telefone);
+                stmt.setString(5, tipoSanguineo);
+                stmt.setString(6, dataNascimento);
+                stmt.setInt(7, idEndereco);
+                stmt.setInt(8, idTipoSanguineo);
 
-                doador.executeUpdate();
+                stmt.executeUpdate();
                 System.out.println("Doador cadastrado com sucesso!");
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -136,17 +136,27 @@ public class DoadorController {
         }
     }
 
-    public void atualizarDoador(int idDoador, String logradouro, String numero, String bairro, String cidade,
-            String estado, String cep, String nome, String cpf, String email, String telefone,
-            String tipoSanguineo, String dataNascimento) {
+    // Atualizar doador e usar EnderecoController para manipular endereços
+    public void atualizarDoador(int idDoador, String logradouro, String numero, String complemento, String bairro,
+            String cidade,
+            String estado, String cep, String nome, String cpf, String email,
+            String telefone, String tipoSanguineo, String dataNascimento, String tipoSangue, String fatorRh) {
 
         EnderecoController enderecoController = new EnderecoController();
+        TipoSanguineoController tipoSanguineoController = new TipoSanguineoController();
 
         // Atualizar o endereço
         Doador doadorExistente = buscarPorCodigoDoador(idDoador);
-        if (doadorExistente != null && doadorExistente.getId_endereco() != null) {
-            int idEndereco = doadorExistente.getId_endereco().getId_endereco();
-            enderecoController.atualizarEndereco(idEndereco, logradouro, numero, bairro, cidade, estado, cep);
+        if (doadorExistente != null && doadorExistente.getIdEndereco() != null
+                && doadorExistente.getIdTipoSanguineo() != null) {
+            int idEndereco = doadorExistente.getIdEndereco().getId_endereco();
+            int idTipoSanguineo = doadorExistente.getIdTipoSanguineo().getIdTipoSanguineo();
+
+            enderecoController.atualizarEndereco(idEndereco, logradouro, numero, complemento, bairro, cidade, estado,
+                    cep);
+
+            tipoSanguineoController.atualizarTipoSanguineo(idTipoSanguineo, tipoSangue, fatorRh);
+
         }
 
         // Atualizar o doador
@@ -171,38 +181,30 @@ public class DoadorController {
         }
     }
 
+    // Deletar doador e endereço
     public void deletarDoador(int idDoador) {
-        Doador doador = buscarPorCodigoDoador(idDoador);
-        if (doador != null) {
+        Doador doadorExistente = buscarPorCodigoDoador(idDoador);
+        if (doadorExistente != null && doadorExistente.getIdEndereco() != null
+                && doadorExistente.getIdTipoSanguineo() != null) {
+            int idEndereco = doadorExistente.getIdEndereco().getId_endereco();
+            int idTipoSanguineo = doadorExistente.getIdTipoSanguineo().getIdTipoSanguineo();
 
-            int idEndereco = -1;
-            if (doador.getId_endereco() != null) {
-                idEndereco = doador.getId_endereco().getId_endereco();
-            }
+            EnderecoController enderecoController = new EnderecoController();
+            TipoSanguineoController tipoSanguineoController = new TipoSanguineoController();
+            enderecoController.deletarEndereco(idEndereco);
+            tipoSanguineoController.deletarTipoSanguineo(idTipoSanguineo);
+        }
 
-            String queryDoador = "DELETE FROM doador WHERE id_doador = ?";
-            try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement stmt = conexao.prepareStatement(queryDoador)) {
+        String query = "DELETE FROM doador WHERE id_doador = ?";
 
-                stmt.setInt(1, idDoador);
-                int registrosDeletados = stmt.executeUpdate();
+        try (Connection conexao = DatabaseConfig.getConnection();
+                PreparedStatement stmt = conexao.prepareStatement(query)) {
 
-                if (registrosDeletados > 0) {
-                    System.out.println("Doador deletado com sucesso!");
-
-                    if (idEndereco != -1) {
-                        EnderecoController enderecoController = new EnderecoController();
-                        enderecoController.deletarEndereco(idEndereco);
-                    }
-                } else {
-                    System.out.println("Doador com ID " + idDoador + " não encontrado.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("Doador com ID " + idDoador + " não encontrado.");
+            stmt.setInt(1, idDoador);
+            stmt.executeUpdate();
+            System.out.println("Doador deletado com sucesso!");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-
 }

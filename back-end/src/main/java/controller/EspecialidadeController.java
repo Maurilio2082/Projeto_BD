@@ -17,7 +17,7 @@ public class EspecialidadeController {
 
     public List<Especialidade> listarEspecialidades() {
         List<Especialidade> especialidades = new ArrayList<>();
-        String query = "SELECT id_especialidade, nome_especialidade FROM especialidades";
+        String query = "SELECT id_especialidade, nome_especialidade FROM especialidade";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 Statement especialidade = conexao.createStatement();
@@ -37,7 +37,7 @@ public class EspecialidadeController {
 
     public Especialidade buscarPorCodigoEspecialidade(int codigo) {
         Especialidade especialidades = null;
-        String query = "SELECT id_especialidade, nome_especialidade FROM especialidades WHERE id_especialidade = ?";
+        String query = "SELECT id_especialidade, nome_especialidade FROM especialidade WHERE id_especialidade = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement especialidade = conexao.prepareStatement(query)) {
@@ -47,7 +47,9 @@ public class EspecialidadeController {
 
             if (resultado.next()) {
                 String nome = resultado.getString("nome_especialidade");
-                especialidades = new Especialidade(codigo, nome);
+                int idEspecialidade = resultado.getInt("id_especialidade");
+
+                especialidades = new Especialidade(idEspecialidade, nome);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -57,7 +59,7 @@ public class EspecialidadeController {
     }
 
     public void cadastrarEspecialidade(String nome) {
-        String query = "INSERT INTO especialidades (nome_especialidade) VALUES (?)";
+        String query = "INSERT INTO especialidade (nome_especialidade) VALUES (?)";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement especialidade = conexao.prepareStatement(query)) {
@@ -72,7 +74,7 @@ public class EspecialidadeController {
     }
 
     public void deletarEspecialidade(int codigo) {
-        String query = "DELETE FROM especialidades WHERE id_especialidade = ?";
+        String query = "DELETE FROM especialidade WHERE id_especialidade = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement especialidade = conexao.prepareStatement(query)) {
@@ -91,7 +93,7 @@ public class EspecialidadeController {
     }
 
     public void atualizarEspecialidade(int codigo, String novoNome) {
-        String query = "UPDATE especialidades SET nome_especialidade = ? WHERE id_especialidade = ?";
+        String query = "UPDATE especialidade SET nome_especialidade = ? WHERE id_especialidade = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement especialidade = conexao.prepareStatement(query)) {

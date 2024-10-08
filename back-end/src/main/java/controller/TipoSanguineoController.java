@@ -103,13 +103,13 @@ public class TipoSanguineoController {
         }
     }
 
-    public void atualizarTipoSanguineo(int codigo, String tipoSangue, String fatorRh) {
+    public void atualizarTipoSanguineo(int idTipoSanguineo, String tipoSangue, String fatorRh) {
         String query = "UPDATE tipo_sanguineo SET tipo_sangue = ?, fator_rh = ? WHERE id_tipo_sanguineo = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement tipoSanguineo = conexao.prepareStatement(query)) {
 
-            tipoSanguineo.setInt(1, codigo);
+            tipoSanguineo.setInt(1, idTipoSanguineo);
             tipoSanguineo.setString(2, tipoSangue);
             tipoSanguineo.setString(3, fatorRh);
             int registro = tipoSanguineo.executeUpdate();
@@ -117,7 +117,7 @@ public class TipoSanguineoController {
             if (registro > 0) {
                 System.out.println("Tipo Sanguineo  atualizada com sucesso!");
             } else {
-                System.out.println("Tipo Sanguineo  com código " + codigo + " não encontrado.");
+                System.out.println("Tipo Sanguineo  com código " + idTipoSanguineo + " não encontrado.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
