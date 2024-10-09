@@ -17,7 +17,7 @@ public class TipoSanguineoController {
 
     public List<TipoSanguineo> listarTipoSanguineos() {
         List<TipoSanguineo> tipoSanguineos = new ArrayList<>();
-        String query = "SELECT id_tipo_sanguineo, tipo_sangue, faltor_rh FROM tipo_sanguineo";
+        String query = "SELECT id_tipo_sanguineo, tipo_sangue, fator_rh FROM tipo_sanguineo";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 Statement tipoSanguineo = conexao.createStatement();
@@ -26,7 +26,7 @@ public class TipoSanguineoController {
             while (resultado.next()) {
                 int codigo = resultado.getInt("id_tipo_sanguineo");
                 String tipoSangue = resultado.getString("tipo_sangue");
-                String fatorRh = resultado.getString("faltor_rh");
+                String fatorRh = resultado.getString("fator_rh");
                 tipoSanguineos.add(new TipoSanguineo(codigo, tipoSangue, fatorRh));
             }
         } catch (SQLException e) {
@@ -38,7 +38,7 @@ public class TipoSanguineoController {
 
     public TipoSanguineo buscarPorCodigTipoSanguineo(int codigo) {
         TipoSanguineo tipoSanguineos = null;
-        String query = "SELECT  id_tipo_sangue, tipo_sangue,faltor_rh FROM tipo_sanguineo WHERE id_tipo_sangue = ?";
+        String query = "SELECT  id_tipo_sangue, tipo_sangue,fator_rh FROM tipo_sanguineo WHERE id_tipo_sangue = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement tipoSanguineo = conexao.prepareStatement(query)) {
@@ -49,7 +49,7 @@ public class TipoSanguineoController {
             if (resultado.next()) {
                 int idTipoSanguineo = resultado.getInt("id_tipo_sangue");
                 String tipoSangue = resultado.getString("tipo_sangue");
-                String fatoRh = resultado.getString("faltor_rh");
+                String fatoRh = resultado.getString("fator_rh");
                 tipoSanguineos = new TipoSanguineo(idTipoSanguineo, tipoSangue, fatoRh);
             }
         } catch (SQLException e) {
@@ -60,23 +60,22 @@ public class TipoSanguineoController {
     }
 
     public int cadastrarTipoSanguineo(String tipoSangue, String fatorRh) {
-        String query = "INSERT INTO tipo_sanguineo (tipo_sangue, faltor_rh) VALUES (?,?)";
+        String query = "INSERT INTO tipo_sanguineo (tipo_sangue, fator_rh) VALUES (?,?)";
         int idTipoSanguineo = -1;
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement tipoSanguineo = conexao.prepareStatement(query)) {
 
+        try (Connection conexao = DatabaseConfig.getConnection();
+                PreparedStatement tipoSanguineo = conexao.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             tipoSanguineo.setString(1, tipoSangue);
             tipoSanguineo.setString(2, fatorRh);
             tipoSanguineo.executeUpdate();
 
-            ResultSet registro = tipoSanguineo.getGeneratedKeys();
+            ResultSet registro = tipoSanguineo.getGeneratedKeys(); // Obtém as chaves geradas
 
             if (registro.next()) {
-
                 idTipoSanguineo = registro.getInt(1);
             }
 
-            System.out.println("Tipo Sanguineo cadastrada com sucesso!");
+            System.out.println("Tipo Sanguíneo cadastrado com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -85,7 +84,7 @@ public class TipoSanguineoController {
     }
 
     public void deletarTipoSanguineo(int codigo) {
-        String query = "DELETE FROM tipo_sanguineo WHERE id_tipo_sangue = ?";
+        String query = "DELETE FROM tipo_sanguineo WHERE id_tipo_sanguineo = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement tipoSanguineo = conexao.prepareStatement(query)) {
@@ -104,20 +103,27 @@ public class TipoSanguineoController {
     }
 
     public void atualizarTipoSanguineo(int idTipoSanguineo, String tipoSangue, String fatorRh) {
+        // Verificação dos valores
+        System.out.println("Atualizando Tipo Sanguíneo:");
+        System.out.println("ID: " + idTipoSanguineo);
+        System.out.println("Tipo Sangue: " + tipoSangue);
+        System.out.println("Fator Rh: " + fatorRh);
+
         String query = "UPDATE tipo_sanguineo SET tipo_sangue = ?, fator_rh = ? WHERE id_tipo_sanguineo = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement tipoSanguineo = conexao.prepareStatement(query)) {
 
-            tipoSanguineo.setInt(1, idTipoSanguineo);
-            tipoSanguineo.setString(2, tipoSangue);
-            tipoSanguineo.setString(3, fatorRh);
+            tipoSanguineo.setString(1, tipoSangue);
+            tipoSanguineo.setString(2, fatorRh); // Certifique-se de que isso é um valor válido
+            tipoSanguineo.setInt(3, idTipoSanguineo);
+
             int registro = tipoSanguineo.executeUpdate();
 
             if (registro > 0) {
-                System.out.println("Tipo Sanguineo  atualizada com sucesso!");
+                System.out.println("Tipo Sanguíneo atualizado com sucesso!");
             } else {
-                System.out.println("Tipo Sanguineo  com código " + idTipoSanguineo + " não encontrado.");
+                System.out.println("Tipo Sanguíneo com código " + idTipoSanguineo + " não encontrado.");
             }
         } catch (SQLException e) {
             e.printStackTrace();

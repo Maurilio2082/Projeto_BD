@@ -1,6 +1,5 @@
 package model;
 
-
 /*
  * ##########################################################################
  * # Classe basica do objeto Consulta.
@@ -11,10 +10,18 @@ public class Consulta {
 
     private int idConsulta;
     private String dataConsulta;
-    private String valorCredito;
-    private Doador iDoador;
-    private Especialidade iEspecialidade;
-    private Hemocentro iHemocentro;
+    private int valorCredito;
+    private Doador idDoador;
+    private Especialidade idEspecialidade;
+    private Hemocentro idHemocentro;
+
+    public Consulta(int idConsulta, String dataConsulta, int valorCredito) {
+
+        this.idConsulta = idConsulta;
+        this.dataConsulta = dataConsulta;
+        this.valorCredito = valorCredito;
+
+    }
 
     public String getDataConsulta() {
         return dataConsulta;
@@ -24,20 +31,20 @@ public class Consulta {
         return idConsulta;
     }
 
-    public String getValorCredito() {
+    public Doador getIdDoador() {
+        return idDoador;
+    }
+
+    public Especialidade getIdEspecialidade() {
+        return idEspecialidade;
+    }
+
+    public Hemocentro getIdHemocentro() {
+        return idHemocentro;
+    }
+
+    public int getValorCredito() {
         return valorCredito;
-    }
-
-    public Doador getiDoador() {
-        return iDoador;
-    }
-
-    public Especialidade getiEspecialidade() {
-        return iEspecialidade;
-    }
-
-    public Hemocentro getiHemocentro() {
-        return iHemocentro;
     }
 
     public void setDataConsulta(String dataConsulta) {
@@ -48,20 +55,20 @@ public class Consulta {
         this.idConsulta = idConsulta;
     }
 
-    public void setValorCredito(String valorCredito) {
+    public void setIdDoador(Doador idDoador) {
+        this.idDoador = idDoador;
+    }
+
+    public void setIdEspecialidade(Especialidade idEspecialidade) {
+        this.idEspecialidade = idEspecialidade;
+    }
+
+    public void setIdHemocentro(Hemocentro idHemocentro) {
+        this.idHemocentro = idHemocentro;
+    }
+
+    public void setValorCredito(int valorCredito) {
         this.valorCredito = valorCredito;
-    }
-
-    public void setiDoador(Doador iDoador) {
-        this.iDoador = iDoador;
-    }
-
-    public void setiEspecialidade(Especialidade iEspecialidade) {
-        this.iEspecialidade = iEspecialidade;
-    }
-
-    public void setiHemocentro(Hemocentro iHemocentro) {
-        this.iHemocentro = iHemocentro;
     }
 
 }
