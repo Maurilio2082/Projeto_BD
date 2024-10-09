@@ -99,9 +99,8 @@ public class DoadorController {
         return doador;
     }
 
-    public void cadastrarDoador(String logradouro, String numero, String complemento, String bairro, String cidade,
-            String estado, String cep,
-            String nome, String cpf, String email, String telefone,
+    public int cadastrarDoador(String logradouro, String numero, String complemento, String bairro, String cidade,
+            String estado, String cep, String nome, String cpf, String email, String telefone,
             String tipoSanguineo, String dataNascimento, String tipoSangue, String fatorRh) {
 
         EnderecoController enderecoController = new EnderecoController();
@@ -110,12 +109,14 @@ public class DoadorController {
         int idTipoSanguineo = tipoSanguineoController.cadastrarTipoSanguineo(tipoSangue, fatorRh);
         int idEndereco = enderecoController.cadastrarEndereco(logradouro, numero, complemento, bairro, cidade, estado,
                 cep);
+        int idDoador = -1;
 
         if (idEndereco != -1) {
-            String queryDoador = "INSERT INTO doador (nome, cpf, email, telefone, tipo_sanguineo, data_nascimento, id_endereco,id_tipo_sanguineo) VALUES (?,?, ?, ?, ?, ?, ?, ?)";
+            String queryDoador = "INSERT INTO doador (nome, cpf, email, telefone, tipo_sanguineo, data_nascimento, id_endereco, id_tipo_sanguineo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement stmt = conexao.prepareStatement(queryDoador)) {
+                    PreparedStatement stmt = conexao.prepareStatement(queryDoador,
+                            PreparedStatement.RETURN_GENERATED_KEYS)) {
 
                 stmt.setString(1, nome);
                 stmt.setString(2, cpf);
@@ -127,13 +128,23 @@ public class DoadorController {
                 stmt.setInt(8, idTipoSanguineo);
 
                 stmt.executeUpdate();
+
+                // Recuperar o ID gerado para o doador
+                ResultSet registro = stmt.getGeneratedKeys();
+                if (registro.next()) {
+                    idDoador = registro.getInt(1);
+                }
+
                 System.out.println("Doador cadastrado com sucesso!");
+
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else {
             System.out.println("Erro ao cadastrar o endereço. Doador não cadastrado.");
         }
+
+        return idDoador; 
     }
 
     // Atualizar doador e usar EnderecoController para manipular endereços

@@ -58,19 +58,30 @@ public class EspecialidadeController {
         return especialidades;
     }
 
-    public void cadastrarEspecialidade(String nome) {
+    public int cadastrarEspecialidade(String nome) {
         String query = "INSERT INTO especialidade (nome_especialidade) VALUES (?)";
+        int idEspecialidade = -1;
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement especialidade = conexao.prepareStatement(query)) {
+                PreparedStatement especialidade = conexao.prepareStatement(query,
+                        PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             especialidade.setString(1, nome);
             especialidade.executeUpdate();
 
+        
+            ResultSet registro = especialidade.getGeneratedKeys();
+            if (registro.next()) {
+                idEspecialidade = registro.getInt(1);
+            }
+
             System.out.println("Especialidade cadastrada com sucesso!");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return idEspecialidade;
     }
 
     public void deletarEspecialidade(int codigo) {
