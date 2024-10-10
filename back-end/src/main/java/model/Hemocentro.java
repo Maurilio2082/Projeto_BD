@@ -14,13 +14,14 @@ public class Hemocentro {
     private String cnpj;
     private Endereco idEndereco;
 
-    public Hemocentro(int idHemocentro, String razaoSocial, String cnpj, String email, String telefone) {
+    public Hemocentro(int idHemocentro, String razaoSocial, String cnpj, String email, String telefone,
+            Endereco idEndereco) {
         this.idHemocentro = idHemocentro;
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
         this.email = email;
         this.telefone = telefone;
-        this.idEndereco = null;
+        this.idEndereco = idEndereco;
     }
 
     public Endereco getIdEndereco() {
@@ -69,6 +70,12 @@ public class Hemocentro {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-10d %-35s %-30s %-25s",
+                idHemocentro, razaoSocial, email, telefone);
     }
 
 }

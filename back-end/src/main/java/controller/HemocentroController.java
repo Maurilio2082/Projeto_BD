@@ -37,8 +37,7 @@ public class HemocentroController {
 
                 // Usar EnderecoController para buscar o endereço
                 Endereco endereco = enderecoController.buscarEnderecoPorCodigo(idEndereco);
-                Hemocentro hemocentro = new Hemocentro(idHemocentro, razaoSocial, cnpj, email, telefone);
-                hemocentro.setIdEndereco(endereco);
+                Hemocentro hemocentro = new Hemocentro(idHemocentro, razaoSocial, cnpj, email, telefone, endereco);
 
                 hemocentros.add(hemocentro);
             }
@@ -51,11 +50,8 @@ public class HemocentroController {
 
     public Hemocentro buscarPorCodigoHemocentro(int codigo) {
         Hemocentro hemocentro = null;
-        EnderecoController enderecoController = new EnderecoController();
-        String query = "SELECT h.id_hemocentro, h.razao_social, h.cnpj, h.email, h.telefone, " +
-                "h.id_endereco " +
-                "FROM hemocentro h " +
-                "WHERE h.id_hemocentro = ?";
+        String query = "SELECT h.id_hemocentro, h.razao_social, h.cnpj, h.email, h.telefone, h.id_endereco " +
+                "FROM hemocentro h WHERE h.id_hemocentro = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement stmt = conexao.prepareStatement(query)) {
@@ -71,10 +67,11 @@ public class HemocentroController {
                 String telefone = resultado.getString("telefone");
                 int idEndereco = resultado.getInt("id_endereco");
 
-                // Usar EnderecoController para buscar o endereço
+                EnderecoController enderecoController = new EnderecoController();
                 Endereco endereco = enderecoController.buscarEnderecoPorCodigo(idEndereco);
-                hemocentro = new Hemocentro(idHemocentro, razaoSocial, cnpj, email, telefone);
-                hemocentro.setIdEndereco(endereco);
+
+                hemocentro = new Hemocentro(idHemocentro, razaoSocial, cnpj, email, telefone, endereco);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,10 +91,12 @@ public class HemocentroController {
         int idHemocentro = -1;
 
         if (idEndereco != -1) {
+
             String queryDoador = "INSERT INTO hemocentro (razao_social, cnpj, email, telefone, id_endereco) VALUES (?, ?, ?, ?, ?)";
 
             try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement hemocentro = conexao.prepareStatement(queryDoador)) {
+                    PreparedStatement hemocentro = conexao.prepareStatement(queryDoador,
+                            Statement.RETURN_GENERATED_KEYS)) {
 
                 // Inserir o doador com o id_endereco recuperado
                 hemocentro.setString(1, razaoSocial);
@@ -114,7 +113,6 @@ public class HemocentroController {
                 }
 
                 System.out.println("Hemocentro cadastrada com sucesso!");
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -135,7 +133,7 @@ public class HemocentroController {
         // Atualizar o endereço
         Hemocentro hemocentroExistente = buscarPorCodigoHemocentro(idHemocentro);
         if (hemocentroExistente != null && hemocentroExistente.getIdEndereco() != null) {
-            int idEndereco = hemocentroExistente.getIdEndereco().getId_endereco();
+            int idEndereco = hemocentroExistente.getIdEndereco().getIdEndereco();
             enderecoController.atualizarEndereco(idEndereco, logradouro, numero, complemento, bairro, cidade, estado,
                     cep);
         }
@@ -158,25 +156,37 @@ public class HemocentroController {
         }
     }
 
-    // Deletar doador e endereço
     public void deletarHemocentro(int idHemocentro) {
         Hemocentro hemocentroExistente = buscarPorCodigoHemocentro(idHemocentro);
         if (hemocentroExistente != null && hemocentroExistente.getIdEndereco() != null) {
-            int idEndereco = hemocentroExistente.getIdEndereco().getId_endereco();
+            int idEndereco = hemocentroExistente.getIdEndereco().getIdEndereco();
             EnderecoController enderecoController = new EnderecoController();
-            enderecoController.deletarEndereco(idEndereco);
-        }
 
-        String query = "DELETE FROM hemocentro WHERE id_hemocentro = ?";
+            // Primeiro, tenta excluir o hemocentro
+            String queryHemocentro = "DELETE FROM hemocentro WHERE id_hemocentro = ?";
+            try (Connection conexao = DatabaseConfig.getConnection();
+                    PreparedStatement stmtHemocentro = conexao.prepareStatement(queryHemocentro)) {
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement stmt = conexao.prepareStatement(query)) {
+                stmtHemocentro.setInt(1, idHemocentro);
+                int registrosAfetados = stmtHemocentro.executeUpdate();
 
-            stmt.setInt(1, idHemocentro);
-            stmt.executeUpdate();
-            System.out.println("Hemocentro deletado com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
+                if (registrosAfetados > 0) {
+                    System.out.println("Hemocentro deletado com sucesso!");
+
+                    // Após deletar o hemocentro, tenta deletar o endereço
+                    if (enderecoController.deletarEndereco(idEndereco)) {
+                        System.out.println("Endereço deletado com sucesso!");
+                    } else {
+                        System.out.println("Erro ao deletar o endereço.");
+                    }
+                } else {
+                    System.out.println("Erro ao deletar o hemocentro. Hemocentro não encontrado.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Hemocentro não encontrado ou não possui endereço associado.");
         }
     }
 
