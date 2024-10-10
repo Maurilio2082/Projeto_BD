@@ -55,14 +55,14 @@ public class EnderecoController {
 
             if (resultado.next()) {
                 int id = resultado.getInt("id_endereco");
-                String longradouro = resultado.getString("longradouro");
+                String logradouro = resultado.getString("logradouro");
                 String numero = resultado.getString("numero");
                 String bairro = resultado.getString("bairro");
                 String complemento = resultado.getString("complemento");
                 String cidade = resultado.getString("cidade");
                 String estado = resultado.getString("estado");
                 String cep = resultado.getString("cep");
-                endereco = new Endereco(id, longradouro, numero, complemento, bairro, cidade, estado, cep);
+                endereco = new Endereco(id, logradouro, numero, complemento, bairro, cidade, estado, cep);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,16 +71,16 @@ public class EnderecoController {
         return endereco;
     }
 
-    public int cadastrarEndereco(String longradouro, String numero, String complemento, String bairro, String cidade,
+    public int cadastrarEndereco(String logradouro, String numero, String complemento, String bairro, String cidade,
             String estado,
             String cep) {
-        String query = "INSERT INTO endereco(logradouro, numero, bairro, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO endereco(logradouro, numero, complemento, bairro, cidade, estado, cep) VALUES (?, ?,?, ?, ?, ?, ?)";
         int idEndereco = -1; // Valor padrão caso a inserção falhe
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement endereco = conexao.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            endereco.setString(1, longradouro);
+            endereco.setString(1, logradouro);
             endereco.setString(2, numero);
             endereco.setString(3, complemento);
             endereco.setString(4, bairro);
@@ -102,7 +102,7 @@ public class EnderecoController {
         return idEndereco;
     }
 
-    public void atualizarEndereco(int codigo, String longradouro, String numero, String complemento, String bairro,
+    public void atualizarEndereco(int codigo, String logradouro, String numero, String complemento, String bairro,
             String cidade,
             String estado,
             String cep) {
@@ -112,7 +112,7 @@ public class EnderecoController {
                 PreparedStatement endereco = conexao.prepareStatement(query)) {
 
             endereco.setInt(1, codigo);
-            endereco.setString(2, longradouro);
+            endereco.setString(2, logradouro);
             endereco.setString(3, numero);
             endereco.setString(4, complemento);
             endereco.setString(5, bairro);
@@ -132,7 +132,7 @@ public class EnderecoController {
         }
     }
 
-    public void deletarEndereco(int codigo) {
+    public boolean deletarEndereco(int codigo) {
         String query = "DELETE FROM endereco WHERE id_endereco = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
@@ -141,13 +141,10 @@ public class EnderecoController {
             endereco.setInt(1, codigo);
             int registro = endereco.executeUpdate();
 
-            if (registro > 0) {
-                System.out.println("Endereco deletado com sucesso!");
-            } else {
-                System.out.println("Endereco com código " + codigo + " não encontrado.");
-            }
+            return registro > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
