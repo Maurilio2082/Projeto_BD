@@ -8,8 +8,8 @@ package model;
 
 public class Endereco {
 
-    private int id_endereco;
-    private String longradouro;
+    private int idEndereco;
+    private String logradouro;
     private String numero;
     private String complemento;
     private String bairro;
@@ -19,12 +19,12 @@ public class Endereco {
     private String latitude;
     private String longitude;
 
-    public Endereco(int id_endereco, String longradouro, String numero, String complemento, String bairro,
+    public Endereco(int idEndereco, String logradouro, String numero, String complemento, String bairro,
             String cidade,
             String estado,
             String cep) {
-        this.id_endereco = id_endereco;
-        this.longradouro = longradouro;
+        this.idEndereco = idEndereco;
+        this.logradouro = logradouro;
         this.numero = numero;
         this.complemento = complemento;
         this.bairro = bairro;
@@ -51,12 +51,12 @@ public class Endereco {
         return complemento;
     }
 
-    public int getId_endereco() {
-        return id_endereco;
+    public int getIdEndereco() {
+        return idEndereco;
     }
 
-    public String getLongradouro() {
-        return longradouro;
+    public String getLogradouro() {
+        return logradouro;
     }
 
     public String getNumero() {
@@ -91,8 +91,8 @@ public class Endereco {
         this.complemento = complemento;
     }
 
-    public void setLongradouro(String longradouro) {
-        this.longradouro = longradouro;
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
     }
 
     public void setNumero(String numero) {
@@ -107,8 +107,8 @@ public class Endereco {
         this.latitude = latitude;
     }
 
-    public void setId_endereco(int id_endereco) {
-        this.id_endereco = id_endereco;
+    public void setId_endereco(int idEndereco) {
+        this.idEndereco = idEndereco;
     }
 
     public void setLongitude(String longitude) {
@@ -116,9 +116,10 @@ public class Endereco {
     }
 
     @Override
-    public String toString() {
 
-        return super.toString();
+    public String toString() {
+        return String.format("%-10d %-40s %-10s %-20s %-20s %-15s %-10s %-10s",
+                idEndereco, logradouro, numero, complemento, bairro, cidade, estado, cep);
     }
 
 }
