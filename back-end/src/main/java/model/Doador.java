@@ -15,23 +15,25 @@ public class Doador {
     private String telefone;
     private String tipoSanguineo;
     private String dataNascimento;
-    private int quantidadeDoada;
+    private String quantidadeDoacoes;
+    private String peso;
     private Endereco idEndereco;
     private TipoSanguineo idTipoSanguineo;
 
-    public Doador(int idDoador, String nome, String cpf, String email, String telefone, String tipoSanguineo,
-            String dataNascimento) {
+    public Doador(int idDoador, String nome, String cpf, String email, String telefone,
+            String dataNascimento, String peso, String quantidadeDoacoes,
+            Endereco idEndereco, TipoSanguineo idTipoSanguineo) {
 
         this.idDoador = idDoador;
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
         this.telefone = telefone;
-        this.tipoSanguineo = tipoSanguineo;
         this.dataNascimento = dataNascimento;
-        this.quantidadeDoada = 0;
-        this.idEndereco = null;
-        this.idTipoSanguineo = null;
+        this.peso = peso;
+        this.quantidadeDoacoes = quantidadeDoacoes;
+        this.idEndereco = idEndereco;
+        this.idTipoSanguineo = idTipoSanguineo;
 
     }
 
@@ -63,10 +65,6 @@ public class Doador {
         return nome;
     }
 
-    public int getQuantidadeDoada() {
-        return quantidadeDoada;
-    }
-
     public String getTipoSanguineo() {
         return tipoSanguineo;
     }
@@ -91,8 +89,24 @@ public class Doador {
         this.nome = nome;
     }
 
-    public void setQuantidadeDoada(int quantidadeDoada) {
-        this.quantidadeDoada = quantidadeDoada;
+    public void setIdDoador(int idDoador) {
+        this.idDoador = idDoador;
+    }
+
+    public void setPeso(String peso) {
+        this.peso = peso;
+    }
+
+    public void setQuantidadeDoacoes(String quantidadeDoacoes) {
+        this.quantidadeDoacoes = quantidadeDoacoes;
+    }
+
+    public String getPeso() {
+        return peso;
+    }
+
+    public String getQuantidadeDoacoes() {
+        return quantidadeDoacoes;
     }
 
     public void setTipoSanguineo(String tipoSanguineo) {
@@ -111,11 +125,16 @@ public class Doador {
         this.idTipoSanguineo = idTipoSanguineo;
     }
 
-    
-
     @Override
-    public String toString() {
+public String toString() {
+    return String.format("%-8d %-20s %-15s %-28s %-15s %-18s %-8s %-15s %-28s %-15s %-15s %-15s",
+            idDoador, nome, cpf, email, telefone, dataNascimento, peso, quantidadeDoacoes,
+            idEndereco != null ? idEndereco.getLogradouro() : "N/A",
+            idEndereco != null ? idEndereco.getBairro() : "N/A",
+            idEndereco != null ? idEndereco.getCidade() : "N/A",
+            idEndereco != null ? idEndereco.getEstado() : "N/A",
+            idTipoSanguineo != null ? idTipoSanguineo.getTipoSanguineo() : "N/A",
+            idTipoSanguineo != null ? idTipoSanguineo.getFatorRh() : "N/A");
+}
 
-        return super.toString();
-    }
 }
