@@ -103,7 +103,7 @@ public class ConsultaController {
             String logradouroHemo, String numeroHemo, String complementoHemo, String bairroHemo, String cidadeHemo,
             String estado,
             String cepHemo, String razaoSocial, String cnpj, String emailHemo, String telefoneHemo,
-            String dataConsulta) {
+            String dataConsulta, String peso, String quantidadeDoacoes) {
 
         HemocentroController hemocentroController = new HemocentroController();
         DoadorController doadorController = new DoadorController();
@@ -115,14 +115,14 @@ public class ConsultaController {
         int idEspecialidade = especialidadeController.cadastrarEspecialidade(nomeEspecialidade);
 
         int idDoador = doadorController.cadastrarDoador(logradouroDoa, numeroDoa, complementoDoa, bairroDoa,
-                cidadeDoa, estado, cepDoa, nomeEspecialidade, cpf, emailDoa, telefoneDoa, tipoSanguineo,
+                cidadeDoa, estado, cepDoa, nomeEspecialidade, cpf, emailDoa, telefoneDoa, peso, quantidadeDoacoes,
                 dataNascimento, tipoSangue, fatorRh);
 
         if (idHemocentro != -1 && idDoador != -1 && idEspecialidade != -1) {
             String queryDoador = "INSERT INTO consulta (data_consulta,valor_credito, id_hemocentro, id_doador,id_especialidade) VALUES (?,?,?,?,?)";
 
             try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement stmt = conexao.prepareStatement(queryDoador)) {
+                    PreparedStatement stmt = conexao.prepareStatement(queryDoador, Statement.RETURN_GENERATED_KEYS)) {
 
                 // Inserir o doador com o id_endereco recuperado
                 stmt.setString(1, dataConsulta);
@@ -148,7 +148,7 @@ public class ConsultaController {
             String tipoSanguineo, String dataNascimento, String tipoSangue, String fatorRh, String nomeEspecialidade,
             String logradouroHemo, String numeroHemo, String complementoHemo, String bairroHemo, String cidadeHemo,
             String estadoHemo, String cepHemo, String razaoSocial, String cnpj, String emailHemo, String telefoneHemo,
-            String dataConsulta) {
+            String dataConsulta, String peso, String quantidadeDoacoes) {
 
         HemocentroController hemocentroController = new HemocentroController();
         DoadorController doadorController = new DoadorController();
@@ -165,7 +165,8 @@ public class ConsultaController {
             // Atualizar Doador
             int idDoador = consultaExistente.getIdDoador().getIdDoador();
             doadorController.atualizarDoador(idDoador, logradouroDoa, numeroDoa, complementoDoa, bairroDoa,
-                    cidadeDoa, estadoDoa, cepDoa, nome, cpf, emailDoa, telefoneDoa, tipoSanguineo, dataNascimento,
+                    cidadeDoa, estadoDoa, cepDoa, nome, cpf, emailDoa, telefoneDoa, peso, quantidadeDoacoes,
+                    dataNascimento,
                     tipoSangue, fatorRh);
 
             // Atualizar Especialidade
