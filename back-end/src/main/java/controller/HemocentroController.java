@@ -98,7 +98,7 @@ public class HemocentroController {
                     PreparedStatement hemocentro = conexao.prepareStatement(queryDoador,
                             Statement.RETURN_GENERATED_KEYS)) {
 
-                // Inserir o doador com o id_endereco recuperado
+                
                 hemocentro.setString(1, razaoSocial);
                 hemocentro.setString(2, cnpj);
                 hemocentro.setString(3, email);
@@ -134,6 +134,7 @@ public class HemocentroController {
         Hemocentro hemocentroExistente = buscarPorCodigoHemocentro(idHemocentro);
         if (hemocentroExistente != null && hemocentroExistente.getIdEndereco() != null) {
             int idEndereco = hemocentroExistente.getIdEndereco().getIdEndereco();
+            
             enderecoController.atualizarEndereco(idEndereco, logradouro, numero, complemento, bairro, cidade, estado,
                     cep);
         }

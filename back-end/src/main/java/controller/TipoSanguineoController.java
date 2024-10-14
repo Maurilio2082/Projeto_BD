@@ -38,7 +38,7 @@ public class TipoSanguineoController {
 
     public TipoSanguineo buscarPorCodigTipoSanguineo(int codigo) {
         TipoSanguineo tipoSanguineos = null;
-        String query = "SELECT  id_tipo_sangue, tipo_sangue,fator_rh FROM tipo_sanguineo WHERE id_tipo_sangue = ?";
+        String query = "SELECT  id_tipo_sanguineo, tipo_sangue,fator_rh FROM tipo_sanguineo WHERE id_tipo_sanguineo = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement tipoSanguineo = conexao.prepareStatement(query)) {
@@ -47,7 +47,7 @@ public class TipoSanguineoController {
             ResultSet resultado = tipoSanguineo.executeQuery();
 
             if (resultado.next()) {
-                int idTipoSanguineo = resultado.getInt("id_tipo_sangue");
+                int idTipoSanguineo = resultado.getInt("id_tipo_sanguineo");
                 String tipoSangue = resultado.getString("tipo_sangue");
                 String fatoRh = resultado.getString("fator_rh");
                 tipoSanguineos = new TipoSanguineo(idTipoSanguineo, tipoSangue, fatoRh);
@@ -83,7 +83,7 @@ public class TipoSanguineoController {
         return idTipoSanguineo;
     }
 
-    public void deletarTipoSanguineo(int codigo) {
+    public boolean deletarTipoSanguineo(int codigo) {
         String query = "DELETE FROM tipo_sanguineo WHERE id_tipo_sanguineo = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
@@ -92,13 +92,11 @@ public class TipoSanguineoController {
             tipoSanguineo.setInt(1, codigo);
             int registro = tipoSanguineo.executeUpdate();
 
-            if (registro > 0) {
-                System.out.println("Tipo Sanguineo deletado com sucesso!");
-            } else {
-                System.out.println("Tipo Sanguineo com código " + codigo + " não encontrado.");
-            }
+            return registro > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

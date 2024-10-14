@@ -74,8 +74,10 @@ public class Hemocentro {
 
     @Override
     public String toString() {
-        return String.format("%-10d %-35s %-30s %-25s",
-                idHemocentro, razaoSocial, email, telefone);
+        return String.format("%-10s %-30s %-30s %-20s %-30s %-20s %-15s %-15s %-15s",
+                idHemocentro, razaoSocial, email, telefone,
+                idEndereco.getLogradouro(), idEndereco.getNumero(),
+                idEndereco.getBairro(), idEndereco.getCidade(), idEndereco.getEstado());
     }
 
 }
