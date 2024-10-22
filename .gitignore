@@ -23,3 +23,15 @@ back-end/target/classes/model/BancoSangue.class
 back-end/target/classes/model/Consulta.class
 back-end/target/classes/model/Hemocentro.class
 back-end/target/classes/model/TipoSanguineo.class
+back-end/target/classes/controller/HistoricoController.class
+back-end/src/main/java/principal/MenuPaciente.java
+back-end/target/classes/controller/HospitalController.class
+back-end/target/classes/model/Paciente.class
+back-end/target/classes/model/Historico.class
+back-end/target/classes/principal/EnderecoMenu.class
+back-end/target/classes/principal/EspecialidadeMenu.class
+back-end/target/classes/principal/HistoricoMenu.class
+back-end/target/classes/controller/PacienteController.class
+back-end/target/classes/model/Hospital.class
+back-end/target/classes/principal/HospitalMenu.class
+back-end/target/classes/principal/MenuPaciente.class
