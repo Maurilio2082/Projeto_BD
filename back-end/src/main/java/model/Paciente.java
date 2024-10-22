@@ -15,8 +15,9 @@ public class Paciente {
     private String cpf;
     private Endereco idEndereco;
 
-    public Paciente(int idPaciente, String nomePaciente, String dataNascimento, String email, String telefone, String cpf,
-                    Endereco idEndereco) {
+    public Paciente(int idPaciente, String nomePaciente, String dataNascimento, String email, String telefone,
+            String cpf,
+            Endereco idEndereco) {
         this.idPaciente = idPaciente;
         this.nomePaciente = nomePaciente;
         this.dataNascimento = dataNascimento;
@@ -28,6 +29,22 @@ public class Paciente {
 
     public Endereco getIdEndereco() {
         return idEndereco;
+    }
+
+    public void setIdPaciente(int idPaciente) {
+        this.idPaciente = idPaciente;
+    }
+
+    public void setNomePaciente(String nomePaciente) {
+        this.nomePaciente = nomePaciente;
+    }
+
+    public int getIdPaciente() {
+        return idPaciente;
+    }
+
+    public String getNomePaciente() {
+        return nomePaciente;
     }
 
     public String getDataNascimento() {

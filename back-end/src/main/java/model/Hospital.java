@@ -28,6 +28,22 @@ public class Hospital {
         this.idEndereco = idEndereco;
     }
 
+    public int getIdHospital() {
+        return idHospital;
+    }
+
+    public String getRazaoSocial() {
+        return razaoSocial;
+    }
+
+    public void setIdHospital(int idHospital) {
+        this.idHospital = idHospital;
+    }
+
+    public void setRazaoSocial(String razaoSocial) {
+        this.razaoSocial = razaoSocial;
+    }
+
     public Endereco getIdEndereco() {
         return idEndereco;
     }
