@@ -11,7 +11,6 @@ public class Endereco {
     private int idEndereco;
     private String logradouro;
     private String numero;
-    private String complemento;
     private String bairro;
     private String cidade;
     private String estado;
@@ -19,14 +18,13 @@ public class Endereco {
     private String latitude;
     private String longitude;
 
-    public Endereco(int idEndereco, String logradouro, String numero, String complemento, String bairro,
+    public Endereco(int idEndereco, String logradouro, String numero, String bairro,
             String cidade,
             String estado,
             String cep) {
         this.idEndereco = idEndereco;
         this.logradouro = logradouro;
         this.numero = numero;
-        this.complemento = complemento;
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
@@ -45,10 +43,6 @@ public class Endereco {
 
     public String getCidade() {
         return cidade;
-    }
-
-    public String getComplemento() {
-        return complemento;
     }
 
     public int getIdEndereco() {
@@ -87,10 +81,6 @@ public class Endereco {
         this.cidade = cidade;
     }
 
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
-
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
     }
@@ -118,8 +108,8 @@ public class Endereco {
     @Override
 
     public String toString() {
-        return String.format("%-10d %-40s %-10s %-20s %-20s %-15s %-10s %-10s",
-                idEndereco, logradouro, numero, complemento, bairro, cidade, estado, cep);
+        return String.format("%-10d %-40s %-10s %-20s %-15s %-10s %-10s",
+                idEndereco, logradouro, numero, bairro, cidade, estado, cep);
     }
 
 }
