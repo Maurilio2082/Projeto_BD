@@ -12,43 +12,38 @@ public class Config {
 
     public static final String MENU_RELATORIOS = """
             Relatórios
-            1 - Relatório de Agendamento por Prestador
-            2 - Relatório de Agendamento por Doador
-            3 - Relatório de Especialidades
-            4 - Relatório de Prestador
-            5 - Relatório de Agendamentos
-            6 - Relatório de Doador
-            7 - Relatório de Especialidades de Prestador
-            8 - Relatório de Banco de Sangue por Prestador
+            1 - Relatório de Especialidades
+            2 - Relatório de Hospitais
+            3 - Relatório de Pacientes
+            4 - Relatório de Medicos
+            5 - Relatório de Historicos
+            6 - Relatório de Medicos por Especialidades
+            7 - Relatório de Medicos por Hospitais
             0 - Sair
             """;
 
     public static final String MENU_ENTIDADES = """
             Entidades
             1 - ESPECIALIDADE
-            2 - PRESTADOR
-            3 - BANCO DE SANGUE
-            4 - AGENDAMENTOS
-            5 - ESPECIALIDADE DO PRESTADOR
-            6 - DOADOR
+            2 - HOSPITAL
+            3 - PACIENTE
+            4 - MEDICO
+            5 - HISTORICO
+            6 - MEDICOS X ESPECIALIDADE
+            7 - MEDICOS X HOSPITAL
             """;
 
     public static void limparConsole(int tempoEspera) {
         try {
-            // Aguarda por um tempo especificado em segundos
             Thread.sleep(tempoEspera * 1000);
-
-            // Limpa o console (comando depende do sistema operacional)
             if (System.getProperty("os.name").contains("Windows")) {
-                // Comando para limpar o console no Windows
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } else {
-                // Comando ANSI para limpar o console em outros sistemas (Linux, Mac, etc.)
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Exibe o erro caso ocorra
+            e.printStackTrace();
         }
     }
 

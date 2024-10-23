@@ -7,62 +7,62 @@ import java.sql.Statement;
 
 public class SplashScreen {
 
-    private String qryTotalEspecialidade = "SELECT COUNT(1) AS total_especialidades FROM especialidades";
-    private String qryTotaAgendamentos = "SELECT COUNT(1) AS total_agendamentos FROM agendamentos";
-    private String qryTotalBancoSangue = "SELECT COUNT(1) AS total_banco_sangue FROM banco_sangue";
-    private String qryTotalDoador = "SELECT COUNT(1) AS total_doador FROM doador";
-    private String qryTotalPrestador = "SELECT COUNT(1) AS total_prestador FROM prestador";
+    private String qryTotalEspecialidades = "SELECT COUNT(1) AS TOTAL_ESPECIALIDADE FROM ESPECIALIDADE";
+    private String qryTotalHospitais = "SELECT COUNT(1) AS TOTAL_HOSPITAIS FROM HOSPITAL";
+    private String qryTotalPecientes = "SELECT COUNT(1) AS TOTAL_PACIETES FROM PACIENTE";
+    private String qryTotalMedicos = "SELECT COUNT(1) AS TOTAL_MEDICOS FROM MEDICO";
+    private String qryTotalHistoricos = "SELECT COUNT(1) AS TOTAL_HISTORICO FROM HISTORICO";
 
-    private String createdBy = "Emmanuel Barcelos, Jonathan Prado , Maurilio Marques";
+    private String createdBy = "Emmanuel, Jonathan, Maurilio ";
     private String professor = "Prof. M.Sc. Howard Roatti";
     private String disciplina = "Banco de Dados";
     private String semestre = "2024/2";
 
-    public int getTotalEspecialidade() {
-        return executarConsulta(qryTotalEspecialidade, "total_especialidades");
+    public int getTotalEspecialidades() {
+        return executarConsulta(qryTotalEspecialidades, "TOTAL_ESPECIALIDADE");
     }
 
-    public int getQryTotalAgendamentos() {
-        return executarConsulta(qryTotaAgendamentos, "total_agendamentos");
+    public int getQryTotalHospitais() {
+        return executarConsulta(qryTotalHospitais, "TOTAL_HOSPITAIS");
     }
 
-    public int getQryTotalBancoSangue() {
-        return executarConsulta(qryTotalBancoSangue, "total_banco_sangue");
+    public int getQryTotalPecientes() {
+        return executarConsulta(qryTotalPecientes, "TOTAL_PACIETES");
     }
 
-    public int getQryTotalDoador() {
-        return executarConsulta(qryTotalDoador, "total_doador");
+    public int getQryTotalMedicos() {
+        return executarConsulta(qryTotalMedicos, "TOTAL_MEDICOS");
     }
 
-    public int getQryTotalPrestador() {
-        return executarConsulta(qryTotalPrestador, "total_prestador");
+    public int getQryTotalHistoricos() {
+        return executarConsulta(qryTotalHistoricos, "TOTAL_HISTORICO");
     }
 
     private int executarConsulta(String consulta, String nomeColuna) {
-        try (Connection conn = DatabaseConfig.getConnection(); // Obtém a conexão com o banco de dados
-                Statement stmt = conn.createStatement(); // Cria a declaração SQL
-                ResultSet resultado = stmt.executeQuery(consulta)) { // Executa a consulta SQL
+        try (Connection conn = DatabaseConfig.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet resultado = stmt.executeQuery(consulta)) {
 
-            // Se houver resultado, retorna o valor da coluna especificada
             if (resultado.next()) {
                 return resultado.getInt(nomeColuna);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Exibe o erro, caso ocorra
+            e.printStackTrace();
         }
-        return 0; // Retorna 0 se nenhum resultado for encontrado ou ocorrer erro
+        return 0;
     }
 
     public String obterTelaAtualizada() {
         return String.format("""
                 ########################################################
-                #                   SISTEMA DE DOAÇÕES
+                #                   SISTEMA DE CONSULTAS
                 #
                 #  TOTAL DE REGISTROS:
                 #      1 - ESPECIALIDADES:         %5d
-                #      2 - AGENDAMENTOS:           %5d
-                #      3 - DOADORES:               %5d
-                #      4 - PRESTADORES:            %5d
+                #      2 - HOSPITAIS:              %5d
+                #      3 - PACIENTES:              %5d
+                #      4 - MEDICOS:                %5d
+                #      5 - HISTORICO               %5d
                 #
                 #  CRIADO POR: %s
                 #
@@ -72,10 +72,11 @@ public class SplashScreen {
                 #              %s
                 ########################################################
                 """,
-                getTotalEspecialidade(),
-                getQryTotalAgendamentos(),
-                getQryTotalDoador(),
-                getQryTotalPrestador(),
+                getTotalEspecialidades(),
+                getQryTotalHospitais(),
+                getQryTotalPecientes(),
+                getQryTotalMedicos(),
+                getQryTotalHistoricos(),
                 createdBy,
                 professor,
                 disciplina,
