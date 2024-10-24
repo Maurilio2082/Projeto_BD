@@ -13,15 +13,19 @@ public class Historico {
     private String observacao;
     private Paciente idPaciente;
     private Hospital idHospital;
+    private Medico idMedico;
+    private Especialidade idEspecialidade;
 
     public Historico(int idHistorico, String dataConsulta, String observacao,
-            Paciente idPaciente, Hospital idHospital) {
+            Paciente idPaciente, Hospital idHospital, Medico idMedico, Especialidade idEspecialidade) {
 
         this.idHistorico = idHistorico;
         this.dataConsulta = dataConsulta;
         this.observacao = observacao;
         this.idPaciente = idPaciente;
         this.idHospital = idHospital;
+        this.idEspecialidade = idEspecialidade;
+        this.idMedico = idMedico;
     }
 
     public String getDataConsulta() {
@@ -64,15 +68,28 @@ public class Historico {
         this.observacao = observacao;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%-8d %-20s %-15s %-28s %-15s %-18s %-8s",
-                idHistorico, dataConsulta, observacao,
-                idHospital != null ? idHospital.getRazaoSocial() : "N/A",
-                idHospital != null ? idHospital.getCnpj() : "N/A",
-                idPaciente != null ? idPaciente.getNomePaciente() : "N/A",
-                idPaciente != null ? idPaciente.getCpf() : "N/A");
+    public void setIdMedico(Medico idMedico) {
+        this.idMedico = idMedico;
     }
-    
+
+    public void setiEspecialidade(Especialidade iEspecialidade) {
+        this.idEspecialidade = iEspecialidade;
+    }
+
+    public Medico getIdMedico() {
+        return idMedico;
+    }
+
+    public Especialidade getiEspecialidade() {
+        return idEspecialidade;
+    }
+
+    public void setIdEspecialidade(Especialidade idEspecialidade) {
+        this.idEspecialidade = idEspecialidade;
+    }
+
+    public Especialidade getIdEspecialidade() {
+        return idEspecialidade;
+    }
 
 }

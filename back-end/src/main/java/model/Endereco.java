@@ -105,11 +105,4 @@ public class Endereco {
         this.longitude = longitude;
     }
 
-    @Override
-
-    public String toString() {
-        return String.format("%-10d %-40s %-10s %-20s %-15s %-10s %-10s",
-                idEndereco, logradouro, numero, bairro, cidade, estado, cep);
-    }
-
 }

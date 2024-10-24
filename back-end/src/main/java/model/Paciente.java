@@ -83,11 +83,4 @@ public class Paciente {
         this.cpf = cpf;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%-10s %-30s %-15s %-30s %-20s %-30s %-20s %-15s %-15s %-15s",
-                idPaciente, nomePaciente, cpf, email, telefone,
-                idEndereco.getLogradouro(), idEndereco.getNumero(),
-                idEndereco.getBairro(), idEndereco.getCidade(), idEndereco.getEstado());
-    }
 }
