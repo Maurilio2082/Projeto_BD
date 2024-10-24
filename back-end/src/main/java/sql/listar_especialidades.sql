@@ -1,3 +1,4 @@
--- sql/listar_produtos.sql
-USE labdatabase;
-SELECT id_especialidade, nome_especialidade FROM especialidades;
+SELECT 
+ID_ESPECIALIDADE,
+NOME_ESPECIALIDADE
+FROM especialidade
