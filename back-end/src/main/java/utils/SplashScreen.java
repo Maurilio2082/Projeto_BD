@@ -55,7 +55,7 @@ public class SplashScreen {
     public String obterTelaAtualizada() {
         return String.format("""
                 ########################################################
-                #                   SISTEMA DE CONSULTAS
+                #                   SISTEMA DE PRONTUARIO
                 #
                 #  TOTAL DE REGISTROS:
                 #      1 - ESPECIALIDADES:         %5d
