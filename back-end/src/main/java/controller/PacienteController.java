@@ -4,47 +4,18 @@ import conexion.DatabaseConfig;
 import model.Paciente;
 import model.Endereco;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class PacienteController {
 
-    public List<Paciente> listarPacientes() {
-        ArrayList<Paciente> pacientes = new ArrayList<>();
-        EnderecoController enderecoController = new EnderecoController();
-        String query = "SELECT ID_PACIENTE, NOME, EMAIL, TELEFONE, DATA_NASCIMENTO, CPF, ID_ENDERECO FROM PACIENTE;";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-             Statement stmt = conexao.createStatement();
-             ResultSet resultado = stmt.executeQuery(query)) {
-
-            while (resultado.next()) {
-                int idPaciente = resultado.getInt("ID_PACIENTE");
-                String nomePaciente = resultado.getString("NOME");
-                String email = resultado.getString("EMAIL");
-                String telefone = resultado.getString("TELEFONE");
-                String dataNascimento = resultado.getString("DATA_NASCIMENTO");
-                String cpf = resultado.getString("CPF");
-                int idEndereco = resultado.getInt("ID_ENDERECO");
-
-                Endereco endereco = enderecoController.buscarEnderecoPorCodigo(idEndereco);
-                Paciente paciente = new Paciente(idPaciente, nomePaciente, dataNascimento, email, telefone, cpf, endereco);
-
-                pacientes.add(paciente);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return pacientes;
-    }
+    private final Scanner scanner = new Scanner(System.in);
 
     public Paciente buscarPorCodigoPaciente(int codigo) {
         Paciente paciente = null;
         String query = "SELECT ID_PACIENTE, NOME, EMAIL, TELEFONE, DATA_NASCIMENTO, CPF, ID_ENDERECO FROM PACIENTE WHERE ID_PACIENTE = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conexao.prepareStatement(query)) {
+                PreparedStatement stmt = conexao.prepareStatement(query)) {
 
             stmt.setInt(1, codigo);
             ResultSet resultado = stmt.executeQuery();
@@ -70,31 +41,52 @@ public class PacienteController {
         return paciente;
     }
 
-    public int cadastrarPaciente(String logradouro, String numero, String bairro, String cidade,
-                                 String estado, String cep, String nomePaciente, String dataNascimento,
-                                 String cpf, String email, String telefone) {
-
+    public void cadastrarPaciente() {
         EnderecoController enderecoController = new EnderecoController();
+
+        System.out.println("Cadastro de Paciente:");
+        System.out.print("Logradouro: ");
+        String logradouro = scanner.nextLine();
+        System.out.print("Número: ");
+        String numero = scanner.nextLine();
+        System.out.print("Bairro: ");
+        String bairro = scanner.nextLine();
+        System.out.print("Cidade: ");
+        String cidade = scanner.nextLine();
+        System.out.print("Estado: ");
+        String estado = scanner.nextLine();
+        System.out.print("CEP: ");
+        String cep = scanner.nextLine();
+        System.out.print("Nome: ");
+        String nomePaciente = scanner.nextLine();
+        System.out.print("Data de Nascimento (YYYY-MM-DD): ");
+        String dataNascimento = scanner.nextLine();
+        System.out.print("CPF: ");
+        String cpf = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Telefone: ");
+        String telefone = scanner.nextLine();
 
         int idEndereco = enderecoController.cadastrarEndereco(logradouro, numero, bairro, cidade, estado, cep);
         int idPaciente = -1;
 
         if (idEndereco != -1) {
-            String queryPaciente = "INSERT INTO PACIENTE (NOME, EMAIL, TELEFONE, DATA_NASCIMENTO, CPF, ID_ENDERECO) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+            String queryPaciente = "INSERT INTO PACIENTE (NOME, EMAIL, TELEFONE, DATA_NASCIMENTO, CPF, ID_ENDERECO) VALUES (?, ?, ?, ?, ?, ?)";
 
             try (Connection conexao = DatabaseConfig.getConnection();
-                 PreparedStatement stmt = conexao.prepareStatement(queryPaciente, Statement.RETURN_GENERATED_KEYS)) {
+                    PreparedStatement statement = conexao.prepareStatement(queryPaciente,
+                            Statement.RETURN_GENERATED_KEYS)) {
 
-                stmt.setString(1, nomePaciente);
-                stmt.setString(2, email);
-                stmt.setString(3, telefone);
-                stmt.setString(4, dataNascimento);
-                stmt.setString(5, cpf);
-                stmt.setInt(6, idEndereco);
-                stmt.executeUpdate();
+                statement.setString(1, nomePaciente);
+                statement.setString(2, email);
+                statement.setString(3, telefone);
+                statement.setString(4, dataNascimento);
+                statement.setString(5, cpf);
+                statement.setInt(6, idEndereco);
+                statement.executeUpdate();
 
-                ResultSet registro = stmt.getGeneratedKeys();
+                ResultSet registro = statement.getGeneratedKeys();
                 if (registro.next()) {
                     idPaciente = registro.getInt(1);
                 }
@@ -106,44 +98,79 @@ public class PacienteController {
         } else {
             System.out.println("Erro ao cadastrar o endereço. Paciente não cadastrado.");
         }
-
-        return idPaciente;
     }
 
-    public void atualizarPaciente(int idPaciente, String logradouro, String numero, String bairro,
-                                  String cidade, String estado, String cep, String nome, String dataNascimento,
-                                  String cpf, String email, String telefone) {
+    public void atualizarPaciente() {
+        System.out.print("Digite o ID do paciente para atualizar: ");
+        int idPaciente = Integer.parseInt(scanner.nextLine());
 
-        EnderecoController enderecoController = new EnderecoController();
         Paciente pacienteExistente = buscarPorCodigoPaciente(idPaciente);
 
-        if (pacienteExistente != null && pacienteExistente.getIdEndereco() != null) {
-            int idEndereco = pacienteExistente.getIdEndereco().getIdEndereco();
-            enderecoController.atualizarEndereco(idEndereco, logradouro, numero, bairro, cidade, estado, cep);
-        }
+        if (pacienteExistente != null) {
+            EnderecoController enderecoController = new EnderecoController();
+            System.out.println("Deixe em branco para manter os dados atuais.");
 
-        String queryPaciente = "UPDATE PACIENTE SET NOME = ?, EMAIL = ?, TELEFONE = ?, DATA_NASCIMENTO = ?, CPF = ? " +
-                "WHERE ID_PACIENTE = ?";
+            System.out.print("Logradouro (" + pacienteExistente.getIdEndereco().getLogradouro() + "): ");
+            String logradouro = scanner.nextLine();
+            System.out.print("Número (" + pacienteExistente.getIdEndereco().getNumero() + "): ");
+            String numero = scanner.nextLine();
+            System.out.print("Bairro (" + pacienteExistente.getIdEndereco().getBairro() + "): ");
+            String bairro = scanner.nextLine();
+            System.out.print("Cidade (" + pacienteExistente.getIdEndereco().getCidade() + "): ");
+            String cidade = scanner.nextLine();
+            System.out.print("Estado (" + pacienteExistente.getIdEndereco().getEstado() + "): ");
+            String estado = scanner.nextLine();
+            System.out.print("CEP (" + pacienteExistente.getIdEndereco().getCep() + "): ");
+            String cep = scanner.nextLine();
+            System.out.print("Nome (" + pacienteExistente.getNomePaciente() + "): ");
+            String nome = scanner.nextLine();
+            System.out.print("Data de Nascimento (" + pacienteExistente.getDataNascimento() + "): ");
+            String dataNascimento = scanner.nextLine();
+            System.out.print("CPF (" + pacienteExistente.getCpf() + "): ");
+            String cpf = scanner.nextLine();
+            System.out.print("Email (" + pacienteExistente.getEmail() + "): ");
+            String email = scanner.nextLine();
+            System.out.print("Telefone (" + pacienteExistente.getTelefone() + "): ");
+            String telefone = scanner.nextLine();
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conexao.prepareStatement(queryPaciente)) {
+            enderecoController.atualizarEndereco(
+                    pacienteExistente.getIdEndereco().getIdEndereco(),
+                    logradouro.isEmpty() ? pacienteExistente.getIdEndereco().getLogradouro() : logradouro,
+                    numero.isEmpty() ? pacienteExistente.getIdEndereco().getNumero() : numero,
+                    bairro.isEmpty() ? pacienteExistente.getIdEndereco().getBairro() : bairro,
+                    cidade.isEmpty() ? pacienteExistente.getIdEndereco().getCidade() : cidade,
+                    estado.isEmpty() ? pacienteExistente.getIdEndereco().getEstado() : estado,
+                    cep.isEmpty() ? pacienteExistente.getIdEndereco().getCep() : cep);
 
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, telefone);
-            stmt.setString(4, dataNascimento);
-            stmt.setString(5, cpf);
-            stmt.setInt(6, idPaciente);
-            stmt.executeUpdate();
+            String queryPaciente = "UPDATE PACIENTE SET NOME = ?, EMAIL = ?, TELEFONE = ?, DATA_NASCIMENTO = ?, CPF = ? WHERE ID_PACIENTE = ?";
 
-            System.out.println("Paciente atualizado com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            try (Connection conexao = DatabaseConfig.getConnection();
+                    PreparedStatement statement = conexao.prepareStatement(queryPaciente)) {
+
+                statement.setString(1, nome.isEmpty() ? pacienteExistente.getNomePaciente() : nome);
+                statement.setString(2, email.isEmpty() ? pacienteExistente.getEmail() : email);
+                statement.setString(3, telefone.isEmpty() ? pacienteExistente.getTelefone() : telefone);
+                statement.setString(4,
+                        dataNascimento.isEmpty() ? pacienteExistente.getDataNascimento() : dataNascimento);
+                statement.setString(5, cpf.isEmpty() ? pacienteExistente.getCpf() : cpf);
+                statement.setInt(6, idPaciente);
+                statement.executeUpdate();
+
+                System.out.println("Paciente atualizado com sucesso!");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Paciente não encontrado.");
         }
     }
 
-    public void deletarHemocentro(int idPaciente) {
+    public void deletarPaciente() {
+        System.out.print("Digite o ID do paciente para deletar: ");
+        int idPaciente = Integer.parseInt(scanner.nextLine());
+
         Paciente pacienteExistente = buscarPorCodigoPaciente(idPaciente);
+
         if (pacienteExistente != null && pacienteExistente.getIdEndereco() != null) {
             int idEndereco = pacienteExistente.getIdEndereco().getIdEndereco();
             EnderecoController enderecoController = new EnderecoController();
@@ -151,10 +178,10 @@ public class PacienteController {
             String queryPaciente = "DELETE FROM PACIENTE WHERE ID_PACIENTE = ?";
 
             try (Connection conexao = DatabaseConfig.getConnection();
-                 PreparedStatement stmtPaciente = conexao.prepareStatement(queryPaciente)) {
+                    PreparedStatement statement = conexao.prepareStatement(queryPaciente)) {
 
-                stmtPaciente.setInt(1, idPaciente);
-                int registrosAfetados = stmtPaciente.executeUpdate();
+                statement.setInt(1, idPaciente);
+                int registrosAfetados = statement.executeUpdate();
 
                 if (registrosAfetados > 0) {
                     System.out.println("Paciente deletado com sucesso!");

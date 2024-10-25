@@ -1,129 +1,124 @@
 package controller;
 
 import conexion.DatabaseConfig;
-import model.*;
+import model.Medico;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-
-/*
- * ##########################################################################
- * # Classe usada para criar os metodos que gerenciam o objeto especialidade.
- * ##########################################################################
- */
+import java.util.Scanner;
 
 public class MedicoController {
 
-    public List<Medico> listarMedicos() {
-        List<Medico> medicos = new ArrayList<>();
-        String query = "SELECT ID_MEDICO, NOME, CONSELHO FROM MEDICO";
+    private final Scanner scanner = new Scanner(System.in);
+
+    public void cadastrarMedico() {
+
+        System.out.print("Digite o nome do medico: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Digite o conselho do medico: ");
+        String conselho = scanner.nextLine();
+
+        String query = "INSERT INTO MEDICO (NOME, CONSELHO) VALUES (?, ?)";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                Statement medico = conexao.createStatement();
-                ResultSet resultado = medico.executeQuery(query)) {
-
-            while (resultado.next()) {
-                int codigo = resultado.getInt("ID_MEDICO");
-                String nome = resultado.getString("NOME");
-                String conselho = resultado.getString("CONSELHO");
-                medicos.add(new Medico(codigo, nome, conselho));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return medicos;
-    }
-
-    public Medico buscarPorCodigoMedico(int codigo) {
-        Medico medicos = null;
-
-        String query = "SELECT ID_MEDICO, NOME, CONSELHO FROM MEDICO WHERE ID_MEDICO = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement medico = conexao.prepareStatement(query)) {
-
-            medico.setInt(1, codigo);
-            ResultSet resultado = medico.executeQuery();
-
-            if (resultado.next()) {
-                codigo = resultado.getInt("ID_MEDICO");
-                String nome = resultado.getString("NOME");
-                String conselho = resultado.getString("CONSELHO");
-                medicos = new Medico(codigo, nome, conselho);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return medicos;
-    }
-
-    public int cadastrarMedico(String nome, String conselho) {
-        String query = "INSERT INTO MEDICO (NOME,CONSELHO) VALUES (?,?)";
-        int idMedico = -1;
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement medico = conexao.prepareStatement(query,
+                PreparedStatement statement = conexao.prepareStatement(query,
                         PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            medico.setString(1, nome);
-            medico.setString(2, conselho);
-            medico.executeUpdate();
+            statement.setString(1, nome);
+            statement.setString(2, conselho);
+            statement.executeUpdate();
 
-            ResultSet registro = medico.getGeneratedKeys();
+            ResultSet registro = statement.getGeneratedKeys();
             if (registro.next()) {
-                idMedico = registro.getInt(1);
+                int idMedico = registro.getInt(1);
+                System.out.println("Medico cadastrado com sucesso! ID: " + idMedico);
             }
-
-            System.out.println("Medico cadastrada com sucesso!");
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return idMedico;
     }
 
-    public void deletarMedico(int codigo) {
+    public void deletarMedico() {
+
+        System.out.println("Remover Medico:");
+        System.out.print("Digite o código do médico a ser deletado: ");
+        int codigo = scanner.nextInt();
+
         String query = "DELETE FROM MEDICO WHERE ID_MEDICO = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement medico = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            medico.setInt(1, codigo);
-            int registro = medico.executeUpdate();
+            statement.setInt(1, codigo);
+            int registro = statement.executeUpdate();
 
             if (registro > 0) {
-                System.out.println("Medico deletada com sucesso!");
+                System.out.println("Médico deletado com sucesso!");
             } else {
-                System.out.println("Medico com código " + codigo + " não encontrado.");
+                System.out.println("Médico com código " + codigo + " não encontrado.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void atualizarMedico(int codigo, String novoNome, String conselho) {
-        String query = "UPDATE MEDICO SET NOME = ?, CONSELHO = ? WHERE ID_MEDICO = ?";
+    public void atualizarMedico() {
+
+        System.out.print("Digite o ID do medico para atualizar: ");
+        int idMedico = scanner.nextInt();
+        scanner.nextLine();
+
+        Medico medicoExistente = buscarPorCodigoMedico(idMedico);
+
+        if (medicoExistente != null) {
+
+            System.out.println("Deixe em branco para manter os dados atuais.");
+
+            System.out.print("Nome do Medico (" + medicoExistente.getNomeMedico() + "): ");
+            String novoNome = scanner.nextLine();
+            System.out.print("Numero do Conselho (" + medicoExistente.getConselho() + "): ");
+            String novoConselho = scanner.nextLine();
+
+            String query = "UPDATE MEDICO SET NOME = ?, CONSELHO = ? WHERE ID_MEDICO = ?";
+
+            try (Connection conexao = DatabaseConfig.getConnection();
+                    PreparedStatement statement = conexao.prepareStatement(query)) {
+
+                statement.setString(1, novoNome.isEmpty() ? medicoExistente.getNomeMedico() : novoNome);
+                statement.setString(2, novoConselho.isEmpty() ? medicoExistente.getConselho() : novoConselho);
+                statement.setInt(3, idMedico);
+                int registro = statement.executeUpdate();
+
+                if (registro > 0) {
+                    System.out.println("Medico atualizado com sucesso!");
+                } else {
+                    System.out.println("Medico com codigo " + idMedico + " nao encontrado.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Medico buscarPorCodigoMedico(int codigo) {
+        Medico medico = null;
+        String query = "SELECT ID_MEDICO, NOME, CONSELHO FROM MEDICO WHERE ID_MEDICO = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement medico = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            medico.setString(1, novoNome);
-            medico.setString(2, conselho);
-            medico.setInt(3, codigo);
-            int registro = medico.executeUpdate();
+            statement.setInt(1, codigo);
+            ResultSet resultado = statement.executeQuery();
 
-            if (registro > 0) {
-                System.out.println("Medico atualizada com sucesso!");
-            } else {
-                System.out.println("Medico com código " + codigo + " não encontrado.");
+            if (resultado.next()) {
+                String nome = resultado.getString("NOME");
+                String conselho = resultado.getString("CONSELHO");
+                medico = new Medico(codigo, nome, conselho);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
 
+        return medico;
+    }
 }

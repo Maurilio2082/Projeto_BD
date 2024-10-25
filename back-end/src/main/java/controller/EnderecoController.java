@@ -1,8 +1,6 @@
 package controller;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import conexion.DatabaseConfig;
 import model.Endereco;
@@ -15,43 +13,15 @@ import model.Endereco;
 
 public class EnderecoController {
 
-    public List<Endereco> listarEnderecos() {
-        ArrayList<Endereco> enderecos = new ArrayList<Endereco>();
-        String query = "SELECT id_endereco, logradouro, numero, bairro, cidade, estado, cep FROM endereco";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                Statement stmt = conexao.createStatement();
-                ResultSet resultado = stmt.executeQuery(query)) {
-
-            while (resultado.next()) {
-                int idEndereco = resultado.getInt("id_endereco");
-                String logradouro = resultado.getString("logradouro");
-                String numero = resultado.getString("numero");
-
-                String bairro = resultado.getString("bairro");
-                String cidade = resultado.getString("cidade");
-                String estado = resultado.getString("estado");
-                String cep = resultado.getString("cep");
-
-                Endereco endereco = new Endereco(idEndereco, logradouro, numero, bairro, cidade, estado,
-                        cep);
-                enderecos.add(endereco);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return enderecos;
-    }
-
     public Endereco buscarEnderecoPorCodigo(int codigo) {
         Endereco endereco = null;
         String query = "SELECT id_endereco,logradouro, numero, bairro, cidade, estado, cep FROM endereco WHERE id_endereco = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement enderecos = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            enderecos.setInt(1, codigo);
-            ResultSet resultado = enderecos.executeQuery();
+            statement.setInt(1, codigo);
+            ResultSet resultado = statement.executeQuery();
 
             if (resultado.next()) {
                 int id = resultado.getInt("id_endereco");
@@ -74,21 +44,20 @@ public class EnderecoController {
             String estado,
             String cep) {
         String query = "INSERT INTO endereco(logradouro, numero, bairro, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?)";
-        int idEndereco = -1; // Valor padrão caso a inserção falhe
+        int idEndereco = -1;
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement endereco = conexao.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement statement = conexao.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            endereco.setString(1, logradouro);
-            endereco.setString(2, numero);
-            endereco.setString(3, bairro);
-            endereco.setString(4, cidade);
-            endereco.setString(5, estado);
-            endereco.setString(6, cep);
-            endereco.executeUpdate();
+            statement.setString(1, logradouro);
+            statement.setString(2, numero);
+            statement.setString(3, bairro);
+            statement.setString(4, cidade);
+            statement.setString(5, estado);
+            statement.setString(6, cep);
+            statement.executeUpdate();
 
-            // Recuperar o id_endereco gerado
-            ResultSet registro = endereco.getGeneratedKeys();
+            ResultSet registro = statement.getGeneratedKeys();
             if (registro.next()) {
                 idEndereco = registro.getInt(1);
             }
@@ -101,28 +70,26 @@ public class EnderecoController {
     }
 
     public void atualizarEndereco(int codigo, String logradouro, String numero, String bairro,
-            String cidade,
-            String estado,
-            String cep) {
+            String cidade, String estado, String cep) {
         String query = "UPDATE endereco SET logradouro = ?, numero = ?, bairro = ?, cidade = ?, estado = ?, cep = ? WHERE id_endereco = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement endereco = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            endereco.setInt(1, codigo);
-            endereco.setString(2, logradouro);
-            endereco.setString(3, numero);
-            endereco.setString(4, bairro);
-            endereco.setString(5, cidade);
-            endereco.setString(6, estado);
-            endereco.setString(7, cep);
+            statement.setString(1, logradouro);
+            statement.setString(2, numero);
+            statement.setString(3, bairro);
+            statement.setString(4, cidade);
+            statement.setString(5, estado);
+            statement.setString(6, cep);
+            statement.setInt(7, codigo);
 
-            int registro = endereco.executeUpdate();
+            int registro = statement.executeUpdate();
 
             if (registro > 0) {
-                System.out.println("Endereco atualizada com sucesso!");
+                System.out.println("Endereço atualizado com sucesso!");
             } else {
-                System.out.println("Endereco com código " + codigo + " não encontrado.");
+                System.out.println("Endereço com código " + codigo + " não encontrado.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -133,10 +100,10 @@ public class EnderecoController {
         String query = "DELETE FROM endereco WHERE id_endereco = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement endereco = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            endereco.setInt(1, codigo);
-            int registro = endereco.executeUpdate();
+            statement.setInt(1, codigo);
+            int registro = statement.executeUpdate();
 
             return registro > 0;
         } catch (SQLException e) {

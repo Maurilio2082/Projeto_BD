@@ -2,10 +2,8 @@ package controller;
 
 import conexion.DatabaseConfig;
 import model.Especialidade;
-
+import java.util.Scanner;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * ##########################################################################
@@ -15,112 +13,115 @@ import java.util.List;
 
 public class EspecialidadeController {
 
-    public List<Especialidade> listarEspecialidades() {
-        List<Especialidade> especialidades = new ArrayList<>();
-        String query = "SELECT id_especialidade, nome_especialidade FROM especialidade";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                Statement especialidade = conexao.createStatement();
-                ResultSet resultado = especialidade.executeQuery(query)) {
-
-            while (resultado.next()) {
-                int codigo = resultado.getInt("id_especialidade");
-                String nome = resultado.getString("nome_especialidade");
-                especialidades.add(new Especialidade(codigo, nome));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return especialidades;
-    }
+    private final Scanner scanner = new Scanner(System.in);
 
     public Especialidade buscarPorCodigoEspecialidade(int codigo) {
-        Especialidade especialidades = null;
+        Especialidade especialidade = null;
         String query = "SELECT id_especialidade, nome_especialidade FROM especialidade WHERE id_especialidade = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement especialidade = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            especialidade.setInt(1, codigo);
-            ResultSet resultado = especialidade.executeQuery();
+            statement.setInt(1, codigo);
+            ResultSet resultado = statement.executeQuery();
 
             if (resultado.next()) {
                 String nome = resultado.getString("nome_especialidade");
                 int idEspecialidade = resultado.getInt("id_especialidade");
-
-                especialidades = new Especialidade(idEspecialidade, nome);
+                especialidade = new Especialidade(idEspecialidade, nome);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return especialidades;
+        return especialidade;
     }
 
-    public int cadastrarEspecialidade(String nome) {
+    public void cadastrarEspecialidade() {
+        System.out.println("Cadastro de Especialidade:");
+        System.out.print("Digite o nome da especialidade: ");
+        String nome = scanner.nextLine();
+
         String query = "INSERT INTO especialidade (nome_especialidade) VALUES (?)";
-        int idEspecialidade = -1;
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement especialidade = conexao.prepareStatement(query,
+                PreparedStatement statement = conexao.prepareStatement(query,
                         PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            especialidade.setString(1, nome);
-            especialidade.executeUpdate();
+            statement.setString(1, nome);
+            statement.executeUpdate();
 
-        
-            ResultSet registro = especialidade.getGeneratedKeys();
+            ResultSet registro = statement.getGeneratedKeys();
             if (registro.next()) {
-                idEspecialidade = registro.getInt(1);
+                int idEspecialidade = registro.getInt(1);
+                System.out.println("Especialidade cadastrada com sucesso! ID: " + idEspecialidade);
             }
-
-            System.out.println("Especialidade cadastrada com sucesso!");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return idEspecialidade;
     }
 
-    public void deletarEspecialidade(int codigo) {
+    public void deletarEspecialidade() {
+        System.out.println("Deletar de Especialidade:");
+
+        System.out.print("Digite o código da especialidade a ser deletada: ");
+        int codigo = scanner.nextInt();
+        scanner.nextLine();
+
         String query = "DELETE FROM especialidade WHERE id_especialidade = ?";
 
         try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement especialidade = conexao.prepareStatement(query)) {
+                PreparedStatement statement = conexao.prepareStatement(query)) {
 
-            especialidade.setInt(1, codigo);
-            int registro = especialidade.executeUpdate();
+            statement.setInt(1, codigo);
+            int registro = statement.executeUpdate();
 
             if (registro > 0) {
                 System.out.println("Especialidade deletada com sucesso!");
             } else {
-                System.out.println("Especialidade com código " + codigo + " não encontrado.");
+                System.out.println("Especialidade com código " + codigo + " não encontrada.");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void atualizarEspecialidade(int codigo, String novoNome) {
-        String query = "UPDATE especialidade SET nome_especialidade = ? WHERE id_especialidade = ?";
+    public void atualizarEspecialidade() {
+        System.out.print("Digite o ID da especialidade para atualizar: ");
+        int idEspecialidade = scanner.nextInt();
+        scanner.nextLine();
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement especialidade = conexao.prepareStatement(query)) {
+        Especialidade especialidadeExistente = buscarPorCodigoEspecialidade(idEspecialidade);
+        if (especialidadeExistente != null) {
+            System.out.println("Deixe em branco para manter os dados atuais.");
 
-            especialidade.setString(1, novoNome);
-            especialidade.setInt(2, codigo);
-            int registro = especialidade.executeUpdate();
+            System.out.print("Nome da Especialidade (" + especialidadeExistente.getNomeEspecialidade() + "): ");
+            String nome = scanner.nextLine();
 
-            if (registro > 0) {
-                System.out.println("Especialidade atualizada com sucesso!");
-            } else {
-                System.out.println("Especialidade com código " + codigo + " não encontrado.");
+            String queryEspecialidade = "UPDATE ESPECIALIDADE SET NOME = ? WHERE ID_ESPECIALIDADE = ?";
+
+            try (Connection conexao = DatabaseConfig.getConnection();
+                    PreparedStatement statement = conexao.prepareStatement(queryEspecialidade)) {
+
+                statement.setString(1, nome.isEmpty() ? especialidadeExistente.getNomeEspecialidade() : nome);
+                statement.setInt(2, idEspecialidade);
+
+                int registro = statement.executeUpdate();
+
+                if (registro > 0) {
+                    System.out.println("Especialidade atualizado com sucesso!");
+                } else {
+                    System.out.println("Especialidade com código " + idEspecialidade + " não encontrado.");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } else {
+            System.out.println("Especialidade nao encontrada.");
         }
     }
-
 }
