@@ -43,7 +43,7 @@ public class DatabaseConfig {
     * [sql](back-end/src/main/java/sql): Nesse diretório encontram-se os scripts utilizados para geração dos relatórios a partir da [classe relatórios](back-end/src/main/java/reports/Relatorios.java).
     * [utils](back-end/src/main/java/utils): Nesse diretório encontram-se scripts de [configuração](back-end/src/main/java/utils/Config.java) e automatização da [tela de informações iniciais](back-end/src/main/java/utils/SplashScreen.java).
     * [principal](back-end/src/main/java/principal): Script responsável por ser a interface entre o usuário e os módulos de acesso ao banco de dados. Deve ser executado após a criação das tabelas.
-        * Dentro dessa pasta também contém o txt [apresentacao] com um link de um video no youtube com a explicação passo a passo de utilização do sistema.
+        * Dentro dessa pasta também contém o [txt](back-end\src\main\java\principal\linkVideo.txt) com um link de um video no youtube com a explicação passo a passo de como execulta o projeto o teste de utilização do sistema.
 - Outros arquivos, como pom.xml e os wvnw, são de configuração do projeto Spring Boot.
 
 ### Instalando MySQL e MySQL Workbench no Linux (Debian/Ubuntu)
