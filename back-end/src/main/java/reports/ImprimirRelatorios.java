@@ -236,4 +236,30 @@ public class ImprimirRelatorios {
         }
     }
 
+    public void imprimirRelatorioAgrupamentoEsp() {
+        List<String[]> relatorio = relatorios.getRelatorioAgrupamentoEsp();
+        String linha = "+--------------------------------+----------------------+";
+        if (relatorio.isEmpty()) {
+            System.out.println("Nenhum dado encontrado.");
+        } else {
+            String formatarCabecalho = "| %-30s | %-20s |%n";
+            String formatarLinha = "| %-30s | %-20s |%n";
+
+            System.out.println("Quantitativo de Medicos por Especialidade:");
+            System.out.println(linha);
+            System.out.format(formatarCabecalho, "Nome Especialidade", "Qts Med Cadastrado");
+            System.out.println(linha);
+
+            for (String[] registro : relatorio) {
+                System.out.format(formatarLinha, registro[0], registro[1]);
+            }
+
+            System.out.println(linha);
+            System.out.println("Aperte enter para sair");
+
+            scanner.nextLine();
+            Config.limparConsole(2);
+        }
+    }
+
 }

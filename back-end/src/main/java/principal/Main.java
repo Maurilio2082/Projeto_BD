@@ -49,15 +49,15 @@ public class Main {
                     System.out.println("Opcao invalida.");
                     break;
             }
-            Config.limparConsole(1);
+            Config.limparConsole(3);
         }
     }
 
     private static void exibirMenuRelatorios() {
         System.out.println(Config.MENU_RELATORIOS);
-        System.out.print("Escolha uma opção [0-7]: ");
+        System.out.print("Escolha uma opção [0-8]: ");
         int opcaoRelatorio = scanner.nextInt();
-        Config.limparConsole(1);
+        Config.limparConsole(3);
 
         switch (opcaoRelatorio) {
             case 1 -> relatorios.imprimirRelatorioEspecialidades();
@@ -67,26 +67,43 @@ public class Main {
             case 5 -> relatorios.imprimirRelatorioHistorico();
             case 6 -> relatorios.imprimirRelatorioEspecialidadeMedicos();
             case 7 -> relatorios.imprimirRelatorioHospitalMedicos();
+            case 8 -> relatorios.imprimirRelatorioAgrupamentoEsp();
             case 0 -> System.out.println("Voltando ao menu principal...");
             default -> System.out.println("Opcao invalida.");
         }
     }
 
     private static void exibirMenuInserir() {
-        System.out.println(Config.MENU_ENTIDADES);
-        System.out.print("Escolha uma opcao [1-7]: ");
-        int opcaoInserir = scanner.nextInt();
-        Config.limparConsole(1);
+        while (true) {
+            System.out.println(Config.MENU_ENTIDADES);
+            System.out.print("Escolha uma opcao [1-7]: ");
+            int opcaoInserir = scanner.nextInt();
+            Config.limparConsole(3);
 
-        switch (opcaoInserir) {
-            case 1 -> especialidadeController.cadastrarEspecialidade();
-            case 2 -> hospitalController.cadastrarHospital();
-            case 3 -> pacienteController.cadastrarPaciente();
-            case 4 -> medicoController.cadastrarMedico();
-            case 5 -> historicoController.cadastrarHistorico();
-            case 6 -> especialidadeMedicoController.cadastrarEspecialidadeXMedico();
-            case 7 -> hospitalMedicoController.cadastrarMedicoXHospital();
-            default -> System.out.println("Opcao invalida.");
+            switch (opcaoInserir) {
+                case 1 -> especialidadeController.cadastrarEspecialidade();
+                case 2 -> hospitalController.cadastrarHospital();
+                case 3 -> pacienteController.cadastrarPaciente();
+                case 4 -> medicoController.cadastrarMedico();
+                case 5 -> historicoController.cadastrarHistorico();
+                case 6 -> especialidadeMedicoController.cadastrarEspecialidadeXMedico();
+                case 7 -> hospitalMedicoController.cadastrarMedicoXHospital();
+                default -> {
+                    System.out.println("Opcao invalida.");
+                    continue;
+                }
+            }
+
+            System.out.print("Deseja inserir mais algum registro? (Sim/Não): ");
+            String resposta = scanner.next().trim().toLowerCase();
+
+            if (resposta.equals("não")) {
+                System.out.println("Voltando ao menu principal...");
+                break;
+            } else if (!resposta.equals("sim")) {
+                System.out.println("Resposta inválida. Retornando ao menu de inserção...");
+
+            }
         }
     }
 
@@ -94,7 +111,7 @@ public class Main {
         System.out.println(Config.MENU_ENTIDADES);
         System.out.print("Escolha uma opcao [1-7]: ");
         int opcaoAtualizar = scanner.nextInt();
-        Config.limparConsole(1);
+        Config.limparConsole(3);
 
         switch (opcaoAtualizar) {
             case 1 -> especialidadeController.atualizarEspecialidade();

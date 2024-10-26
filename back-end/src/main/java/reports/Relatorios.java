@@ -24,6 +24,7 @@ public class Relatorios {
     private String queryRelatorioHistoricos;
     private String queryRelatorioEspecialidadeMedicos;
     private String queryRelatorioHospitaisMedicos;
+    private String queryRelatorioAgrupamentoEsp;
 
     public Relatorios() {
         queryRelatorioEspecialidades = lerArquivoSQL("sql/listar_especialidades.sql");
@@ -33,6 +34,7 @@ public class Relatorios {
         queryRelatorioHistoricos = lerArquivoSQL("sql/listar_historicos.sql");
         queryRelatorioEspecialidadeMedicos = lerArquivoSQL("sql/listar_medicos_especialidade.sql");
         queryRelatorioHospitaisMedicos = lerArquivoSQL("sql/listar_medicos_hospitais.sql");
+        queryRelatorioAgrupamentoEsp = lerArquivoSQL("sql/listar_agrupamento_especialidade.sql");
     }
 
     private String lerArquivoSQL(String caminhoArquivo) {
@@ -52,6 +54,30 @@ public class Relatorios {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<String[]> getRelatorioAgrupamentoEsp() {
+        List<String[]> relatorio = new ArrayList<>();
+        if (queryRelatorioAgrupamentoEsp == null) {
+            System.err.println("A consulta SQL está nula.");
+            return relatorio;
+        }
+
+        try (Connection conexao = DatabaseConfig.getConnection();
+                Statement stmt = conexao.createStatement();
+                ResultSet resultado = stmt.executeQuery(queryRelatorioAgrupamentoEsp)) {
+
+            while (resultado.next()) {
+                String nomeEspecialidade = resultado.getString("NOME_ESPECIALIDADE");
+                String qtsEspecialidade = resultado.getString("QUANTIDADE_MEDICOS");
+                relatorio.add(new String[] { nomeEspecialidade, qtsEspecialidade });
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return relatorio;
     }
 
     public List<Especialidade> getRelatorioEspecialidade() {
