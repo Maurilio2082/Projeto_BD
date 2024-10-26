@@ -5,7 +5,6 @@ import model.Paciente;
 import model.Endereco;
 import java.sql.*;
 import java.util.Scanner;
-import controller.RemoverDepedencia;
 
 public class PacienteController {
 
@@ -70,7 +69,6 @@ public class PacienteController {
         String telefone = scanner.nextLine();
 
         int idEndereco = enderecoController.cadastrarEndereco(logradouro, numero, bairro, cidade, estado, cep);
-        int idPaciente = -1;
 
         if (idEndereco != -1) {
             String queryPaciente = "INSERT INTO PACIENTE (NOME, EMAIL, TELEFONE, DATA_NASCIMENTO, CPF, ID_ENDERECO) VALUES (?, ?, ?, ?, ?, ?)";
@@ -89,10 +87,10 @@ public class PacienteController {
 
                 ResultSet registro = statement.getGeneratedKeys();
                 if (registro.next()) {
-                    idPaciente = registro.getInt(1);
+                    int idPaciente = registro.getInt(1);
+                    System.out.println("Paciente cadastrado com sucesso! ID: " + idPaciente);
                 }
 
-                System.out.println("Paciente cadastrado com sucesso!");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
