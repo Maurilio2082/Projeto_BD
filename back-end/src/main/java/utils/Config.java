@@ -32,6 +32,7 @@ public class Config {
             5 - HISTORICO
             6 - MEDICOS X ESPECIALIDADE
             7 - MEDICOS X HOSPITAL
+            0 - SAIR
             """;
 
     public static void limparConsole(int tempoEspera) {

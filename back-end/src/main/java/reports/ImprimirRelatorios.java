@@ -37,7 +37,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
 
         }
     }
@@ -65,7 +65,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
 
         }
     }
@@ -102,7 +102,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
         }
     }
 
@@ -137,7 +137,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
         }
     }
 
@@ -178,7 +178,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
         }
     }
 
@@ -205,7 +205,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
         }
     }
 
@@ -232,7 +232,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
         }
     }
 
@@ -258,7 +258,7 @@ public class ImprimirRelatorios {
             System.out.println("Aperte enter para sair");
 
             scanner.nextLine();
-            Config.limparConsole(2);
+            Config.limparConsole(1);
         }
     }
 
