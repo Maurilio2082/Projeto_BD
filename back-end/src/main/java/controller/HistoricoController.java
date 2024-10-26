@@ -168,7 +168,15 @@ public class HistoricoController {
                 novoMedico = new MedicoController().buscarPorCodigoMedico(novoIdMedico);
             }
 
-            String query = "UPDATE HISTORICO SET DATA_CONSULTA = ?, OBSERVACAO = ?, ID_ESPECIALIDADE = ?, ID_MEDICO = ? WHERE ID_HISTORICO = ?";
+            System.out.println("Hospital ( " + historicoExistente.getIdHospital().getRazaoSocial() + ")");
+            String novoHospitalInput = scanner.nextLine();
+            Hospital novoHospital = historicoExistente.getIdHospital();
+            if (!novoHospitalInput.isEmpty()) {
+                int novoIdHospital = Integer.parseInt(novoHospitalInput);
+                novoHospital = new HospitalController().buscarPorCodigoHospital(novoIdHospital);
+            }
+
+            String query = "UPDATE HISTORICO SET DATA_CONSULTA = ?, OBSERVACAO = ?, ID_ESPECIALIDADE = ?, ID_MEDICO = ?, ID_HOSPITAL= ?  WHERE ID_HISTORICO = ?";
 
             try (Connection conexao = DatabaseConfig.getConnection();
                     PreparedStatement statement = conexao.prepareStatement(query)) {
@@ -177,7 +185,8 @@ public class HistoricoController {
                 statement.setString(2, novaObservacao);
                 statement.setInt(3, novaEspecialidade.getIdEspecialidade());
                 statement.setInt(4, novoMedico.getIdMedico());
-                statement.setInt(5, idHistorico);
+                statement.setInt(5, novoHospital.getIdHospital());
+                statement.setInt(6, idHistorico);
 
                 statement.executeUpdate();
                 System.out.println("Historico atualizado com sucesso!");

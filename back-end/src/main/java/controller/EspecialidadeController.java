@@ -119,7 +119,7 @@ public class EspecialidadeController {
             System.out.print("Nome da Especialidade (" + especialidadeExistente.getNomeEspecialidade() + "): ");
             String nome = scanner.nextLine();
 
-            String queryEspecialidade = "UPDATE ESPECIALIDADE SET NOME = ? WHERE ID_ESPECIALIDADE = ?";
+            String queryEspecialidade = "UPDATE ESPECIALIDADE SET NOME_ESPECIALIDADE = ? WHERE ID_ESPECIALIDADE = ?";
 
             try (Connection conexao = DatabaseConfig.getConnection();
                     PreparedStatement statement = conexao.prepareStatement(queryEspecialidade)) {
