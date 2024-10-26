@@ -39,13 +39,60 @@ public class MedicoController {
     }
 
     public void deletarMedico() {
-
         System.out.println("Remover Medico:");
         System.out.print("Digite o código do médico a ser deletado: ");
         int codigo = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Tem certeza que deseja deletar este médico? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        RemoverDepedencia depedencia = new RemoverDepedencia();
+
+        boolean possuiDependenciaEspecialidade = depedencia.verificarDependencia("ESPECIALIDADE_MEDICO", "ID_MEDICO",
+                codigo);
+        boolean possuiDependenciaHospital = depedencia.verificarDependencia("HOSPITAL_MEDICO", "ID_MEDICO", codigo);
+
+        boolean possuiDependenciaHistorico = depedencia.verificarDependencia("HISTORICO", "ID_MEDICO", codigo);
+
+        if (possuiDependenciaEspecialidade) {
+            System.out.print("O médico possui especialidades associadas. Deseja remover esses vínculos? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase("Sim")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+            depedencia.deletarDependencia("ESPECIALIDADE_MEDICO", "ID_MEDICO", codigo);
+
+        }
+
+        if (possuiDependenciaHospital) {
+            System.out.print("O médico possui hospitais associados. Deseja remover esses vínculos? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase("Sim")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+            depedencia.deletarDependencia("HOSPITAL_MEDICO", "ID_MEDICO", codigo);
+
+        }
+
+        if (possuiDependenciaHistorico) {
+            System.out.print("O médico possui historico associados. Deseja remover esses vínculos? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase("Sim")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+            depedencia.deletarDependencia("HISTORICO", "ID_MEDICO", codigo);
+
+        }
 
         String query = "DELETE FROM MEDICO WHERE ID_MEDICO = ?";
-
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement statement = conexao.prepareStatement(query)) {
 

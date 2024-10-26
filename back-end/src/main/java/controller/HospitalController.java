@@ -190,17 +190,40 @@ public class HospitalController {
         int idHospital = scanner.nextInt();
         scanner.nextLine();
 
-        Hospital hospitalExistente = buscarPorCodigoHospital(idHospital);
-        if (hospitalExistente == null) {
-            System.out.println("Hospital não encontrado.");
+        System.out.print("Tem certeza que deseja deletar este hospital? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
             return;
         }
 
-        EnderecoController enderecoController = new EnderecoController();
-        int idEndereco = hospitalExistente.getIdEndereco().getIdEndereco();
+        RemoverDepedencia depedencia = new RemoverDepedencia();
+
+        boolean possuiDependenciaMedico = depedencia.verificarDependencia("HOSPITAL_MEDICO", "ID_HOSPITAL", idHospital);
+
+        boolean possuiDependenciaHistorico = depedencia.verificarDependencia("HISTORICO", "ID_HOSPITAL", idHospital);
+
+        if (possuiDependenciaMedico) {
+            System.out.print("O hospital possui médicos associados. Deseja remover esses vínculos? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase("Sim")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+            depedencia.deletarDependencia("HOSPITAL_MEDICO", "ID_HOSPITAL", idHospital);
+        }
+
+        if (possuiDependenciaHistorico) {
+            System.out.print("O hospital possui historico associados. Deseja remover esses vínculos? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase("Sim")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+            depedencia.deletarDependencia("HISTORICO", "ID_HOSPITAL", idHospital);
+        }
 
         String queryHospital = "DELETE FROM HOSPITAL WHERE ID_HOSPITAL = ?";
-
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement statement = conexao.prepareStatement(queryHospital)) {
 
@@ -209,18 +232,12 @@ public class HospitalController {
 
             if (registrosAfetados > 0) {
                 System.out.println("Hospital deletado com sucesso!");
-
-                if (enderecoController.deletarEndereco(idEndereco)) {
-                    System.out.println("Endereço deletado com sucesso!");
-                } else {
-                    System.out.println("Erro ao deletar o endereço.");
-                }
             } else {
                 System.out.println("Erro ao deletar o hospital. Hospital não encontrado.");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 }

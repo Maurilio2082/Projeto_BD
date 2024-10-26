@@ -74,7 +74,6 @@ public class HospitalMedicoController {
     }
 
     public void deletarMedicoXHospital() {
-
         System.out.println("Remover Medico X Hospital:");
 
         System.out.print("Digite o código do hospital: ");
@@ -85,8 +84,14 @@ public class HospitalMedicoController {
         int idMedico = scanner.nextInt();
         scanner.nextLine();
 
-        String query = "DELETE FROM HOSPITAL_MEDICO WHERE ID_HOSPITAL = ? AND ID_MEDICO = ?";
+        System.out.print("Tem certeza que deseja remover este médico do hospital? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
 
+        String query = "DELETE FROM HOSPITAL_MEDICO WHERE ID_HOSPITAL = ? AND ID_MEDICO = ?";
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement statement = conexao.prepareStatement(query)) {
 

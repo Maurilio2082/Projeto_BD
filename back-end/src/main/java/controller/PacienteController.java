@@ -5,6 +5,7 @@ import model.Paciente;
 import model.Endereco;
 import java.sql.*;
 import java.util.Scanner;
+import controller.RemoverDepedencia;
 
 public class PacienteController {
 
@@ -169,36 +170,42 @@ public class PacienteController {
         System.out.print("Digite o ID do paciente para deletar: ");
         int idPaciente = Integer.parseInt(scanner.nextLine());
 
-        Paciente pacienteExistente = buscarPorCodigoPaciente(idPaciente);
+        System.out.print("Tem certeza que deseja deletar este paciente? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
 
-        if (pacienteExistente != null && pacienteExistente.getIdEndereco() != null) {
-            int idEndereco = pacienteExistente.getIdEndereco().getIdEndereco();
-            EnderecoController enderecoController = new EnderecoController();
+        RemoverDepedencia depedencia = new RemoverDepedencia();
 
-            String queryPaciente = "DELETE FROM PACIENTE WHERE ID_PACIENTE = ?";
-
-            try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement statement = conexao.prepareStatement(queryPaciente)) {
-
-                statement.setInt(1, idPaciente);
-                int registrosAfetados = statement.executeUpdate();
-
-                if (registrosAfetados > 0) {
-                    System.out.println("Paciente deletado com sucesso!");
-
-                    if (enderecoController.deletarEndereco(idEndereco)) {
-                        System.out.println("Endereço deletado com sucesso!");
-                    } else {
-                        System.out.println("Erro ao deletar o endereço.");
-                    }
-                } else {
-                    System.out.println("Erro ao deletar o paciente. Paciente não encontrado.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        boolean possuiDependencia = depedencia.verificarDependencia("HISTORICO", "ID_PACIENTE", idPaciente);
+        if (possuiDependencia) {
+            System.out.print("O paciente possui histórico associado. Deseja remover esses registros? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (resposta.equalsIgnoreCase("Sim")) {
+                depedencia.deletarDependencia("HISTORICO", "ID_PACIENTE", idPaciente);
+            } else {
+                System.out.println("Operação cancelada.");
+                return;
             }
-        } else {
-            System.out.println("Paciente não encontrado ou não possui endereço associado.");
+        }
+
+        String queryPaciente = "DELETE FROM PACIENTE WHERE ID_PACIENTE = ?";
+        try (Connection conexao = DatabaseConfig.getConnection();
+                PreparedStatement statement = conexao.prepareStatement(queryPaciente)) {
+
+            statement.setInt(1, idPaciente);
+            int registrosAfetados = statement.executeUpdate();
+
+            if (registrosAfetados > 0) {
+                System.out.println("Paciente deletado com sucesso!");
+            } else {
+                System.out.println("Paciente não encontrado.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+
 }

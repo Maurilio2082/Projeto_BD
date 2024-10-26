@@ -61,7 +61,6 @@ public class HistoricoController {
         System.out.print("Digite a observação: ");
         String observacao = scanner.nextLine();
 
-        // Buscando paciente
         System.out.print("Digite o ID do paciente (ou deixe em branco para buscar pelo CPF): ");
         String inputIdPaciente = scanner.nextLine();
         Paciente paciente = null;
@@ -75,7 +74,6 @@ public class HistoricoController {
             paciente = buscarPacientePorCpf(cpfPaciente);
         }
 
-        // Buscando hospital
         System.out.print("Digite o ID do hospital (ou deixe em branco para buscar pelo CNPJ): ");
         String inputIdHospital = scanner.nextLine();
         Hospital hospital = null;
@@ -89,7 +87,6 @@ public class HistoricoController {
             hospital = buscarHospitalPorCnpj(cnpjHospital);
         }
 
-        // Buscando especialidade
         System.out.print("Digite o ID da especialidade: ");
         int idEspecialidade = scanner.nextInt();
         Especialidade especialidade = new EspecialidadeController().buscarPorCodigoEspecialidade(idEspecialidade);
@@ -98,7 +95,6 @@ public class HistoricoController {
             return;
         }
 
-        // Buscando médico
         System.out.print("Digite o ID do médico: ");
         int idMedico = scanner.nextInt();
         Medico medico = new MedicoController().buscarPorCodigoMedico(idMedico);
@@ -155,7 +151,6 @@ public class HistoricoController {
                 novaObservacao = historicoExistente.getObservacao();
             }
 
-            // Atualizar especialidade
             System.out
                     .println("Especialidade ( " + historicoExistente.getIdEspecialidade().getNomeEspecialidade() + ")");
             String novaEspecialidadeInput = scanner.nextLine();
@@ -165,7 +160,6 @@ public class HistoricoController {
                 novaEspecialidade = new EspecialidadeController().buscarPorCodigoEspecialidade(novoIdEspecialidade);
             }
 
-            // Atualizar médico
             System.out.println("Medico ( " + historicoExistente.getIdMedico().getNomeMedico() + ")");
             String novoMedicoInput = scanner.nextLine();
             Medico novoMedico = historicoExistente.getIdMedico();
@@ -197,9 +191,16 @@ public class HistoricoController {
     public void deletarHistorico() {
         System.out.print("Digite o código do histórico a ser deletado: ");
         int idHistorico = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Tem certeza que deseja deletar este histórico? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
 
         String deleteHistorico = "DELETE FROM HISTORICO WHERE ID_HISTORICO = ?";
-
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement statement = conexao.prepareStatement(deleteHistorico)) {
 
@@ -211,7 +212,6 @@ public class HistoricoController {
             } else {
                 System.out.println("Histórico não encontrado.");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

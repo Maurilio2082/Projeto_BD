@@ -130,16 +130,22 @@ public class EspecialidadeMedicoController {
     public void deletarEspecialidadeXMedico() {
         System.out.println("Deletar Especilidade X Medico:");
 
-        System.out.print("Digite o codigo do medico: ");
+        System.out.print("Digite o código do médico: ");
         int idMedico = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.print("Digite o codigo da especialidade a ser removida: ");
+        System.out.print("Digite o código da especialidade a ser removida: ");
         int idEspecialidade = scanner.nextInt();
         scanner.nextLine();
 
-        String query = "DELETE FROM ESPECIALIDADE_MEDICO WHERE ID_MEDICO = ? AND ID_ESPECIALIDADE = ?";
+        System.out.print("Tem certeza que deseja remover essa especialidade do médico? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
 
+        String query = "DELETE FROM ESPECIALIDADE_MEDICO WHERE ID_MEDICO = ? AND ID_ESPECIALIDADE = ?";
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement statement = conexao.prepareStatement(query)) {
 
@@ -148,9 +154,9 @@ public class EspecialidadeMedicoController {
             int rowsAffected = statement.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Especialidade removida com sucesso");
+                System.out.println("Especialidade removida do médico com sucesso.");
             } else {
-                System.out.println("Especialidade ou medico nao encontrado.");
+                System.out.println("Especialidade ou médico não encontrado.");
             }
         } catch (SQLException e) {
             e.printStackTrace();

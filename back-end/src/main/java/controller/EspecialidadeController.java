@@ -64,14 +64,33 @@ public class EspecialidadeController {
     }
 
     public void deletarEspecialidade() {
-        System.out.println("Deletar de Especialidade:");
-
+        System.out.println("Deletar Especialidade:");
         System.out.print("Digite o código da especialidade a ser deletada: ");
         int codigo = scanner.nextInt();
         scanner.nextLine();
 
-        String query = "DELETE FROM especialidade WHERE id_especialidade = ?";
+        System.out.print("Tem certeza que deseja deletar a especialidade? (Sim/Não): ");
+        String confirmacao = scanner.nextLine();
+        if (!confirmacao.equalsIgnoreCase("Sim")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
 
+        RemoverDepedencia depedencia = new RemoverDepedencia();
+
+        boolean possuiDependencia = depedencia.verificarDependencia("ESPECIALIDADE_MEDICO", "ID_ESPECIALIDADE", codigo);
+        if (possuiDependencia) {
+            System.out.print("A especialidade possui vínculos. Deseja deletar esses registros vinculados? (Sim/Não): ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase("Sim")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+
+            depedencia.deletarDependencia("ESPECIALIDADE_MEDICO", "ID_ESPECIALIDADE", codigo);
+        }
+
+        String query = "DELETE FROM especialidade WHERE id_especialidade = ?";
         try (Connection conexao = DatabaseConfig.getConnection();
                 PreparedStatement statement = conexao.prepareStatement(query)) {
 
@@ -83,7 +102,6 @@ public class EspecialidadeController {
             } else {
                 System.out.println("Especialidade com código " + codigo + " não encontrada.");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
