@@ -1,16 +1,28 @@
 package conexion;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 public class DatabaseConfig {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/labdatabase";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String CONNECTION_STRING = "mongodb://localhost:27017";
+    private static final String DATABASE_NAME = "labdatabase";
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    private static MongoDatabase database;
+
+    static {
+        try {
+            MongoClient mongoClient = MongoClients.create(CONNECTION_STRING);
+            database = mongoClient.getDatabase(DATABASE_NAME);
+            System.out.println("Conectado ao MongoDB: " + DATABASE_NAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro ao conectar ao MongoDB.");
+        }
+    }
+
+    public static MongoDatabase getDatabase() {
+        return database;
     }
 }

@@ -1,145 +1,85 @@
 package controller;
 
-import conexion.DatabaseConfig;
-import model.Especialidade;
+import java.util.List;
 import java.util.Scanner;
-import java.sql.*;
 
-/*
- * ##########################################################################
- * # Classe usada para criar os metodos que gerenciam o objeto especialidade.
- * ##########################################################################
- */
+import Repository.EspecialidadeRepository;
+import model.Especialidade;
+import utils.RemoverDependencia;
 
 public class EspecialidadeController {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final EspecialidadeRepository repository;
+    private final Scanner scanner;
 
-    public Especialidade buscarPorCodigoEspecialidade(int codigo) {
-        Especialidade especialidade = null;
-        String query = "SELECT id_especialidade, nome_especialidade FROM especialidade WHERE id_especialidade = ?";
+    public EspecialidadeController() {
+        this.repository = new EspecialidadeRepository();
+        this.scanner = new Scanner(System.in);
+    }
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                String nome = resultado.getString("nome_especialidade");
-                int idEspecialidade = resultado.getInt("id_especialidade");
-                especialidade = new Especialidade(idEspecialidade, nome);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void listarEspecialidades() {
+        List<Especialidade> especialidades = repository.buscarTodasEspecialidades();
+        if (especialidades.isEmpty()) {
+            System.out.println("Nenhuma especialidade encontrada.");
+        } else {
+            especialidades.forEach(System.out::println);
         }
+    }
 
-        return especialidade;
+    public void buscarEspecialidadePorId() {
+        System.out.print("Digite o ID da especialidade: ");
+        String id = scanner.nextLine();
+        Especialidade especialidade = repository.buscarPorId(id);
+        if (especialidade == null) {
+            System.out.println("Especialidade não encontrada.");
+        } else {
+            System.out.println(especialidade);
+        }
+    }
+
+    public void buscarEspecialidadePorNome() {
+        System.out.print("Digite o nome da especialidade: ");
+        String nome = scanner.nextLine();
+        Especialidade especialidade = repository.buscarPorNome(nome);
+        if (especialidade == null) {
+            System.out.println("Especialidade não encontrada.");
+        } else {
+            System.out.println(especialidade);
+        }
     }
 
     public void cadastrarEspecialidade() {
-        System.out.println("Cadastro de Especialidade:");
-        System.out.print("Digite o nome da especialidade: ");
+        System.out.print("Digite o nome da nova especialidade: ");
         String nome = scanner.nextLine();
-
-        String query = "INSERT INTO especialidade (nome_especialidade) VALUES (?)";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query,
-                        PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            statement.setString(1, nome);
-            statement.executeUpdate();
-
-            ResultSet registro = statement.getGeneratedKeys();
-            if (registro.next()) {
-                int idEspecialidade = registro.getInt(1);
-                System.out.println("Especialidade cadastrada com sucesso! ID: " + idEspecialidade);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deletarEspecialidade() {
-        System.out.println("Deletar Especialidade:");
-        System.out.print("Digite o código da especialidade a ser deletada: ");
-        int codigo = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Tem certeza que deseja deletar a especialidade? (Sim/Não): ");
-        String confirmacao = scanner.nextLine();
-        if (!confirmacao.equalsIgnoreCase("Sim")) {
-            System.out.println("Operação cancelada.");
-            return;
-        }
-
-        RemoverDepedencia depedencia = new RemoverDepedencia();
-
-        boolean possuiDependencia = depedencia.verificarDependencia("ESPECIALIDADE_MEDICO", "ID_ESPECIALIDADE", codigo);
-        if (possuiDependencia) {
-            System.out.print("A especialidade possui vínculos. Deseja deletar esses registros vinculados? (Sim/Não): ");
-            String resposta = scanner.nextLine();
-            if (!resposta.equalsIgnoreCase("Sim")) {
-                System.out.println("Operação cancelada.");
-                return;
-            }
-
-            depedencia.deletarDependencia("ESPECIALIDADE_MEDICO", "ID_ESPECIALIDADE", codigo);
-        }
-
-        String query = "DELETE FROM especialidade WHERE id_especialidade = ?";
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            int registro = statement.executeUpdate();
-
-            if (registro > 0) {
-                System.out.println("Especialidade deletada com sucesso!");
-            } else {
-                System.out.println("Especialidade com código " + codigo + " não encontrada.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Especialidade especialidade = new Especialidade(null, nome);
+        repository.inserirEspecialidade(especialidade);
     }
 
     public void atualizarEspecialidade() {
-        System.out.print("Digite o ID da especialidade para atualizar: ");
-        int idEspecialidade = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("Digite o ID da especialidade: ");
+        String id = scanner.nextLine();
+        Especialidade especialidadeAtual = repository.buscarPorId(id);
 
-        Especialidade especialidadeExistente = buscarPorCodigoEspecialidade(idEspecialidade);
-        if (especialidadeExistente != null) {
-            System.out.println("Deixe em branco para manter os dados atuais.");
-
-            System.out.print("Nome da Especialidade (" + especialidadeExistente.getNomeEspecialidade() + "): ");
-            String nome = scanner.nextLine();
-
-            String queryEspecialidade = "UPDATE ESPECIALIDADE SET NOME_ESPECIALIDADE = ? WHERE ID_ESPECIALIDADE = ?";
-
-            try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement statement = conexao.prepareStatement(queryEspecialidade)) {
-
-                statement.setString(1, nome.isEmpty() ? especialidadeExistente.getNomeEspecialidade() : nome);
-                statement.setInt(2, idEspecialidade);
-
-                int registro = statement.executeUpdate();
-
-                if (registro > 0) {
-                    System.out.println("Especialidade atualizado com sucesso!");
-                } else {
-                    System.out.println("Especialidade com código " + idEspecialidade + " não encontrado.");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("Especialidade nao encontrada.");
+        if (especialidadeAtual == null) {
+            System.out.println("Especialidade não encontrada.");
+            return;
         }
+
+        System.out.print("Digite o novo nome da especialidade (ou deixe em branco para manter o atual): ");
+        String novoNome = scanner.nextLine();
+
+        String nomeAtualizado = novoNome.isEmpty() ? especialidadeAtual.getNomeEspecialidade() : novoNome;
+        repository.atualizarEspecialidade(id, nomeAtualizado);
+    }
+
+    public void deletarEspecialidade() {
+        System.out.print("Digite o ID da especialidade que deseja excluir: ");
+        String especialidadeId = scanner.nextLine();
+
+        System.out.println("Excluindo dependências relacionadas à especialidade...");
+        RemoverDependencia.removerDependenciasEspecialidade(especialidadeId);
+
+        repository.excluirEspecialidade(especialidadeId);
+        System.out.println("Especialidade excluída com sucesso.");
     }
 }

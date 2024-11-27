@@ -1,115 +1,99 @@
 package controller;
 
-import java.sql.*;
-
-import conexion.DatabaseConfig;
 import model.Endereco;
 
-/*
- * ##########################################################################
- * # Classe usada para criar os metodos que gerenciam o objeto endereco.
- * ##########################################################################
- */
+import java.util.List;
+import java.util.Scanner;
+
+import Repository.EnderecoRepository;
 
 public class EnderecoController {
 
-    public Endereco buscarEnderecoPorCodigo(int codigo) {
-        Endereco endereco = null;
-        String query = "SELECT id_endereco,logradouro, numero, bairro, cidade, estado, cep FROM endereco WHERE id_endereco = ?";
+    private final EnderecoRepository repository;
+    private final Scanner scanner;
+    private String ultimoEnderecoCadastradoId; // Para armazenar o ID do último endereço cadastrado.
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
+    public EnderecoController() {
+        this.repository = new EnderecoRepository();
+        this.scanner = new Scanner(System.in);
+    }
 
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                int id = resultado.getInt("id_endereco");
-                String logradouro = resultado.getString("logradouro");
-                String numero = resultado.getString("numero");
-                String bairro = resultado.getString("bairro");
-                String cidade = resultado.getString("cidade");
-                String estado = resultado.getString("estado");
-                String cep = resultado.getString("cep");
-                endereco = new Endereco(id, logradouro, numero, bairro, cidade, estado, cep);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void listarEnderecos() {
+        List<Endereco> enderecos = repository.buscarTodosEnderecos();
+        if (enderecos.isEmpty()) {
+            System.out.println("Nenhum endereço encontrado.");
+        } else {
+            enderecos.forEach(System.out::println);
         }
+    }
 
+    public void buscarEnderecoPorCep() {
+        System.out.print("Digite o CEP do endereço: ");
+        String cep = scanner.nextLine();
+        Endereco endereco = repository.buscarPorCep(cep);
+        if (endereco == null) {
+            System.out.println("Endereço não encontrado.");
+        } else {
+            System.out.println(endereco);
+        }
+    }
+
+    public Endereco cadastrarEndereco() {
+        System.out.print("Logradouro: ");
+        String logradouro = scanner.nextLine();
+        System.out.print("Número: ");
+        String numero = scanner.nextLine();
+        System.out.print("Bairro: ");
+        String bairro = scanner.nextLine();
+        System.out.print("Cidade: ");
+        String cidade = scanner.nextLine();
+        System.out.print("Estado: ");
+        String estado = scanner.nextLine();
+        System.out.print("CEP: ");
+        String cep = scanner.nextLine();
+    
+        Endereco endereco = new Endereco(null, logradouro, numero, bairro, cidade, estado, cep);
+        String enderecoId = repository.inserirEndereco(endereco);
+        endereco.setId(enderecoId); // Atualiza o ID no objeto Endereco
         return endereco;
     }
+    
 
-    public int cadastrarEndereco(String logradouro, String numero, String bairro, String cidade,
-            String estado,
-            String cep) {
-        String query = "INSERT INTO endereco(logradouro, numero, bairro, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?)";
-        int idEndereco = -1;
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            statement.setString(1, logradouro);
-            statement.setString(2, numero);
-            statement.setString(3, bairro);
-            statement.setString(4, cidade);
-            statement.setString(5, estado);
-            statement.setString(6, cep);
-            statement.executeUpdate();
-
-            ResultSet registro = statement.getGeneratedKeys();
-            if (registro.next()) {
-                idEndereco = registro.getInt(1);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return idEndereco;
+    public String getUltimoEnderecoCadastradoId() {
+        return ultimoEnderecoCadastradoId;
     }
 
-    public void atualizarEndereco(int codigo, String logradouro, String numero, String bairro,
-            String cidade, String estado, String cep) {
-        String query = "UPDATE endereco SET logradouro = ?, numero = ?, bairro = ?, cidade = ?, estado = ?, cep = ? WHERE id_endereco = ?";
+    public Endereco atualizarEndereco(Endereco enderecoAtual) {
+        System.out.println("Atualize os dados do endereço (ou deixe em branco para manter o atual):");
+        System.out.print("Logradouro: ");
+        String logradouro = scanner.nextLine();
+        System.out.print("Número: ");
+        String numero = scanner.nextLine();
+        System.out.print("Bairro: ");
+        String bairro = scanner.nextLine();
+        System.out.print("Cidade: ");
+        String cidade = scanner.nextLine();
+        System.out.print("Estado: ");
+        String estado = scanner.nextLine();
+        System.out.print("CEP: ");
+        String cep = scanner.nextLine();
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
+        Endereco enderecoAtualizado = new Endereco(
+                enderecoAtual.getId(),
+                logradouro.isEmpty() ? enderecoAtual.getLogradouro() : logradouro,
+                numero.isEmpty() ? enderecoAtual.getNumero() : numero,
+                bairro.isEmpty() ? enderecoAtual.getBairro() : bairro,
+                cidade.isEmpty() ? enderecoAtual.getCidade() : cidade,
+                estado.isEmpty() ? enderecoAtual.getEstado() : estado,
+                cep.isEmpty() ? enderecoAtual.getCep() : cep);
 
-            statement.setString(1, logradouro);
-            statement.setString(2, numero);
-            statement.setString(3, bairro);
-            statement.setString(4, cidade);
-            statement.setString(5, estado);
-            statement.setString(6, cep);
-            statement.setInt(7, codigo);
-
-            int registro = statement.executeUpdate();
-
-            if (registro > 0) {
-                System.out.println("Endereço atualizado com sucesso!");
-            } else {
-                System.out.println("Endereço com código " + codigo + " não encontrado.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        repository.atualizarEndereco(enderecoAtualizado.getId(), enderecoAtualizado);
+        return enderecoAtualizado;
     }
 
-    public boolean deletarEndereco(int codigo) {
-        String query = "DELETE FROM endereco WHERE id_endereco = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            int registro = statement.executeUpdate();
-
-            return registro > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void excluirEndereco() {
+        System.out.print("Digite o ID do endereço que deseja excluir: ");
+        String id = scanner.nextLine();
+        repository.excluirEndereco(id);
     }
-
 }

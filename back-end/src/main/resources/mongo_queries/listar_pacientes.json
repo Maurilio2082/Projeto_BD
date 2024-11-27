@@ -1,0 +1,22 @@
+[
+  {
+    "$lookup": {
+      "from": "enderecos",
+      "localField": "enderecoId",
+      "foreignField": "_id",
+      "as": "enderecoInfo"
+    }
+  },
+  {
+    "$project": {
+      "nome": 1,
+      "cpf": 1,
+      "telefone": 1,
+      "email": 1,
+      "dataNascimento": 1,
+      "enderecoInfo.logradouro": 1,
+      "enderecoInfo.bairro": 1,
+      "enderecoInfo.cidade": 1
+    }
+  }
+]

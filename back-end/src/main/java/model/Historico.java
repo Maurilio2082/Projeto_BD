@@ -1,95 +1,94 @@
 package model;
 
-/*
- * ##########################################################################
- * # Classe basica do objeto Historico.
- * ##########################################################################
- */
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "historicos") // Nome da coleção no MongoDB
 public class Historico {
 
-    private int idHistorico;
+    @Id
+    private String id; // Identificador único no MongoDB
     private String dataConsulta;
     private String observacao;
-    private Paciente idPaciente;
-    private Hospital idHospital;
-    private Medico idMedico;
-    private Especialidade idEspecialidade;
+    private String pacienteId; // Referência ao ID do paciente no MongoDB
+    private String hospitalId; // Referência ao ID do hospital no MongoDB
+    private String medicoId; // Referência ao ID do médico no MongoDB
+    private String especialidadeId; // Referência ao ID da especialidade no MongoDB
 
-    public Historico(int idHistorico, String dataConsulta, String observacao,
-            Paciente idPaciente, Hospital idHospital, Medico idMedico, Especialidade idEspecialidade) {
+    public Historico() {
+    }
 
-        this.idHistorico = idHistorico;
+    public Historico(String id, String dataConsulta, String observacao, String pacienteId, String hospitalId,
+            String medicoId, String especialidadeId) {
+        this.id = id;
         this.dataConsulta = dataConsulta;
         this.observacao = observacao;
-        this.idPaciente = idPaciente;
-        this.idHospital = idHospital;
-        this.idEspecialidade = idEspecialidade;
-        this.idMedico = idMedico;
+        this.pacienteId = pacienteId;
+        this.hospitalId = hospitalId;
+        this.medicoId = medicoId;
+        this.especialidadeId = especialidadeId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDataConsulta() {
         return dataConsulta;
     }
 
-    public int getIdHistorico() {
-        return idHistorico;
-    }
-
-    public void setIdHospital(Hospital idHospital) {
-        this.idHospital = idHospital;
-    }
-
-    public void setIdPaciente(Paciente idPaciente) {
-        this.idPaciente = idPaciente;
-    }
-
-    public Hospital getIdHospital() {
-        return idHospital;
-    }
-
-    public Paciente getIdPaciente() {
-        return idPaciente;
+    public void setDataConsulta(String dataConsulta) {
+        this.dataConsulta = dataConsulta;
     }
 
     public String getObservacao() {
         return observacao;
     }
 
-    public void setDataConsulta(String dataConsulta) {
-        this.dataConsulta = dataConsulta;
-    }
-
-    public void setIdHistorico(int idHistorico) {
-        this.idHistorico = idHistorico;
-    }
-
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
 
-    public void setIdMedico(Medico idMedico) {
-        this.idMedico = idMedico;
+    public String getPacienteId() {
+        return pacienteId;
     }
 
-    public void setiEspecialidade(Especialidade iEspecialidade) {
-        this.idEspecialidade = iEspecialidade;
+    public void setPacienteId(String pacienteId) {
+        this.pacienteId = pacienteId;
     }
 
-    public Medico getIdMedico() {
-        return idMedico;
+    public String getHospitalId() {
+        return hospitalId;
     }
 
-    public Especialidade getiEspecialidade() {
-        return idEspecialidade;
+    public void setHospitalId(String hospitalId) {
+        this.hospitalId = hospitalId;
     }
 
-    public void setIdEspecialidade(Especialidade idEspecialidade) {
-        this.idEspecialidade = idEspecialidade;
+    public String getMedicoId() {
+        return medicoId;
     }
 
-    public Especialidade getIdEspecialidade() {
-        return idEspecialidade;
+    public void setMedicoId(String medicoId) {
+        this.medicoId = medicoId;
     }
 
+    public String getEspecialidadeId() {
+        return especialidadeId;
+    }
+
+    public void setEspecialidadeId(String especialidadeId) {
+        this.especialidadeId = especialidadeId;
+    }
+
+    @Override
+    public String toString() {
+        return "Historico [id=" + id + ", dataConsulta=" + dataConsulta + ", observacao=" + observacao +
+                ", pacienteId=" + pacienteId + ", hospitalId=" + hospitalId +
+                ", medicoId=" + medicoId + ", especialidadeId=" + especialidadeId + "]";
+    }
 }

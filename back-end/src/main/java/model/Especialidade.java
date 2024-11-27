@@ -1,24 +1,29 @@
 package model;
 
-/*
- * ##########################################################################
- * # Classe basica do objeto Especialidade.
- * ##########################################################################
- */
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "especialidades") // Nome da coleção no MongoDB
 public class Especialidade {
-    private int idEspecialidade;
+
+    @Id
+    private String id; // Identificador único no MongoDB
     private String nomeEspecialidade;
 
-    public Especialidade(int idEspecialidade, String nomeEspecialidade) {
-
-        this.idEspecialidade = idEspecialidade;
-        this.nomeEspecialidade = nomeEspecialidade;
-
+    public Especialidade() {
     }
 
-    public int getIdEspecialidade() {
-        return idEspecialidade;
+    public Especialidade(String id, String nomeEspecialidade) {
+        this.id = id;
+        this.nomeEspecialidade = nomeEspecialidade;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNomeEspecialidade() {
@@ -29,7 +34,8 @@ public class Especialidade {
         this.nomeEspecialidade = nomeEspecialidade;
     }
 
-    public void setIdEspecialidade(int idEspecialidade) {
-        this.idEspecialidade = idEspecialidade;
+    @Override
+    public String toString() {
+        return "Especialidade [id=" + id + ", nomeEspecialidade=" + nomeEspecialidade + "]";
     }
 }

@@ -1,171 +1,164 @@
 package controller;
 
-import conexion.DatabaseConfig;
+import model.Especialidade;
 import model.Medico;
+import utils.RemoverDependencia;
 
-import java.sql.*;
+import java.util.List;
 import java.util.Scanner;
+
+import Repository.EspecialidadeRepository;
+import Repository.MedicoRepository;
 
 public class MedicoController {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final MedicoRepository medicoRepository;
+    private final EspecialidadeRepository especialidadeRepository;
+    private final Scanner scanner;
 
-    public void cadastrarMedico() {
+    public MedicoController() {
+        this.medicoRepository = new MedicoRepository();
+        this.especialidadeRepository = new EspecialidadeRepository();
+        this.scanner = new Scanner(System.in);
+    }
 
-        System.out.print("Digite o nome do medico: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("Digite o conselho do medico: ");
-        String conselho = scanner.nextLine();
-
-        String query = "INSERT INTO MEDICO (NOME, CONSELHO) VALUES (?, ?)";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query,
-                        PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            statement.setString(1, nome);
-            statement.setString(2, conselho);
-            statement.executeUpdate();
-
-            ResultSet registro = statement.getGeneratedKeys();
-            if (registro.next()) {
-                int idMedico = registro.getInt(1);
-                System.out.println("Medico cadastrado com sucesso! ID: " + idMedico);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void listarMedicos() {
+        List<Medico> medicos = medicoRepository.buscarTodosMedicos();
+        if (medicos.isEmpty()) {
+            System.out.println("Nenhum médico encontrado.");
+        } else {
+            medicos.forEach(System.out::println);
         }
     }
 
-    public void deletarMedico() {
-        System.out.println("Remover Medico:");
-        System.out.print("Digite o código do médico a ser deletado: ");
-        int codigo = scanner.nextInt();
-        scanner.nextLine();
+    public void buscarMedicoPorNome() {
+        System.out.print("Digite o nome do médico: ");
+        String nome = scanner.nextLine();
+        Medico medico = medicoRepository.buscarPorNome(nome);
+        if (medico == null) {
+            System.out.println("Médico não encontrado.");
+        } else {
+            System.out.println(medico);
+        }
+    }
 
-        System.out.print("Tem certeza que deseja deletar este médico? (Sim/Não): ");
-        String confirmacao = scanner.nextLine();
-        if (!confirmacao.equalsIgnoreCase("Sim")) {
-            System.out.println("Operação cancelada.");
+    public void cadastrarMedico() {
+        System.out.println("Digite os dados do novo médico:");
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.print("Conselho: ");
+        String conselho = scanner.nextLine();
+
+        // Listar especialidades disponíveis
+        List<Especialidade> especialidades = especialidadeRepository.buscarTodasEspecialidades();
+        if (especialidades.isEmpty()) {
+            System.out.println("Nenhuma especialidade encontrada. Não é possível cadastrar o médico.");
             return;
         }
 
-        RemoverDepedencia depedencia = new RemoverDepedencia();
-
-        boolean possuiDependenciaEspecialidade = depedencia.verificarDependencia("ESPECIALIDADE_MEDICO", "ID_MEDICO",
-                codigo);
-        boolean possuiDependenciaHospital = depedencia.verificarDependencia("HOSPITAL_MEDICO", "ID_MEDICO", codigo);
-
-        boolean possuiDependenciaHistorico = depedencia.verificarDependencia("HISTORICO", "ID_MEDICO", codigo);
-
-        if (possuiDependenciaEspecialidade) {
-            System.out.print("O médico possui especialidades associadas. Deseja remover esses vínculos? (Sim/Não): ");
-            String resposta = scanner.nextLine();
-            if (!resposta.equalsIgnoreCase("Sim")) {
-                System.out.println("Operação cancelada.");
-                return;
-            }
-            depedencia.deletarDependencia("ESPECIALIDADE_MEDICO", "ID_MEDICO", codigo);
-
+        System.out.println("Selecione a especialidade:");
+        for (int i = 0; i < especialidades.size(); i++) {
+            Especialidade especialidade = especialidades.get(i);
+            System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
         }
 
-        if (possuiDependenciaHospital) {
-            System.out.print("O médico possui hospitais associados. Deseja remover esses vínculos? (Sim/Não): ");
-            String resposta = scanner.nextLine();
-            if (!resposta.equalsIgnoreCase("Sim")) {
-                System.out.println("Operação cancelada.");
-                return;
+        int escolhaEspecialidade;
+        while (true) {
+            System.out.print("Escolha o número da especialidade: ");
+            try {
+                escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
+                if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
             }
-            depedencia.deletarDependencia("HOSPITAL_MEDICO", "ID_MEDICO", codigo);
-
         }
 
-        if (possuiDependenciaHistorico) {
-            System.out.print("O médico possui historico associados. Deseja remover esses vínculos? (Sim/Não): ");
-            String resposta = scanner.nextLine();
-            if (!resposta.equalsIgnoreCase("Sim")) {
-                System.out.println("Operação cancelada.");
-                return;
-            }
-            depedencia.deletarDependencia("HISTORICO", "ID_MEDICO", codigo);
+        Especialidade especialidadeEscolhida = especialidades.get(escolhaEspecialidade - 1);
 
-        }
-
-        String query = "DELETE FROM MEDICO WHERE ID_MEDICO = ?";
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            int registro = statement.executeUpdate();
-
-            if (registro > 0) {
-                System.out.println("Médico deletado com sucesso!");
-            } else {
-                System.out.println("Médico com código " + codigo + " não encontrado.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Cria e insere o médico
+        Medico medico = new Medico(null, nome, conselho, especialidadeEscolhida);
+        medicoRepository.inserirMedico(medico);
     }
 
     public void atualizarMedico() {
+        System.out.print("Digite o ID do médico que deseja atualizar: ");
+        String id = scanner.nextLine();
 
-        System.out.print("Digite o ID do medico para atualizar: ");
-        int idMedico = scanner.nextInt();
-        scanner.nextLine();
+        // Buscar o médico atual para exibir seus dados
+        Medico medicoAtual = medicoRepository.buscarPorNome(id);
+        if (medicoAtual == null) {
+            System.out.println("Médico não encontrado.");
+            return;
+        }
 
-        Medico medicoExistente = buscarPorCodigoMedico(idMedico);
+        System.out.println("Atualize os dados (ou deixe em branco para manter o atual):");
 
-        if (medicoExistente != null) {
+        System.out.print("Nome [" + medicoAtual.getNome() + "]: ");
+        String nome = scanner.nextLine();
 
-            System.out.println("Deixe em branco para manter os dados atuais.");
+        System.out.print("Conselho [" + medicoAtual.getConselho() + "]: ");
+        String conselho = scanner.nextLine();
 
-            System.out.print("Nome do Medico (" + medicoExistente.getNomeMedico() + "): ");
-            String novoNome = scanner.nextLine();
-            System.out.print("Numero do Conselho (" + medicoExistente.getConselho() + "): ");
-            String novoConselho = scanner.nextLine();
+        System.out.println("Especialidade atual: " + medicoAtual.getEspecialidade().getNomeEspecialidade());
+        System.out.println("Deseja alterar a especialidade? (Sim/Não)");
+        String alterarEspecialidade = scanner.nextLine().trim().toLowerCase();
 
-            String query = "UPDATE MEDICO SET NOME = ?, CONSELHO = ? WHERE ID_MEDICO = ?";
+        Especialidade especialidadeAtualizada = medicoAtual.getEspecialidade(); // Manter a atual por padrão
+        if (alterarEspecialidade.equals("sim")) {
+            // Listar especialidades disponíveis
+            List<Especialidade> especialidades = especialidadeRepository.buscarTodasEspecialidades();
+            if (especialidades.isEmpty()) {
+                System.out.println("Nenhuma especialidade encontrada. Não é possível alterar a especialidade.");
+                return;
+            }
 
-            try (Connection conexao = DatabaseConfig.getConnection();
-                    PreparedStatement statement = conexao.prepareStatement(query)) {
+            System.out.println("Selecione a nova especialidade:");
+            for (int i = 0; i < especialidades.size(); i++) {
+                Especialidade especialidade = especialidades.get(i);
+                System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
+            }
 
-                statement.setString(1, novoNome.isEmpty() ? medicoExistente.getNomeMedico() : novoNome);
-                statement.setString(2, novoConselho.isEmpty() ? medicoExistente.getConselho() : novoConselho);
-                statement.setInt(3, idMedico);
-                int registro = statement.executeUpdate();
-
-                if (registro > 0) {
-                    System.out.println("Medico atualizado com sucesso!");
-                } else {
-                    System.out.println("Medico com codigo " + idMedico + " nao encontrado.");
+            int escolhaEspecialidade;
+            while (true) {
+                System.out.print("Escolha o número da especialidade: ");
+                try {
+                    escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
+                    if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
+                        especialidadeAtualizada = especialidades.get(escolhaEspecialidade - 1);
+                        break;
+                    } else {
+                        System.out.println("Número inválido. Tente novamente.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida. Digite um número.");
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
+
+        // Cria o objeto atualizado com os novos dados ou mantém os existentes
+        Medico medicoAtualizado = new Medico(
+                id,
+                nome.isEmpty() ? medicoAtual.getNome() : nome,
+                conselho.isEmpty() ? medicoAtual.getConselho() : conselho,
+                especialidadeAtualizada);
+
+        // Atualiza no repositório
+        medicoRepository.atualizarMedico(id, medicoAtualizado);
+        System.out.println("Médico atualizado com sucesso!");
     }
 
-    public Medico buscarPorCodigoMedico(int codigo) {
-        Medico medico = null;
-        String query = "SELECT ID_MEDICO, NOME, CONSELHO FROM MEDICO WHERE ID_MEDICO = ?";
+    public void deletarMedico() {
+        System.out.print("Digite o ID do médico que deseja excluir: ");
+        String medicoId = scanner.nextLine();
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
+        System.out.println("Excluindo dependências relacionadas ao médico...");
+        RemoverDependencia.removerDependenciasMedico(medicoId);
 
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                String nome = resultado.getString("NOME");
-                String conselho = resultado.getString("CONSELHO");
-                medico = new Medico(codigo, nome, conselho);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return medico;
+        medicoRepository.excluirMedico(medicoId);
+        System.out.println("Médico excluído com sucesso.");
     }
 }

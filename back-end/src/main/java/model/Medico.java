@@ -1,37 +1,41 @@
 package model;
 
-/*
- * ##########################################################################
- * # Classe basica do objeto Medico.
- * ##########################################################################
- */
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "medicos") // Nome da coleção no MongoDB
 public class Medico {
-    private int idMedico;
-    private String nomeMedico;
+
+    @Id
+    private String id; // Identificador único no MongoDB
+    private String nome;
     private String conselho;
+    private Especialidade especialidade; // Associação direta com Especialidade
 
-    public Medico(int idMedico, String nomeMedico, String conselho) {
-        this.idMedico = idMedico;
-        this.nomeMedico = nomeMedico;
+    public Medico() {
+    }
+
+    public Medico(String id, String nome, String conselho, Especialidade especialidade) {
+        this.id = id;
+        this.nome = nome;
         this.conselho = conselho;
-
+        this.especialidade = especialidade;
     }
 
-    public int getIdMedico() {
-        return idMedico;
+    public String getId() {
+        return id;
     }
 
-    public String getNomeMedico() {
-        return nomeMedico;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setNomeMedico(String nomeEspecialidade) {
-        this.nomeMedico = nomeEspecialidade;
+    public String getNome() {
+        return nome;
     }
 
-    public void setIdMedico(int idEspecialidade) {
-        this.idMedico = idEspecialidade;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getConselho() {
@@ -40,5 +44,18 @@ public class Medico {
 
     public void setConselho(String conselho) {
         this.conselho = conselho;
+    }
+
+    public Especialidade getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(Especialidade especialidade) {
+        this.especialidade = especialidade;
+    }
+
+    @Override
+    public String toString() {
+        return "Medico [id=" + id + ", nome=" + nome + ", conselho=" + conselho + ", especialidade=" + especialidade + "]";
     }
 }

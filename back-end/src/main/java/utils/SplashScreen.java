@@ -1,51 +1,47 @@
 package utils;
 
-import java.sql.Connection;
-import conexion.*;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import conexion.DatabaseConfig;
+import org.bson.Document;
 
 public class SplashScreen {
 
-    private String qryTotalEspecialidades = "SELECT COUNT(1) AS TOTAL_ESPECIALIDADE FROM ESPECIALIDADE";
-    private String qryTotalHospitais = "SELECT COUNT(1) AS TOTAL_HOSPITAIS FROM HOSPITAL";
-    private String qryTotalPecientes = "SELECT COUNT(1) AS TOTAL_PACIETES FROM PACIENTE";
-    private String qryTotalMedicos = "SELECT COUNT(1) AS TOTAL_MEDICOS FROM MEDICO";
-    private String qryTotalHistoricos = "SELECT COUNT(1) AS TOTAL_HISTORICO FROM HISTORICO";
+    private final MongoDatabase database;
 
-    private String createdBy = "Emmanuel, Jonathan, Maurilio ";
-    private String professor = "Prof. M.Sc. Howard Roatti";
-    private String disciplina = "Banco de Dados";
-    private String semestre = "2024/2";
+    private final String createdBy = "Emmanuel, Jonathan, Maurilio";
+    private final String professor = "Prof. M.Sc. Howard Roatti";
+    private final String disciplina = "Banco de Dados";
+    private final String semestre = "2024/2";
 
-    public int getTotalEspecialidades() {
-        return executarConsulta(qryTotalEspecialidades, "TOTAL_ESPECIALIDADE");
+    public SplashScreen() {
+        this.database = DatabaseConfig.getDatabase();
     }
 
-    public int getQryTotalHospitais() {
-        return executarConsulta(qryTotalHospitais, "TOTAL_HOSPITAIS");
+    public long getTotalEspecialidades() {
+        return contarRegistros("especialidades");
     }
 
-    public int getQryTotalPecientes() {
-        return executarConsulta(qryTotalPecientes, "TOTAL_PACIETES");
+    public long getTotalHospitais() {
+        return contarRegistros("hospitais");
     }
 
-    public int getQryTotalMedicos() {
-        return executarConsulta(qryTotalMedicos, "TOTAL_MEDICOS");
+    public long getTotalPacientes() {
+        return contarRegistros("pacientes");
     }
 
-    public int getQryTotalHistoricos() {
-        return executarConsulta(qryTotalHistoricos, "TOTAL_HISTORICO");
+    public long getTotalMedicos() {
+        return contarRegistros("medicos");
     }
 
-    private int executarConsulta(String consulta, String nomeColuna) {
-        try (Connection conn = DatabaseConfig.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet resultado = stmt.executeQuery(consulta)) {
+    public long getTotalHistoricos() {
+        return contarRegistros("historicos");
+    }
 
-            if (resultado.next()) {
-                return resultado.getInt(nomeColuna);
-            }
+    private long contarRegistros(String collectionName) {
+        try {
+            MongoCollection<Document> collection = database.getCollection(collectionName);
+            return collection.countDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,14 +51,14 @@ public class SplashScreen {
     public String obterTelaAtualizada() {
         return String.format("""
                 ########################################################
-                #                   SISTEMA DE PRONTUARIO
+                #                   SISTEMA DE PRONTUÁRIO
                 #
                 #  TOTAL DE REGISTROS:
                 #      1 - ESPECIALIDADES:         %5d
                 #      2 - HOSPITAIS:              %5d
                 #      3 - PACIENTES:              %5d
-                #      4 - MEDICOS:                %5d
-                #      5 - HISTORICO               %5d
+                #      4 - MÉDICOS:                %5d
+                #      5 - HISTÓRICO               %5d
                 #
                 #  CRIADO POR: %s
                 #
@@ -73,10 +69,10 @@ public class SplashScreen {
                 ########################################################
                 """,
                 getTotalEspecialidades(),
-                getQryTotalHospitais(),
-                getQryTotalPecientes(),
-                getQryTotalMedicos(),
-                getQryTotalHistoricos(),
+                getTotalHospitais(),
+                getTotalPacientes(),
+                getTotalMedicos(),
+                getTotalHistoricos(),
                 createdBy,
                 professor,
                 disciplina,

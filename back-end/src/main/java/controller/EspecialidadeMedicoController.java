@@ -1,208 +1,80 @@
 package controller;
 
+import com.mongodb.client.MongoCollection;
 import conexion.DatabaseConfig;
-import model.Medico;
-import model.Especialidade;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
-import java.sql.*;
 import java.util.Scanner;
 
 public class EspecialidadeMedicoController {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final MongoCollection<Document> especialidadeMedicoCollection;
 
-    public void cadastrarEspecialidadeXMedico() {
-        System.out.println("Cadastro de Especialidade X Médico:");
-
-        System.out.print("Digite o código do médico: ");
-        int idMedico = scanner.nextInt();
-        scanner.nextLine();
-
-        Medico medico = buscarPorCodigoMedico(idMedico);
-        if (medico == null) {
-            System.out.println("Médico não encontrado.");
-            return;
-        }
-
-        System.out.print("Digite o código da especialidade: ");
-        int idEspecialidade = scanner.nextInt();
-        scanner.nextLine();
-
-        Especialidade especialidade = buscarPorCodigoEspecialidade(idEspecialidade);
-        if (especialidade == null) {
-            System.out.println("Especialidade não encontrada.");
-            return;
-        }
-
-        if (verificarRelacionamentoExistente(idMedico, idEspecialidade)) {
-            System.out.println("Esse relacionamento já existe entre o médico e a especialidade.");
-            return;
-        }
-
-        String query = "INSERT INTO ESPECIALIDADE_MEDICO (ID_MEDICO, ID_ESPECIALIDADE) VALUES (?, ?)";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idMedico);
-            statement.setInt(2, idEspecialidade);
-            statement.executeUpdate();
-
-            System.out.println("Especialidade associada ao médico com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public EspecialidadeMedicoController() {
+        this.especialidadeMedicoCollection = DatabaseConfig.getDatabase().getCollection("especialidade_medico");
     }
 
-    private boolean verificarRelacionamentoExistente(int idMedico, int idEspecialidade) {
-        String query = "SELECT COUNT(*) FROM ESPECIALIDADE_MEDICO WHERE ID_MEDICO = ? AND ID_ESPECIALIDADE = ?";
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
+    public void cadastrarEspecialidadeXMedico() {
+        Scanner scanner = new Scanner(System.in);
 
-            statement.setInt(1, idMedico);
-            statement.setInt(2, idEspecialidade);
-            ResultSet resultado = statement.executeQuery();
+        System.out.print("ID da especialidade: ");
+        String especialidadeId = scanner.nextLine();
+        System.out.print("ID do médico: ");
+        String medicoId = scanner.nextLine();
 
-            if (resultado.next()) {
-                return resultado.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        Document relacao = new Document("especialidadeId", new ObjectId(especialidadeId))
+                .append("medicoId", new ObjectId(medicoId));
+
+        especialidadeMedicoCollection.insertOne(relacao);
+        System.out.println("Relação especialidade-médico cadastrada com sucesso.");
     }
 
     public void atualizarEspecialidadeXMedico() {
-        System.out.println("Alterar Especilidade X Medico:");
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Digite o codigo do medico: ");
-        int idMedico = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("Digite o ID da relação especialidade-médico que deseja atualizar: ");
+        String idRelacao = scanner.nextLine();
 
-        Medico medico = buscarPorCodigoMedico(idMedico);
-        if (medico == null) {
-            System.out.println("Médico não encontrado.");
+        Document filtro = new Document("_id", new ObjectId(idRelacao));
+        Document relacaoAtual = especialidadeMedicoCollection.find(filtro).first();
+
+        if (relacaoAtual == null) {
+            System.out.println("Relação não encontrada.");
             return;
         }
 
-        System.out.print("Digite o codigo da especialidade atual: ");
-        int idEspecialidadeAtual = scanner.nextInt();
-        scanner.nextLine();
+        System.out.println("Deixe os campos em branco para não alterar o valor atual.");
+        System.out.print("Novo ID da especialidade: ");
+        String novaEspecialidadeId = scanner.nextLine();
+        System.out.print("Novo ID do médico: ");
+        String novoMedicoId = scanner.nextLine();
 
-        Especialidade especialidadeAtual = buscarPorCodigoEspecialidade(idEspecialidadeAtual);
-        if (especialidadeAtual == null) {
-            System.out.println("Especialidade atual nao encontrada.");
+        Document atualizacao = new Document();
+        if (!novaEspecialidadeId.isBlank()) {
+            atualizacao.append("especialidadeId", new ObjectId(novaEspecialidadeId));
+        }
+        if (!novoMedicoId.isBlank()) {
+            atualizacao.append("medicoId", new ObjectId(novoMedicoId));
+        }
+
+        if (atualizacao.isEmpty()) {
+            System.out.println("Nenhuma alteração realizada.");
             return;
         }
 
-        System.out.print("Digite o codigo da nova especialidade: ");
-        int idNovaEspecialidade = scanner.nextInt();
-        scanner.nextLine();
-
-        Especialidade novaEspecialidade = buscarPorCodigoEspecialidade(idNovaEspecialidade);
-        if (novaEspecialidade == null) {
-            System.out.println("Nova especialidade nao encontrada.");
-            return;
-        }
-
-        String query = "UPDATE ESPECIALIDADE_MEDICO SET ID_ESPECIALIDADE = ? WHERE ID_MEDICO = ? AND ID_ESPECIALIDADE = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idNovaEspecialidade);
-            statement.setInt(2, idMedico);
-            statement.setInt(3, idEspecialidadeAtual);
-
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Especialidade alterada com sucesso");
-            } else {
-                System.out.println("Especialidade ou médico não encontrado.");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        especialidadeMedicoCollection.updateOne(filtro, new Document("$set", atualizacao));
+        System.out.println("Relação especialidade-médico atualizada com sucesso.");
     }
 
     public void deletarEspecialidadeXMedico() {
-        System.out.println("Deletar Especilidade X Medico:");
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Digite o código do médico: ");
-        int idMedico = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("Digite o ID da relação especialidade-médico que deseja excluir: ");
+        String idRelacao = scanner.nextLine();
 
-        System.out.print("Digite o código da especialidade a ser removida: ");
-        int idEspecialidade = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Tem certeza que deseja remover essa especialidade do médico? (Sim/Não): ");
-        String confirmacao = scanner.nextLine();
-        if (!confirmacao.equalsIgnoreCase("Sim")) {
-            System.out.println("Operação cancelada.");
-            return;
-        }
-
-        String query = "DELETE FROM ESPECIALIDADE_MEDICO WHERE ID_MEDICO = ? AND ID_ESPECIALIDADE = ?";
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idMedico);
-            statement.setInt(2, idEspecialidade);
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Especialidade removida do médico com sucesso.");
-            } else {
-                System.out.println("Especialidade ou médico não encontrado.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Especialidade buscarPorCodigoEspecialidade(int codigo) {
-        Especialidade especialidade = null;
-        String query = "SELECT ID_ESPECIALIDADE, NOME_ESPECIALIDADE FROM ESPECIALIDADE WHERE ID_ESPECIALIDADE = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                String nome = resultado.getString("NOME_ESPECIALIDADE");
-                especialidade = new Especialidade(codigo, nome);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return especialidade;
-    }
-
-    public Medico buscarPorCodigoMedico(int codigo) {
-        Medico medico = null;
-        String query = "SELECT ID_MEDICO, NOME, CONSELHO FROM MEDICO WHERE ID_MEDICO = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                String nome = resultado.getString("NOME");
-                String conselho = resultado.getString("CONSELHO");
-                medico = new Medico(codigo, nome, conselho);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return medico;
+        Document filtro = new Document("_id", new ObjectId(idRelacao));
+        especialidadeMedicoCollection.deleteOne(filtro);
+        System.out.println("Relação especialidade-médico excluída com sucesso.");
     }
 }

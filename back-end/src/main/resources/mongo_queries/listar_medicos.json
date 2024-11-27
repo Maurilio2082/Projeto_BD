@@ -1,0 +1,8 @@
+[
+  {
+    "$project": {
+      "nome": 1,
+      "conselho": 1
+    }
+  }
+]

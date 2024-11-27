@@ -1,0 +1,27 @@
+[
+  {
+    "$lookup": {
+      "from": "medicos",
+      "localField": "medicoId",
+      "foreignField": "_id",
+      "as": "medicoInfo"
+    }
+  },
+  {
+    "$lookup": {
+      "from": "especialidades",
+      "localField": "especialidadeId",
+      "foreignField": "_id",
+      "as": "especialidadeInfo"
+    }
+  },
+  {
+    "$project": {
+      "medicoInfo.nome": 1,
+      "especialidadeInfo.nomeEspecialidade": 1
+    }
+  },
+  {
+    "$sort": { "especialidadeInfo.nomeEspecialidade": 1 }
+  }
+]

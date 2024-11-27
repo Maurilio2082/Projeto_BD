@@ -1,0 +1,8 @@
+[
+  {
+    "$project": {
+      "_id": 1,
+      "nomeEspecialidade": 1
+    }
+  }
+]

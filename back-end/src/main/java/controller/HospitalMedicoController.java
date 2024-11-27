@@ -1,218 +1,80 @@
 package controller;
 
+import com.mongodb.client.MongoCollection;
 import conexion.DatabaseConfig;
-import model.Endereco;
-import model.Hospital;
-import model.Medico;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
-import java.sql.*;
 import java.util.Scanner;
 
 public class HospitalMedicoController {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final MongoCollection<Document> hospitalMedicoCollection;
+
+    public HospitalMedicoController() {
+        this.hospitalMedicoCollection = DatabaseConfig.getDatabase().getCollection("hospital_medico");
+    }
 
     public void cadastrarMedicoXHospital() {
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Cadastrar Médico X Hospital:");
-        System.out.print("Digite o código do hospital: ");
-        int idHospital = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("ID do hospital: ");
+        String hospitalId = scanner.nextLine();
+        System.out.print("ID do médico: ");
+        String medicoId = scanner.nextLine();
 
-        Hospital hospital = buscarPorCodigoHospital(idHospital);
-        if (hospital == null) {
-            System.out.println("Hospital não encontrado.");
-            return;
-        }
+        Document relacao = new Document("hospitalId", new ObjectId(hospitalId))
+                .append("medicoId", new ObjectId(medicoId));
 
-        System.out.print("Digite o código do médico: ");
-        int idMedico = scanner.nextInt();
-        scanner.nextLine();
-
-        Medico medico = buscarPorCodigoMedico(idMedico);
-        if (medico == null) {
-            System.out.println("Médico não encontrado.");
-            return;
-        }
-
-        if (verificarRelacionamentoExistente(idHospital, idMedico)) {
-            System.out.println("Esse relacionamento já existe entre o médico e o hospital.");
-            return;
-        }
-
-        String query = "INSERT INTO HOSPITAL_MEDICO (ID_HOSPITAL, ID_MEDICO) VALUES (?, ?)";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idHospital);
-            statement.setInt(2, idMedico);
-            statement.executeUpdate();
-
-            System.out.println("Médico associado ao hospital com sucesso!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean verificarRelacionamentoExistente(int idHospital, int idMedico) {
-        String query = "SELECT COUNT(*) FROM HOSPITAL_MEDICO WHERE ID_HOSPITAL = ? AND ID_MEDICO = ?";
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idHospital);
-            statement.setInt(2, idMedico);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                return resultado.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public void deletarMedicoXHospital() {
-        System.out.println("Remover Medico X Hospital:");
-
-        System.out.print("Digite o código do hospital: ");
-        int idHospital = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Digite o código do médico a ser removido: ");
-        int idMedico = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Tem certeza que deseja remover este médico do hospital? (Sim/Não): ");
-        String confirmacao = scanner.nextLine();
-        if (!confirmacao.equalsIgnoreCase("Sim")) {
-            System.out.println("Operação cancelada.");
-            return;
-        }
-
-        String query = "DELETE FROM HOSPITAL_MEDICO WHERE ID_HOSPITAL = ? AND ID_MEDICO = ?";
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idHospital);
-            statement.setInt(2, idMedico);
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Médico removido do hospital com sucesso!");
-            } else {
-                System.out.println("Médico ou hospital não encontrado.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        hospitalMedicoCollection.insertOne(relacao);
+        System.out.println("Relação médico-hospital cadastrada com sucesso.");
     }
 
     public void atualizarMedicoXHospital() {
-        System.out.println("Alterar Medico X Hospital:");
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Digite o código do hospital: ");
-        int idHospital = scanner.nextInt();
-        scanner.nextLine();
+        System.out.print("Digite o ID da relação médico-hospital que deseja atualizar: ");
+        String idRelacao = scanner.nextLine();
 
-        Hospital hospital = buscarPorCodigoHospital(idHospital);
-        if (hospital == null) {
-            System.out.println("Hospital não encontrado.");
+        Document filtro = new Document("_id", new ObjectId(idRelacao));
+        Document relacaoAtual = hospitalMedicoCollection.find(filtro).first();
+
+        if (relacaoAtual == null) {
+            System.out.println("Relação não encontrada.");
             return;
         }
 
-        System.out.print("Digite o código do médico atual a ser alterado: ");
-        int idMedicoAtual = scanner.nextInt();
-        scanner.nextLine();
+        System.out.println("Deixe os campos em branco para não alterar o valor atual.");
+        System.out.print("Novo ID do hospital: ");
+        String novoHospitalId = scanner.nextLine();
+        System.out.print("Novo ID do médico: ");
+        String novoMedicoId = scanner.nextLine();
 
-        Medico medicoAtual = buscarPorCodigoMedico(idMedicoAtual);
-        if (medicoAtual == null) {
-            System.out.println("Médico atual não encontrado.");
+        Document atualizacao = new Document();
+        if (!novoHospitalId.isBlank()) {
+            atualizacao.append("hospitalId", new ObjectId(novoHospitalId));
+        }
+        if (!novoMedicoId.isBlank()) {
+            atualizacao.append("medicoId", new ObjectId(novoMedicoId));
+        }
+
+        if (atualizacao.isEmpty()) {
+            System.out.println("Nenhuma alteração realizada.");
             return;
         }
 
-        System.out.print("Digite o código do novo médico: ");
-        int idNovoMedico = scanner.nextInt();
-        scanner.nextLine();
-
-        Medico novoMedico = buscarPorCodigoMedico(idNovoMedico);
-        if (novoMedico == null) {
-            System.out.println("Novo médico não encontrado.");
-            return;
-        }
-
-        String query = "UPDATE HOSPITAL_MEDICO SET ID_MEDICO = ? WHERE ID_HOSPITAL = ? AND ID_MEDICO = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, idNovoMedico);
-            statement.setInt(2, idHospital);
-            statement.setInt(3, idMedicoAtual);
-
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Médico associado ao hospital atualizado com sucesso!");
-            } else {
-                System.out.println("Médico ou hospital não encontrado.");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        hospitalMedicoCollection.updateOne(filtro, new Document("$set", atualizacao));
+        System.out.println("Relação médico-hospital atualizada com sucesso.");
     }
 
-    public Hospital buscarPorCodigoHospital(int codigo) {
-        Hospital hospital = null;
-        String query = "SELECT ID_HOSPITAL, RAZAO_SOCIAL, CNPJ, EMAIL, TELEFONE, CATEGORIA, ID_ENDERECO FROM HOSPITAL WHERE ID_HOSPITAL = ?";
+    public void deletarMedicoXHospital() {
+        Scanner scanner = new Scanner(System.in);
 
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
+        System.out.print("Digite o ID da relação médico-hospital que deseja excluir: ");
+        String idRelacao = scanner.nextLine();
 
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                String razaoSocial = resultado.getString("RAZAO_SOCIAL");
-                String cnpj = resultado.getString("CNPJ");
-                String email = resultado.getString("EMAIL");
-                String telefone = resultado.getString("TELEFONE");
-                String categoria = resultado.getString("CATEGORIA");
-                int idEndereco = resultado.getInt("ID_ENDERECO");
-
-                EnderecoController enderecoController = new EnderecoController();
-                Endereco endereco = enderecoController.buscarEnderecoPorCodigo(idEndereco);
-
-                hospital = new Hospital(codigo, razaoSocial, cnpj, email, telefone, categoria, endereco);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return hospital;
-    }
-
-    public Medico buscarPorCodigoMedico(int codigo) {
-        Medico medico = null;
-        String query = "SELECT ID_MEDICO, NOME, CONSELHO FROM MEDICO WHERE ID_MEDICO = ?";
-
-        try (Connection conexao = DatabaseConfig.getConnection();
-                PreparedStatement statement = conexao.prepareStatement(query)) {
-
-            statement.setInt(1, codigo);
-            ResultSet resultado = statement.executeQuery();
-
-            if (resultado.next()) {
-                String nome = resultado.getString("NOME");
-                String conselho = resultado.getString("CONSELHO");
-                medico = new Medico(codigo, nome, conselho);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return medico;
+        Document filtro = new Document("_id", new ObjectId(idRelacao));
+        hospitalMedicoCollection.deleteOne(filtro);
+        System.out.println("Relação médico-hospital excluída com sucesso.");
     }
 }

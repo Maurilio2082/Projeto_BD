@@ -1,50 +1,63 @@
 package model;
 
-/*
- * ##########################################################################
- * # Classe basica do objeto Paciente.
- * ##########################################################################
- */
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "pacientes") // Nome da coleção no MongoDB
 public class Paciente {
 
-    private int idPaciente;
-    private String nomePaciente;
+    @Id
+    private String id; // Identificador único no MongoDB
+    private String nome;
     private String email;
     private String telefone;
     private String dataNascimento;
     private String cpf;
-    private Endereco idEndereco;
+    private Endereco endereco; // Associação direta com Endereco
 
-    public Paciente(int idPaciente, String nomePaciente, String dataNascimento, String email, String telefone,
-            String cpf,
-            Endereco idEndereco) {
-        this.idPaciente = idPaciente;
-        this.nomePaciente = nomePaciente;
-        this.dataNascimento = dataNascimento;
+    public Paciente() {
+    }
+
+    public Paciente(String id, String nome, String email, String telefone, String dataNascimento, String cpf, Endereco endereco) {
+        this.id = id;
+        this.nome = nome;
         this.email = email;
         this.telefone = telefone;
+        this.dataNascimento = dataNascimento;
         this.cpf = cpf;
-        this.idEndereco = idEndereco;
+        this.endereco = endereco;
     }
 
-    public Endereco getIdEndereco() {
-        return idEndereco;
+    public String getId() {
+        return id;
     }
 
-    public void setIdPaciente(int idPaciente) {
-        this.idPaciente = idPaciente;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setNomePaciente(String nomePaciente) {
-        this.nomePaciente = nomePaciente;
+    public String getNome() {
+        return nome;
     }
 
-    public int getIdPaciente() {
-        return idPaciente;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getNomePaciente() {
-        return nomePaciente;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
     public String getDataNascimento() {
@@ -55,26 +68,6 @@ public class Paciente {
         this.dataNascimento = dataNascimento;
     }
 
-    public void setIdEndereco(Endereco id_endereco) {
-        this.idEndereco = id_endereco;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public String getCpf() {
         return cpf;
     }
@@ -83,4 +76,18 @@ public class Paciente {
         this.cpf = cpf;
     }
 
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    @Override
+    public String toString() {
+        return "Paciente [id=" + id + ", nome=" + nome + ", email=" + email +
+               ", telefone=" + telefone + ", dataNascimento=" + dataNascimento +
+               ", cpf=" + cpf + ", endereco=" + endereco + "]";
+    }
 }
