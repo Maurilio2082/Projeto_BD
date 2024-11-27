@@ -1,22 +1,39 @@
 [
   {
+    "$addFields": {
+      "enderecoIdObjectId": {
+        "$toObjectId": "$enderecoId"
+      }
+    }
+  },
+  {
     "$lookup": {
       "from": "enderecos",
-      "localField": "enderecoId",
+      "localField": "enderecoIdObjectId",
       "foreignField": "_id",
       "as": "enderecoInfo"
     }
   },
   {
+    "$unwind": {
+      "path": "$enderecoInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
     "$project": {
+      "_id": 1,
       "razaoSocial": 1,
       "cnpj": 1,
-      "categoria": 1,
-      "telefone": 1,
       "email": 1,
+      "telefone": 1,
+      "categoria": 1,
       "enderecoInfo.logradouro": 1,
+      "enderecoInfo.numero": 1,
       "enderecoInfo.bairro": 1,
-      "enderecoInfo.cidade": 1
+      "enderecoInfo.cidade": 1,
+      "enderecoInfo.estado": 1,
+      "enderecoInfo.cep": 1
     }
   }
 ]

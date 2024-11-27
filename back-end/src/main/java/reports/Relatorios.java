@@ -4,7 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
+
 
 import conexion.DatabaseConfig;
 
@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,23 +51,22 @@ public class Relatorios {
         queryRelatorioAgrupamentoEsp = lerArquivoConsulta("mongo_queries/listar_agrupamento_especialidade.json");
     }
 
- private String lerArquivoConsulta(String caminhoArquivo) {
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(caminhoArquivo)) {
-        if (inputStream != null) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+    private String lerArquivoConsulta(String caminhoArquivo) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(caminhoArquivo)) {
+            if (inputStream != null) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+                }
+            } else {
+                System.err.println("Arquivo de consulta não encontrado: " + caminhoArquivo);
+                return null;
             }
-        } else {
-            System.err.println("Arquivo de consulta não encontrado: " + caminhoArquivo);
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar o arquivo de consulta: " + caminhoArquivo);
+            e.printStackTrace();
             return null;
         }
-    } catch (IOException e) {
-        System.err.println("Erro ao carregar o arquivo de consulta: " + caminhoArquivo);
-        e.printStackTrace();
-        return null;
     }
-}
-
 
     // Relatório 1: Listar Especialidades
     public List<Document> getRelatorioEspecialidades() {
@@ -117,8 +116,12 @@ public class Relatorios {
         }
 
         try {
-            Bson consulta = Document.parse(queryJson); // Converte a string JSON em um filtro BSON
-            MongoCursor<Document> cursor = collection.find(consulta).iterator();
+            // Converta o JSON da consulta em uma lista de estágios de pipeline
+            List<Document> pipeline = parsePipeline(queryJson);
+
+            // Execute a consulta de agregação
+            MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+
             while (cursor.hasNext()) {
                 resultados.add(cursor.next());
             }
@@ -130,4 +133,16 @@ public class Relatorios {
 
         return resultados;
     }
+
+    private List<Document> parsePipeline(String queryJson) {
+        try {
+            // Use a biblioteca de JSON para interpretar a string como uma lista de
+            // documentos
+            return Document.parse("{\"pipeline\": " + queryJson + "}").getList("pipeline", Document.class);
+        } catch (Exception e) {
+            System.err.println("Erro ao interpretar o pipeline JSON: " + e.getMessage());
+            throw e;
+        }
+    }
+
 }

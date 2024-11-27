@@ -1,22 +1,48 @@
 [
   {
+    "$addFields": {
+      "enderecoIdObjectId": {
+        "$convert": {
+          "input": "$enderecoId",
+          "to": "objectId",
+          "onError": null
+        }
+      }
+    }
+  },
+  {
+    "$match": {
+      "enderecoIdObjectId": { "$ne": null }
+    }
+  },
+  {
     "$lookup": {
       "from": "enderecos",
-      "localField": "enderecoId",
+      "localField": "enderecoIdObjectId",
       "foreignField": "_id",
       "as": "enderecoInfo"
     }
   },
   {
+    "$unwind": {
+      "path": "$enderecoInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
     "$project": {
+      "_id": 1,
       "nome": 1,
+      "dataNascimento": 1,
       "cpf": 1,
       "telefone": 1,
       "email": 1,
-      "dataNascimento": 1,
       "enderecoInfo.logradouro": 1,
+      "enderecoInfo.numero": 1,
       "enderecoInfo.bairro": 1,
-      "enderecoInfo.cidade": 1
+      "enderecoInfo.cidade": 1,
+      "enderecoInfo.estado": 1,
+      "enderecoInfo.cep": 1
     }
   }
 ]
