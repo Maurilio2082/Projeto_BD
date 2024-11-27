@@ -1,1 +1,73 @@
-{}
+[
+  {
+    "$lookup": {
+      "from": "medicos",
+      "localField": "medicoId",
+      "foreignField": "_id",
+      "as": "medicoInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$medicoInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
+    "$lookup": {
+      "from": "pacientes",
+      "localField": "pacienteId",
+      "foreignField": "_id",
+      "as": "pacienteInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$pacienteInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
+    "$lookup": {
+      "from": "hospitais",
+      "localField": "hospitalId",
+      "foreignField": "_id",
+      "as": "hospitalInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$hospitalInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
+    "$lookup": {
+      "from": "especialidades",
+      "localField": "especialidadeId",
+      "foreignField": "_id",
+      "as": "especialidadeInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$especialidadeInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
+    "$project": {
+      "_id": 1,
+      "dataConsulta": 1,
+      "observacao": 1,
+      "pacienteInfo.nome": 1,
+      "pacienteInfo.cpf": 1,
+      "medicoInfo.nome": 1,
+      "medicoInfo.conselho": 1,
+      "especialidadeInfo.nomeEspecialidade": 1,
+      "hospitalInfo.razaoSocial": 1,
+      "hospitalInfo.categoria": 1,
+      "hospitalInfo.telefone": 1
+    }
+  }
+]

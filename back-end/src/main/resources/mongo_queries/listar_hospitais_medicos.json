@@ -1,1 +1,45 @@
-{}
+[
+  {
+    "$lookup": {
+      "from": "hospitais",
+      "localField": "hospitalId",
+      "foreignField": "_id",
+      "as": "hospitalInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$hospitalInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
+    "$lookup": {
+      "from": "medicos",
+      "localField": "medicoId",
+      "foreignField": "_id",
+      "as": "medicoInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$medicoInfo",
+      "preserveNullAndEmptyArrays": false
+    }
+  },
+  {
+    "$project": {
+      "_id": 0,
+      "hospitalId": "$hospitalInfo._id",
+      "hospitalNome": "$hospitalInfo.razaoSocial",
+      "hospitalCNPJ": "$hospitalInfo.cnpj",
+      "hospitalCategoria": "$hospitalInfo.categoria",
+      "hospitalTelefone": "$hospitalInfo.telefone",
+      "hospitalEmail": "$hospitalInfo.email",
+      "medicoId": "$medicoInfo._id",
+      "medicoNome": "$medicoInfo.nome",
+      "medicoConselho": "$medicoInfo.conselho",
+      "especialidadeId": "$medicoInfo.especialidadeId"
+    }
+  }
+]

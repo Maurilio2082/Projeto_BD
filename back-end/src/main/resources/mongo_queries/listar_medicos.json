@@ -1,1 +1,36 @@
-{}
+[
+  {
+    "$addFields": {
+      "especialidadeIdObjectId": {
+        "$convert": {
+          "input": "$especialidadeId",
+          "to": "objectId",
+          "onError": null,  
+          "onNull": null    
+        }
+      }
+    }
+  },
+  {
+    "$lookup": {
+      "from": "especialidades",
+      "localField": "especialidadeIdObjectId",
+      "foreignField": "_id",
+      "as": "especialidadeInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$especialidadeInfo",
+      "preserveNullAndEmptyArrays": true 
+    }
+  },
+  {
+    "$project": {
+      "_id": 1,
+      "nome": 1,
+      "conselho": 1,
+      "especialidadeInfo.nomeEspecialidade": 1
+    }
+  }
+]

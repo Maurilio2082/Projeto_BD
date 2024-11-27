@@ -1,1 +1,48 @@
-{}
+[
+  {
+    "$addFields": {
+      "especialidadeIdObjectId": {
+        "$convert": {
+          "input": "$especialidadeId",
+          "to": "objectId",
+          "onError": null,
+          "onNull": null
+        }
+      }
+    }
+  },
+  {
+    "$lookup": {
+      "from": "especialidades",
+      "localField": "especialidadeIdObjectId",
+      "foreignField": "_id",
+      "as": "especialidadeInfo"
+    }
+  },
+  {
+    "$unwind": {
+      "path": "$especialidadeInfo",
+      "preserveNullAndEmptyArrays": true
+    }
+  },
+  {
+    "$group": {
+      "_id": {
+        "especialidadeId": "$especialidadeInfo._id",
+        "nomeEspecialidade": "$especialidadeInfo.nomeEspecialidade"
+      },
+      "quantidadeMedicos": { "$sum": 1 }
+    }
+  },
+  {
+    "$project": {
+      "_id": 0,
+      "especialidadeId": "$_id.especialidadeId",
+      "nomeEspecialidade": "$_id.nomeEspecialidade",
+      "quantidadeMedicos": 1
+    }
+  },
+  {
+    "$sort": { "quantidadeMedicos": -1 }
+  }
+]
