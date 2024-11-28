@@ -19,7 +19,42 @@ public class ImprimirRelatorios {
         return List.of(); // Retorna lista vazia se não for do tipo esperado
     }
 
-    public void imprimirRelatorioMedicos() {
+    public void imprimirTodosRelatorios() {
+        System.out.println("=== Início de Todos os Relatórios ===\n");
+
+        System.out.println("\n");
+        imprimirRelatorioMedicos(false);
+        System.out.println("\n");
+
+        imprimirRelatorioEspecialidadeMedicos(false);
+        System.out.println("\n");
+
+        imprimirRelatorioHospitalMedicos(false);
+        System.out.println("\n");
+
+        imprimirRelatorioAgrupamentoEsp(false);
+        System.out.println("\n");
+
+        imprimirRelatorioEspecialidades(false);
+        System.out.println("\n");
+
+        imprimirRelatorioHospitais(false);
+        System.out.println("\n");
+
+        imprimirRelatorioPacientes(false);
+        System.out.println("\n");
+
+        imprimirRelatorioHistorico(false);
+        System.out.println("\n");
+
+        System.out.println("\n=== Fim de Todos os Relatórios ===");
+
+        System.out.println("Aperte Enter para retornar...");
+        scanner.nextLine();
+        Config.limparConsole(1);
+    }
+
+    public void imprimirRelatorioMedicos(boolean esperarUsuario) {
         List<Document> medicos = relatorios.getRelatorioMedicos();
         String linha = "+--------------------------+----------------------+-----------------+";
         if (medicos.isEmpty()) {
@@ -51,13 +86,15 @@ public class ImprimirRelatorios {
             }
 
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioEspecialidadeMedicos() {
+    public void imprimirRelatorioEspecialidadeMedicos(boolean esperarUsuario) {
         List<Document> especialidadeMedicos = relatorios.getRelatorioEspecialidadeMedicos();
         String linha = "+--------------------------+--------------------------+";
         if (especialidadeMedicos.isEmpty()) {
@@ -81,13 +118,15 @@ public class ImprimirRelatorios {
             }
 
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioHospitalMedicos() {
+    public void imprimirRelatorioHospitalMedicos(boolean esperarUsuario) {
         List<Document> hospitalMedicos = relatorios.getRelatorioHospitaisMedicos();
 
         String linha = "+--------------------------+--------------------------+--------------------------+";
@@ -116,15 +155,16 @@ public class ImprimirRelatorios {
                         hospitalNome,
                         categoria);
             }
-
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioAgrupamentoEsp() {
+    public void imprimirRelatorioAgrupamentoEsp(boolean esperarUsuario) {
         List<Document> agrupamentoEspecialidades = relatorios.getRelatorioAgrupamentoEsp();
         String linha = "+--------------------------+--------------------------+";
         if (agrupamentoEspecialidades.isEmpty()) {
@@ -146,15 +186,16 @@ public class ImprimirRelatorios {
                         especialidadeNome != null ? especialidadeNome : "N/A",
                         quantidadeMedicos);
             }
-
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioEspecialidades() {
+    public void imprimirRelatorioEspecialidades(boolean esperarUsuario) {
         List<Document> especialidades = relatorios.getRelatorioEspecialidades();
         String linha = "+--------------------------+--------------------------+";
         if (especialidades.isEmpty()) {
@@ -176,15 +217,16 @@ public class ImprimirRelatorios {
                         id,
                         nomeEspecialidade != null ? nomeEspecialidade : "N/A");
             }
-
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioHospitais() {
+    public void imprimirRelatorioHospitais(boolean esperarUsuario) {
         List<Document> hospitais = relatorios.getRelatorioHospitais();
         String linha = "+--------------------------+--------------------------------+-----------------+-----------------+--------------+--------------------------------+----------------------+-------------------------+---------------+";
         if (hospitais.isEmpty()) {
@@ -221,15 +263,16 @@ public class ImprimirRelatorios {
                         endereco != null ? endereco.getString("bairro") : "N/A",
                         endereco != null ? endereco.getString("cidade") : "N/A");
             }
-
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioPacientes() {
+    public void imprimirRelatorioPacientes(boolean esperarUsuario) {
         List<Document> pacientes = relatorios.getRelatorioPacientes();
         String linha = "+--------------------------+--------------------------------+-----------------+-----------------+--------------+--------------------------------+----------------------+-------------------------+---------------+";
         if (pacientes.isEmpty()) {
@@ -266,15 +309,16 @@ public class ImprimirRelatorios {
                         endereco != null ? endereco.getString("bairro") : "N/A",
                         endereco != null ? endereco.getString("cidade") : "N/A");
             }
-
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 
-    public void imprimirRelatorioHistorico() {
+    public void imprimirRelatorioHistorico(boolean esperarUsuario) {
         List<Document> historicos = relatorios.getRelatorioHistoricos();
         String linha = "+--------------------------+--------------+---------------------------+---------------------------+----------------------+-------------------------------------+-----------------+--------------------------------------------------------------+";
         if (historicos.isEmpty()) {
@@ -309,11 +353,12 @@ public class ImprimirRelatorios {
                         hospital != null ? hospital.getString("categoria") : "N/A",
                         historico.getString("observacao") != null ? historico.getString("observacao") : "N/A");
             }
-
             System.out.println(linha);
-            System.out.println("Aperte enter para sair");
-            scanner.nextLine();
-            Config.limparConsole(1);
+            if (esperarUsuario) {
+                System.out.println("Aperte Enter para continuar...");
+                scanner.nextLine();
+                Config.limparConsole(1);
+            }
         }
     }
 

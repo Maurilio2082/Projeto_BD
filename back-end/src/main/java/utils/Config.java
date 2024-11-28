@@ -20,6 +20,7 @@ public class Config {
             6 - Relatório de Medicos por Especialidades
             7 - Relatório de Medicos por Hospitais
             8 - Relatório de Qts de Medicos por Especialidade
+            9 - Todos Relatorios
             0 - Sair
             """;
 

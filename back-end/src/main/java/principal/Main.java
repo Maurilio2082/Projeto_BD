@@ -60,14 +60,15 @@ public class Main {
                 Config.limparConsole(1);
 
                 switch (opcaoRelatorio) {
-                    case 1 -> relatorios.imprimirRelatorioEspecialidades();
-                    case 2 -> relatorios.imprimirRelatorioHospitais();
-                    case 3 -> relatorios.imprimirRelatorioPacientes();
-                    case 4 -> relatorios.imprimirRelatorioMedicos();
-                    case 5 -> relatorios.imprimirRelatorioHistorico();
-                    case 6 -> relatorios.imprimirRelatorioEspecialidadeMedicos();
-                    case 7 -> relatorios.imprimirRelatorioHospitalMedicos();
-                    case 8 -> relatorios.imprimirRelatorioAgrupamentoEsp();
+                    case 1 -> relatorios.imprimirRelatorioEspecialidades(true);
+                    case 2 -> relatorios.imprimirRelatorioHospitais(true);
+                    case 3 -> relatorios.imprimirRelatorioPacientes(true);
+                    case 4 -> relatorios.imprimirRelatorioMedicos(true);
+                    case 5 -> relatorios.imprimirRelatorioHistorico(true);
+                    case 6 -> relatorios.imprimirRelatorioEspecialidadeMedicos(true);
+                    case 7 -> relatorios.imprimirRelatorioHospitalMedicos(true);
+                    case 8 -> relatorios.imprimirRelatorioAgrupamentoEsp(true);
+                    case 9 -> relatorios.imprimirTodosRelatorios();
                     case 0 -> {
                         System.out.println("Voltando ao menu principal...");
                         return;
