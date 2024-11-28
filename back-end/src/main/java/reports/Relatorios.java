@@ -107,7 +107,9 @@ public class Relatorios {
 
     // Relatório 8: Agrupamento de Especialidades
     public List<Document> getRelatorioAgrupamentoEsp() {
-        return executarConsulta(medicosCollection, queryRelatorioAgrupamentoEsp);
+        MongoCollection<Document> qtsEspecialidadesMedicosCollection = DatabaseConfig.getDatabase()
+                .getCollection("especialidades_medicos");
+        return executarConsulta(qtsEspecialidadesMedicosCollection, queryRelatorioAgrupamentoEsp);
     }
 
     private List<Document> executarConsulta(MongoCollection<Document> collection, String queryJson) {
