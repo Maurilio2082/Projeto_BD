@@ -81,15 +81,23 @@ public class EnderecoRepository {
     }
 
     public void atualizarEndereco(String id, Endereco enderecoAtualizado) {
-        Bson filtro = eq("_id", id);
-        Document atualizacao = new Document("$set", new Document("logradouro", enderecoAtualizado.getLogradouro())
-                .append("numero", enderecoAtualizado.getNumero())
-                .append("bairro", enderecoAtualizado.getBairro())
-                .append("cidade", enderecoAtualizado.getCidade())
-                .append("estado", enderecoAtualizado.getEstado())
-                .append("cep", enderecoAtualizado.getCep()));
-        colecao.updateOne(filtro, atualizacao);
-        System.out.println("Endereço atualizado com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Certifique-se de usar ObjectId
+            Document atualizacao = new Document("$set", new Document()
+                    .append("logradouro", enderecoAtualizado.getLogradouro())
+                    .append("numero", enderecoAtualizado.getNumero())
+                    .append("bairro", enderecoAtualizado.getBairro())
+                    .append("cidade", enderecoAtualizado.getCidade())
+                    .append("estado", enderecoAtualizado.getEstado())
+                    .append("cep", enderecoAtualizado.getCep()));
+
+            colecao.updateOne(filtro, atualizacao);
+
+            System.out.println("Endereço atualizado com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar o endereço no banco de dados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void excluirEndereco(String id) {

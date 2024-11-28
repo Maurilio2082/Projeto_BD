@@ -28,20 +28,20 @@ public class PacienteRepository {
         MongoCursor<Document> cursor = colecao.find().iterator();
         List<Paciente> pacientes = new ArrayList<>();
         EnderecoRepository enderecoRepository = new EnderecoRepository();
-    
+
         while (cursor.hasNext()) {
             Document doc = cursor.next();
-    
+
             String enderecoId = doc.getString("enderecoId");
             Endereco endereco = null;
-    
+
             // Verificar se o enderecoId é válido antes de buscar o endereço
             if (enderecoId != null && enderecoId.length() == 24) {
                 endereco = enderecoRepository.buscarPorId(enderecoId);
             } else {
                 System.err.println("ID de endereço inválido ou ausente para paciente: " + doc.getString("nome"));
             }
-    
+
             pacientes.add(new Paciente(
                     doc.getObjectId("_id").toString(),
                     doc.getString("nome"),
@@ -55,8 +55,6 @@ public class PacienteRepository {
         cursor.close();
         return pacientes;
     }
-    
-    
 
     public Paciente buscarPorCpf(String cpf) {
         Bson filtro = eq("cpf", cpf);
@@ -91,15 +89,24 @@ public class PacienteRepository {
     }
 
     public void atualizarPaciente(String id, Paciente pacienteAtualizado) {
-        Bson filtro = eq("_id", id);
-        Document atualizacao = new Document("$set", new Document("nome", pacienteAtualizado.getNome())
-                .append("email", pacienteAtualizado.getEmail())
-                .append("telefone", pacienteAtualizado.getTelefone())
-                .append("dataNascimento", pacienteAtualizado.getDataNascimento())
-                .append("cpf", pacienteAtualizado.getCpf())
-                .append("enderecoId", pacienteAtualizado.getEndereco().getId())); // Referência ao endereço
-        colecao.updateOne(filtro, atualizacao);
-        System.out.println("Paciente atualizado com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Garantir que o ID seja um ObjectId válido
+            Document atualizacao = new Document("$set", new Document()
+                    .append("nome", pacienteAtualizado.getNome())
+                    .append("email", pacienteAtualizado.getEmail())
+                    .append("telefone", pacienteAtualizado.getTelefone())
+                    .append("dataNascimento", pacienteAtualizado.getDataNascimento())
+                    .append("cpf", pacienteAtualizado.getCpf())
+                    .append("enderecoId", pacienteAtualizado.getEndereco().getId())); // Atualiza apenas o ID do
+                                                                                      // endereço associado
+
+            colecao.updateOne(filtro, atualizacao);
+
+            System.out.println("Paciente atualizado com sucesso no banco de dados!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar paciente no banco de dados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void excluirPaciente(String id) {

@@ -62,32 +62,59 @@ public class PacienteController {
     }
 
     public void atualizarPaciente() {
-        System.out.print("Digite o CPF do paciente que deseja atualizar: ");
-        String id = scanner.nextLine();
-        Paciente pacienteAtual = repository.buscarPorCpf(id);
-
-        if (pacienteAtual == null) {
-            System.out.println("Paciente não encontrado.");
+        // Listar todos os pacientes
+        List<Paciente> pacientes = repository.buscarTodosPacientes();
+        if (pacientes.isEmpty()) {
+            System.out.println("Nenhum paciente encontrado para atualização.");
             return;
         }
 
-        System.out.println("Atualize os dados do paciente (ou deixe em branco para manter o atual):");
+        System.out.println("Selecione o paciente que deseja atualizar:");
+        for (int i = 0; i < pacientes.size(); i++) {
+            Paciente paciente = pacientes.get(i);
+            System.out.println((i + 1) + " - " + paciente.getNome() + " (CPF: " + paciente.getCpf() + ")");
+        }
 
-        System.out.print("Nome: ");
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + pacientes.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= pacientes.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        Paciente pacienteAtual = pacientes.get(escolha - 1);
+
+        System.out.println("Atualize os dados do paciente (ou deixe em branco para manter o atual):");
+        System.out.print("Nome [" + pacienteAtual.getNome() + "]: ");
         String nome = scanner.nextLine();
-        System.out.print("Email: ");
+
+        System.out.print("Email [" + pacienteAtual.getEmail() + "]: ");
         String email = scanner.nextLine();
-        System.out.print("Telefone: ");
+
+        System.out.print("Telefone [" + pacienteAtual.getTelefone() + "]: ");
         String telefone = scanner.nextLine();
-        System.out.print("Data de Nascimento: ");
+
+        System.out.print("Data de Nascimento [" + pacienteAtual.getDataNascimento() + "]: ");
         String dataNascimento = scanner.nextLine();
-        System.out.print("CPF: ");
+
+        System.out.print("CPF [" + pacienteAtual.getCpf() + "]: ");
         String cpf = scanner.nextLine();
 
+        // Atualizar o endereço associado
+        System.out.println("Atualize os dados do endereço associado:");
         Endereco enderecoAtualizado = enderecoController.atualizarEndereco(pacienteAtual.getEndereco());
 
+        // Criar o objeto atualizado
         Paciente pacienteAtualizado = new Paciente(
-                id,
+                pacienteAtual.getId(),
                 nome.isEmpty() ? pacienteAtual.getNome() : nome,
                 email.isEmpty() ? pacienteAtual.getEmail() : email,
                 telefone.isEmpty() ? pacienteAtual.getTelefone() : telefone,
@@ -95,7 +122,9 @@ public class PacienteController {
                 cpf.isEmpty() ? pacienteAtual.getCpf() : cpf,
                 enderecoAtualizado);
 
-        repository.atualizarPaciente(id, pacienteAtualizado);
+        // Atualizar no repositório
+        repository.atualizarPaciente(pacienteAtual.getId(), pacienteAtualizado);
+        System.out.println("Paciente atualizado com sucesso!");
     }
 
     public void deletarPaciente() {

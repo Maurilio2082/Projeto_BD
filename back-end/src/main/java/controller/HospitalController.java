@@ -41,32 +41,60 @@ public class HospitalController {
     }
 
     public void atualizarHospital() {
-        System.out.print("Digite o CNPJ do hospital que deseja atualizar: ");
-        String id = scanner.nextLine();
-        Hospital hospitalAtual = repository.buscarPorCnpj(id);
-
-        if (hospitalAtual == null) {
-            System.out.println("Hospital não encontrado.");
+        // Listar hospitais disponíveis para seleção
+        List<Hospital> hospitais = repository.buscarTodosHospitais();
+        if (hospitais.isEmpty()) {
+            System.out.println("Nenhum hospital encontrado para atualização.");
             return;
         }
 
-        System.out.println("Atualize os dados (ou deixe em branco para manter o atual):");
+        System.out.println("Selecione o hospital que deseja atualizar:");
+        for (int i = 0; i < hospitais.size(); i++) {
+            Hospital hospital = hospitais.get(i);
+            System.out.println((i + 1) + " - " + hospital.getRazaoSocial() + " (CNPJ: " + hospital.getCnpj() + ")");
+        }
 
-        System.out.print("Razão Social: ");
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + hospitais.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= hospitais.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        Hospital hospitalAtual = hospitais.get(escolha - 1);
+
+        // Exibir os dados atuais e permitir a edição
+        System.out.println("Atualize os dados do hospital (ou deixe em branco para manter o atual):");
+
+        System.out.print("Razão Social [" + hospitalAtual.getRazaoSocial() + "]: ");
         String razaoSocial = scanner.nextLine();
-        System.out.print("CNPJ: ");
+
+        System.out.print("CNPJ [" + hospitalAtual.getCnpj() + "]: ");
         String cnpj = scanner.nextLine();
-        System.out.print("Email: ");
+
+        System.out.print("Email [" + hospitalAtual.getEmail() + "]: ");
         String email = scanner.nextLine();
-        System.out.print("Telefone: ");
+
+        System.out.print("Telefone [" + hospitalAtual.getTelefone() + "]: ");
         String telefone = scanner.nextLine();
-        System.out.print("Categoria: ");
+
+        System.out.print("Categoria [" + hospitalAtual.getCategoria() + "]: ");
         String categoria = scanner.nextLine();
 
+        // Atualizar endereço associado
         Endereco enderecoAtualizado = enderecoController.atualizarEndereco(hospitalAtual.getEndereco());
 
+        // Criar objeto atualizado com os novos dados ou manter os existentes
         Hospital hospitalAtualizado = new Hospital(
-                id,
+                hospitalAtual.getId(),
                 razaoSocial.isEmpty() ? hospitalAtual.getRazaoSocial() : razaoSocial,
                 cnpj.isEmpty() ? hospitalAtual.getCnpj() : cnpj,
                 email.isEmpty() ? hospitalAtual.getEmail() : email,
@@ -74,7 +102,8 @@ public class HospitalController {
                 categoria.isEmpty() ? hospitalAtual.getCategoria() : categoria,
                 enderecoAtualizado);
 
-        repository.atualizarHospital(id, hospitalAtualizado);
+        // Atualizar o hospital no banco de dados
+        repository.atualizarHospital(hospitalAtual.getId(), hospitalAtualizado);
     }
 
     public void deletarHospital() {
@@ -84,14 +113,14 @@ public class HospitalController {
             System.out.println("Nenhum hospital encontrado para exclusão.");
             return;
         }
-    
+
         // Exibir a lista de hospitais
         System.out.println("Selecione o hospital que deseja excluir:");
         for (int i = 0; i < hospitais.size(); i++) {
             Hospital hospital = hospitais.get(i);
             System.out.println((i + 1) + " - " + hospital.getRazaoSocial() + " (CNPJ: " + hospital.getCnpj() + ")");
         }
-    
+
         // Obter a escolha do usuário
         int escolha;
         while (true) {
@@ -107,10 +136,10 @@ public class HospitalController {
                 System.out.println("Entrada inválida. Digite um número.");
             }
         }
-    
+
         // Selecionar o hospital
         Hospital hospitalSelecionado = hospitais.get(escolha - 1);
-    
+
         // Verificar e excluir o endereço associado
         Endereco enderecoAssociado = hospitalSelecionado.getEndereco();
         if (enderecoAssociado != null && enderecoAssociado.getId() != null
@@ -124,11 +153,10 @@ public class HospitalController {
         } else {
             System.out.println("Nenhum endereço válido associado encontrado para exclusão.");
         }
-    
+
         // Excluir o hospital
         repository.excluirHospital(hospitalSelecionado.getId());
         System.out.println("Hospital excluído com sucesso!");
     }
-    
 
 }

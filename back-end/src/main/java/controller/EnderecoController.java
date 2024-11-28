@@ -62,19 +62,26 @@ public class EnderecoController {
 
     public Endereco atualizarEndereco(Endereco enderecoAtual) {
         System.out.println("Atualize os dados do endereço (ou deixe em branco para manter o atual):");
-        System.out.print("Logradouro: ");
+    
+        System.out.print("Logradouro [" + enderecoAtual.getLogradouro() + "]: ");
         String logradouro = scanner.nextLine();
-        System.out.print("Número: ");
+    
+        System.out.print("Número [" + enderecoAtual.getNumero() + "]: ");
         String numero = scanner.nextLine();
-        System.out.print("Bairro: ");
+    
+        System.out.print("Bairro [" + enderecoAtual.getBairro() + "]: ");
         String bairro = scanner.nextLine();
-        System.out.print("Cidade: ");
+    
+        System.out.print("Cidade [" + enderecoAtual.getCidade() + "]: ");
         String cidade = scanner.nextLine();
-        System.out.print("Estado: ");
+    
+        System.out.print("Estado [" + enderecoAtual.getEstado() + "]: ");
         String estado = scanner.nextLine();
-        System.out.print("CEP: ");
+    
+        System.out.print("CEP [" + enderecoAtual.getCep() + "]: ");
         String cep = scanner.nextLine();
-
+    
+        // Criar um objeto Endereco atualizado com os novos dados ou manter os existentes
         Endereco enderecoAtualizado = new Endereco(
                 enderecoAtual.getId(),
                 logradouro.isEmpty() ? enderecoAtual.getLogradouro() : logradouro,
@@ -82,11 +89,20 @@ public class EnderecoController {
                 bairro.isEmpty() ? enderecoAtual.getBairro() : bairro,
                 cidade.isEmpty() ? enderecoAtual.getCidade() : cidade,
                 estado.isEmpty() ? enderecoAtual.getEstado() : estado,
-                cep.isEmpty() ? enderecoAtual.getCep() : cep);
-
-        repository.atualizarEndereco(enderecoAtualizado.getId(), enderecoAtualizado);
+                cep.isEmpty() ? enderecoAtual.getCep() : cep
+        );
+    
+        // Persistir alterações no banco de dados
+        try {
+            repository.atualizarEndereco(enderecoAtualizado.getId(), enderecoAtualizado);
+            System.out.println("Endereço atualizado com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar o endereço no banco de dados: " + e.getMessage());
+        }
+    
         return enderecoAtualizado;
     }
+    
 
     public void excluirEndereco(String enderecoId) {
         repository.excluirEndereco(enderecoId);

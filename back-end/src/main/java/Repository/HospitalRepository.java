@@ -113,15 +113,26 @@ public class HospitalRepository {
     }
 
     public void atualizarHospital(String id, Hospital hospitalAtualizado) {
-        Bson filtro = eq("_id", id);
-        Document atualizacao = new Document("$set", new Document("razaoSocial", hospitalAtualizado.getRazaoSocial())
-                .append("cnpj", hospitalAtualizado.getCnpj())
-                .append("email", hospitalAtualizado.getEmail())
-                .append("telefone", hospitalAtualizado.getTelefone())
-                .append("categoria", hospitalAtualizado.getCategoria())
-                .append("enderecoId", hospitalAtualizado.getEndereco().getId())); // Salvar apenas o ID do endereço
-        colecao.updateOne(filtro, atualizacao);
-        System.out.println("Hospital atualizado com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Certificar que o ID está no formato correto
+
+            // Construir o documento de atualização
+            Document atualizacao = new Document("$set", new Document()
+                    .append("razaoSocial", hospitalAtualizado.getRazaoSocial())
+                    .append("cnpj", hospitalAtualizado.getCnpj())
+                    .append("email", hospitalAtualizado.getEmail())
+                    .append("telefone", hospitalAtualizado.getTelefone())
+                    .append("categoria", hospitalAtualizado.getCategoria())
+                    .append("enderecoId", hospitalAtualizado.getEndereco().getId()) // Referenciar o ID do endereço
+            );
+
+            // Atualizar no MongoDB
+            colecao.updateOne(filtro, atualizacao);
+            System.out.println("Hospital atualizado com sucesso no banco de dados!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar hospital no banco de dados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void excluirHospital(String id) {
