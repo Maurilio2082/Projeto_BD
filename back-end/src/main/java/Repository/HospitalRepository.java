@@ -30,7 +30,7 @@ public class HospitalRepository {
 
         while (cursor.hasNext()) {
             Document doc = cursor.next();
-            Endereco endereco = enderecoRepository.buscarPorCep(doc.getString("endereco.cep"));
+            Endereco endereco = enderecoRepository.buscarPorId(doc.getString("endereco._id"));
 
             hospitais.add(new Hospital(
                     doc.getObjectId("_id").toString(),
@@ -52,7 +52,7 @@ public class HospitalRepository {
 
         if (doc != null) {
 
-            Endereco endereco = enderecoRepository.buscarPorCep(doc.getString("endereco.cep"));
+            Endereco endereco = enderecoRepository.buscarPorId(doc.getString("endereco._id"));
 
             return new Hospital(
                     doc.getObjectId("_id").toString(),

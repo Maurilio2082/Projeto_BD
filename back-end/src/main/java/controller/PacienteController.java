@@ -51,16 +51,15 @@ public class PacienteController {
         String dataNascimento = scanner.nextLine();
         System.out.print("CPF: ");
         String cpf = scanner.nextLine();
-    
+
         // Cadastra o endereço
         System.out.println("Digite os dados do endereço do paciente:");
         Endereco endereco = enderecoController.cadastrarEndereco();
-    
+
         // Cria o objeto paciente com o endereço associado
         Paciente paciente = new Paciente(null, nome, email, telefone, dataNascimento, cpf, endereco);
         repository.inserirPaciente(paciente);
     }
-    
 
     public void atualizarPaciente() {
         System.out.print("Digite o CPF do paciente que deseja atualizar: ");
@@ -100,20 +99,52 @@ public class PacienteController {
     }
 
     public void deletarPaciente() {
-        System.out.print("Digite o CPF do paciente que deseja excluir: ");
-        String pacienteId = scanner.nextLine();
-
-        Paciente paciente = repository.buscarPorCpf(pacienteId);
-
-        if (paciente == null) {
-            System.out.println("Paciente não encontrado.");
+        // Listar todos os pacientes
+        List<Paciente> pacientes = repository.buscarTodosPacientes();
+        if (pacientes.isEmpty()) {
+            System.out.println("Nenhum paciente encontrado para exclusão.");
             return;
         }
 
-        System.out.println("Excluindo dependências relacionadas ao paciente...");
-        enderecoController.excluirEndereco();
+        // Exibir a lista de pacientes
+        System.out.println("Selecione o paciente que deseja excluir:");
+        for (int i = 0; i < pacientes.size(); i++) {
+            Paciente paciente = pacientes.get(i);
+            System.out.println((i + 1) + " - " + paciente.getNome() + " (CPF: " + paciente.getCpf() + ")");
+        }
 
-        repository.excluirPaciente(pacienteId);
-        System.out.println("Paciente excluído com sucesso.");
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + pacientes.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= pacientes.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        // Selecionar o paciente
+        Paciente pacienteSelecionado = pacientes.get(escolha - 1);
+
+        // Verificar e excluir o endereço associado
+        Endereco enderecoAssociado = pacienteSelecionado.getEndereco();
+        if (enderecoAssociado != null && enderecoAssociado.getId() != null
+                && enderecoAssociado.getId().length() == 24) {
+            enderecoController.excluirEndereco(enderecoAssociado.getId());
+            System.out.println("Endereço associado excluído com sucesso.");
+        } else {
+            System.out.println("Nenhum endereço válido associado encontrado para exclusão.");
+        }
+
+        // Excluir o paciente
+        repository.excluirPaciente(pacienteSelecionado.getId());
+        System.out.println("Paciente excluído com sucesso!");
     }
+
 }

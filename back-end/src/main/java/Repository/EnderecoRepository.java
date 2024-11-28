@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,27 +35,35 @@ public class EnderecoRepository {
                     doc.getString("bairro"),
                     doc.getString("cidade"),
                     doc.getString("estado"),
-                    doc.getString("cep")
-            ));
+                    doc.getString("cep")));
         }
         cursor.close();
         return enderecos;
     }
 
-    public Endereco buscarPorCep(String cep) {
-        Bson filtro = eq("cep", cep); 
-        Document doc = colecao.find(filtro).first();
+    public Endereco buscarPorId(String id) {
+        if (id == null || id.isEmpty() || id.length() != 24) {
+            System.err.println("ID do endereço inválido ou ausente: " + id);
+            return null;
+        }
 
-        if (doc != null) {
-            return new Endereco(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("logradouro"),
-                    doc.getString("numero"),
-                    doc.getString("bairro"),
-                    doc.getString("cidade"),
-                    doc.getString("estado"),
-                    doc.getString("cep")
-            );
+        try {
+            Bson filtro = eq("_id", new ObjectId(id));
+            Document doc = colecao.find(filtro).first();
+
+            if (doc != null) {
+                return new Endereco(
+                        doc.getObjectId("_id").toString(),
+                        doc.getString("logradouro"),
+                        doc.getString("numero"),
+                        doc.getString("bairro"),
+                        doc.getString("cidade"),
+                        doc.getString("estado"),
+                        doc.getString("cep"));
+            }
+        } catch (IllegalArgumentException e) {
+            System.err.println("ID do endereço inválido: " + id);
+            e.printStackTrace();
         }
         return null;
     }
@@ -70,10 +79,9 @@ public class EnderecoRepository {
         System.out.println("Endereço inserido com sucesso!");
         return documento.getObjectId("_id").toString(); // Retorna o ID gerado pelo MongoDB
     }
-    
 
     public void atualizarEndereco(String id, Endereco enderecoAtualizado) {
-        Bson filtro = eq("_id", id); 
+        Bson filtro = eq("_id", id);
         Document atualizacao = new Document("$set", new Document("logradouro", enderecoAtualizado.getLogradouro())
                 .append("numero", enderecoAtualizado.getNumero())
                 .append("bairro", enderecoAtualizado.getBairro())
@@ -85,8 +93,14 @@ public class EnderecoRepository {
     }
 
     public void excluirEndereco(String id) {
-        Bson filtro = eq("_id", id); 
-        colecao.deleteOne(filtro);
-        System.out.println("Endereço excluído com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id));
+            colecao.deleteOne(filtro);
+            System.out.println("Endereço excluído com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir endereço: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 }

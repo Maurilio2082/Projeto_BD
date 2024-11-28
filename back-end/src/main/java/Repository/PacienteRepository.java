@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,20 @@ public class PacienteRepository {
         MongoCursor<Document> cursor = colecao.find().iterator();
         List<Paciente> pacientes = new ArrayList<>();
         EnderecoRepository enderecoRepository = new EnderecoRepository();
-
+    
         while (cursor.hasNext()) {
             Document doc = cursor.next();
-            Endereco endereco = enderecoRepository.buscarPorCep(doc.getString("endereco.cep"));
+    
+            String enderecoId = doc.getString("enderecoId");
+            Endereco endereco = null;
+    
+            // Verificar se o enderecoId é válido antes de buscar o endereço
+            if (enderecoId != null && enderecoId.length() == 24) {
+                endereco = enderecoRepository.buscarPorId(enderecoId);
+            } else {
+                System.err.println("ID de endereço inválido ou ausente para paciente: " + doc.getString("nome"));
+            }
+    
             pacientes.add(new Paciente(
                     doc.getObjectId("_id").toString(),
                     doc.getString("nome"),
@@ -38,12 +49,14 @@ public class PacienteRepository {
                     doc.getString("telefone"),
                     doc.getString("dataNascimento"),
                     doc.getString("cpf"),
-                    endereco // Passar o objeto Endereco
+                    endereco // Passar o objeto Endereco, pode ser nulo
             ));
         }
         cursor.close();
         return pacientes;
     }
+    
+    
 
     public Paciente buscarPorCpf(String cpf) {
         Bson filtro = eq("cpf", cpf);
@@ -51,7 +64,7 @@ public class PacienteRepository {
         EnderecoRepository enderecoRepository = new EnderecoRepository();
 
         if (doc != null) {
-            Endereco endereco = enderecoRepository.buscarPorCep(doc.getString("endereco.cep"));
+            Endereco endereco = enderecoRepository.buscarPorId(doc.getString("endereco._id"));
 
             return new Paciente(
                     doc.getObjectId("_id").toString(),
@@ -90,8 +103,13 @@ public class PacienteRepository {
     }
 
     public void excluirPaciente(String id) {
-        Bson filtro = eq("_id", id);
-        colecao.deleteOne(filtro);
-        System.out.println("Paciente excluído com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Certifique-se de usar ObjectId para IDs no MongoDB
+            colecao.deleteOne(filtro);
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir paciente: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 }

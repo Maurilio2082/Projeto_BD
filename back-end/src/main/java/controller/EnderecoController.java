@@ -5,15 +5,24 @@ import model.Endereco;
 import java.util.List;
 import java.util.Scanner;
 
+import org.bson.Document;
+
+import com.mongodb.client.MongoCollection;
+
 import Repository.EnderecoRepository;
+import conexion.DatabaseConfig;
 
 public class EnderecoController {
 
     private final EnderecoRepository repository;
+    private final MongoCollection<Document> enderecoCollection;
+
     private final Scanner scanner;
     private String ultimoEnderecoCadastradoId; // Para armazenar o ID do último endereço cadastrado.
 
     public EnderecoController() {
+        this.enderecoCollection = DatabaseConfig.getDatabase().getCollection("enderecos");
+
         this.repository = new EnderecoRepository();
         this.scanner = new Scanner(System.in);
     }
@@ -24,17 +33,6 @@ public class EnderecoController {
             System.out.println("Nenhum endereço encontrado.");
         } else {
             enderecos.forEach(System.out::println);
-        }
-    }
-
-    public void buscarEnderecoPorCep() {
-        System.out.print("Digite o CEP do endereço: ");
-        String cep = scanner.nextLine();
-        Endereco endereco = repository.buscarPorCep(cep);
-        if (endereco == null) {
-            System.out.println("Endereço não encontrado.");
-        } else {
-            System.out.println(endereco);
         }
     }
 
@@ -51,13 +49,12 @@ public class EnderecoController {
         String estado = scanner.nextLine();
         System.out.print("CEP: ");
         String cep = scanner.nextLine();
-    
+
         Endereco endereco = new Endereco(null, logradouro, numero, bairro, cidade, estado, cep);
         String enderecoId = repository.inserirEndereco(endereco);
         endereco.setId(enderecoId); // Atualiza o ID no objeto Endereco
         return endereco;
     }
-    
 
     public String getUltimoEnderecoCadastradoId() {
         return ultimoEnderecoCadastradoId;
@@ -91,9 +88,9 @@ public class EnderecoController {
         return enderecoAtualizado;
     }
 
-    public void excluirEndereco() {
-        System.out.print("Digite o ID do endereço que deseja excluir: ");
-        String id = scanner.nextLine();
-        repository.excluirEndereco(id);
+    public void excluirEndereco(String enderecoId) {
+        repository.excluirEndereco(enderecoId);
+        System.out.println("Endereço excluído com sucesso!");
     }
+
 }
