@@ -56,87 +56,20 @@ public class MedicoController {
     }
 
     public void atualizarMedico() {
-        System.out.print("Digite o ID do médico que deseja atualizar: ");
-        String id = scanner.nextLine();
-
-        // Buscar o médico atual para exibir seus dados
-        Medico medicoAtual = medicoRepository.buscarPorNome(id);
-        if (medicoAtual == null) {
-            System.out.println("Médico não encontrado.");
-            return;
-        }
-
-        System.out.println("Atualize os dados (ou deixe em branco para manter o atual):");
-
-        System.out.print("Nome [" + medicoAtual.getNome() + "]: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("Conselho [" + medicoAtual.getConselho() + "]: ");
-        String conselho = scanner.nextLine();
-
-        System.out.println("Especialidade atual: " + medicoAtual.getEspecialidade().getNomeEspecialidade());
-        System.out.println("Deseja alterar a especialidade? (Sim/Não)");
-        String alterarEspecialidade = scanner.nextLine().trim().toLowerCase();
-
-        Especialidade especialidadeAtualizada = medicoAtual.getEspecialidade(); // Manter a atual por padrão
-        if (alterarEspecialidade.equals("sim")) {
-            // Listar especialidades disponíveis
-            List<Especialidade> especialidades = especialidadeRepository.buscarTodasEspecialidades();
-            if (especialidades.isEmpty()) {
-                System.out.println("Nenhuma especialidade encontrada. Não é possível alterar a especialidade.");
-                return;
-            }
-
-            System.out.println("Selecione a nova especialidade:");
-            for (int i = 0; i < especialidades.size(); i++) {
-                Especialidade especialidade = especialidades.get(i);
-                System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
-            }
-
-            int escolhaEspecialidade;
-            while (true) {
-                System.out.print("Escolha o número da especialidade: ");
-                try {
-                    escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
-                    if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
-                        especialidadeAtualizada = especialidades.get(escolhaEspecialidade - 1);
-                        break;
-                    } else {
-                        System.out.println("Número inválido. Tente novamente.");
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Entrada inválida. Digite um número.");
-                }
-            }
-        }
-
-        // Cria o objeto atualizado com os novos dados ou mantém os existentes
-        Medico medicoAtualizado = new Medico(
-                id,
-                nome.isEmpty() ? medicoAtual.getNome() : nome,
-                conselho.isEmpty() ? medicoAtual.getConselho() : conselho,
-                especialidadeAtualizada);
-
-        // Atualiza no repositório
-        medicoRepository.atualizarMedico(id, medicoAtualizado);
-        System.out.println("Médico atualizado com sucesso!");
-    }
-
-    public void deletarMedico() {
         // Listar todos os médicos
         List<Medico> medicos = medicoRepository.buscarTodosMedicos();
         if (medicos.isEmpty()) {
-            System.out.println("Nenhum médico encontrado para exclusão.");
+            System.out.println("Nenhum médico encontrado para atualização.");
             return;
         }
-    
+
         // Exibir a lista de médicos
-        System.out.println("Selecione o médico que deseja excluir:");
+        System.out.println("Selecione o médico que deseja atualizar:");
         for (int i = 0; i < medicos.size(); i++) {
             Medico medico = medicos.get(i);
             System.out.println((i + 1) + " - " + medico.getNome() + " (Conselho: " + medico.getConselho() + ")");
         }
-    
+
         // Obter a escolha do usuário
         int escolha;
         while (true) {
@@ -152,18 +85,72 @@ public class MedicoController {
                 System.out.println("Entrada inválida. Digite um número.");
             }
         }
-    
+
+        // Selecionar o médico
+        Medico medicoAtual = medicos.get(escolha - 1);
+
+        // Exibir os dados atuais e permitir a edição
+        System.out.println("Atualize os dados do médico (ou deixe em branco para manter o atual):");
+
+        System.out.print("Nome [" + medicoAtual.getNome() + "]: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Conselho [" + medicoAtual.getConselho() + "]: ");
+        String conselho = scanner.nextLine();
+
+        // Criar objeto atualizado com os novos dados ou manter os existentes
+        Medico medicoAtualizado = new Medico(
+                medicoAtual.getId(),
+                nome.isEmpty() ? medicoAtual.getNome() : nome,
+                conselho.isEmpty() ? medicoAtual.getConselho() : conselho,
+                medicoAtual.getEspecialidade()); // Mantém a especialidade existente
+
+        // Atualizar no repositório
+        medicoRepository.atualizarMedico(medicoAtual.getId(), medicoAtualizado);
+        System.out.println("Médico atualizado com sucesso!");
+    }
+
+    public void deletarMedico() {
+        // Listar todos os médicos
+        List<Medico> medicos = medicoRepository.buscarTodosMedicos();
+        if (medicos.isEmpty()) {
+            System.out.println("Nenhum médico encontrado para exclusão.");
+            return;
+        }
+
+        // Exibir a lista de médicos
+        System.out.println("Selecione o médico que deseja excluir:");
+        for (int i = 0; i < medicos.size(); i++) {
+            Medico medico = medicos.get(i);
+            System.out.println((i + 1) + " - " + medico.getNome() + " (Conselho: " + medico.getConselho() + ")");
+        }
+
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + medicos.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= medicos.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
         // Selecionar o médico
         Medico medicoSelecionado = medicos.get(escolha - 1);
-    
+
         // Excluir associações relacionadas ao médico
         System.out.println("Excluindo associações relacionadas ao médico...");
         medicoRepository.removerDependenciasMedico(medicoSelecionado.getId());
-    
+
         // Excluir o médico
         medicoRepository.excluirMedico(medicoSelecionado.getId());
         System.out.println("Médico excluído com sucesso!");
     }
-    
 
 }

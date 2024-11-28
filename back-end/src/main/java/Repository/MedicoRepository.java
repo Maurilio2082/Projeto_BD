@@ -69,14 +69,24 @@ public class MedicoRepository {
     }
 
     public void atualizarMedico(String id, Medico medicoAtualizado) {
-        Bson filtro = eq("_id", id);
-        Document atualizacao = new Document("$set", new Document("nome", medicoAtualizado.getNome())
-                .append("conselho", medicoAtualizado.getConselho())
-                .append("especialidadeId", medicoAtualizado.getEspecialidade().getId())); // Salva apenas o ID da
-                                                                                          // especialidade
-        colecao.updateOne(filtro, atualizacao);
-        System.out.println("Médico atualizado com sucesso!");
+        try {
+            // Garantir que o ID seja tratado como ObjectId
+            Bson filtro = eq("_id", new ObjectId(id));
+    
+            // Construir o documento de atualização
+            Document atualizacao = new Document("$set", new Document()
+                    .append("nome", medicoAtualizado.getNome())
+                    .append("conselho", medicoAtualizado.getConselho()));
+    
+            // Atualizar no banco de dados
+            colecao.updateOne(filtro, atualizacao);
+            System.out.println("Médico atualizado com sucesso no banco de dados!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar médico no banco de dados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+    
 
     public void excluirMedico(String id) {
         try {
