@@ -79,9 +79,14 @@ public class MedicoRepository {
     }
 
     public void excluirMedico(String id) {
-        Bson filtro = eq("_id", id);
-        colecao.deleteOne(filtro);
-        System.out.println("Médico excluído com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Garantir que o ID seja tratado como ObjectId
+            colecao.deleteOne(filtro);
+            System.out.println("Médico excluído com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir médico: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public List<Medico> buscarMedicosPorHospital(String hospitalId) {
@@ -121,6 +126,30 @@ public class MedicoRepository {
             );
         }
         return null;
+    }
+
+    public void removerDependenciasMedico(String medicoId) {
+        System.out.println("Removendo dependências do médico com ID: " + medicoId);
+
+        try {
+            // Remover associações do médico com hospitais
+            MongoCollection<Document> colecaoHospitalMedico = DatabaseConfig.getDatabase()
+                    .getCollection("hospitais_medicos");
+            Bson filtroHospitalMedico = eq("medicoId", new ObjectId(medicoId));
+            colecaoHospitalMedico.deleteMany(filtroHospitalMedico);
+            System.out.println("Associações do médico com hospitais removidas.");
+
+            // Remover associações do médico com especialidades
+            MongoCollection<Document> colecaoEspecialidadeMedico = DatabaseConfig.getDatabase()
+                    .getCollection("especialidades_medicos");
+            Bson filtroEspecialidadeMedico = eq("medicoId", new ObjectId(medicoId));
+            colecaoEspecialidadeMedico.deleteMany(filtroEspecialidadeMedico);
+            System.out.println("Associações do médico com especialidades removidas.");
+
+        } catch (Exception e) {
+            System.err.println("Erro ao remover dependências do médico: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package Repository;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -65,8 +66,15 @@ public class HospitalMedicoRepository {
         System.out.println("Relação entre hospital e médico inserida com sucesso!");
     }
 
-    public void excluirRelacao(String id) {
-        colecao.deleteOne(eq("_id", new ObjectId(id)));
-        System.out.println("Relação excluída com sucesso!");
+    public void excluirMedico(String id) {
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); 
+            colecao.deleteOne(filtro);
+            System.out.println("Médico excluído com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir médico: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 }

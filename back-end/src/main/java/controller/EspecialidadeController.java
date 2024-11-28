@@ -73,13 +73,46 @@ public class EspecialidadeController {
     }
 
     public void deletarEspecialidade() {
-        System.out.print("Digite o ID da especialidade que deseja excluir: ");
-        String especialidadeId = scanner.nextLine();
+        // Listar todas as especialidades
+        List<Especialidade> especialidades = repository.buscarTodasEspecialidades();
+        if (especialidades.isEmpty()) {
+            System.out.println("Nenhuma especialidade encontrada para exclusão.");
+            return;
+        }
 
+        // Exibir a lista de especialidades
+        System.out.println("Selecione a especialidade que deseja excluir:");
+        for (int i = 0; i < especialidades.size(); i++) {
+            Especialidade especialidade = especialidades.get(i);
+            System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
+        }
+
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + especialidades.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= especialidades.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        // Selecionar a especialidade
+        Especialidade especialidadeSelecionada = especialidades.get(escolha - 1);
+
+        // Remover dependências relacionadas à especialidade (se aplicável)
         System.out.println("Excluindo dependências relacionadas à especialidade...");
-        RemoverDependencia.removerDependenciasEspecialidade(especialidadeId);
+        RemoverDependencia.removerDependenciasEspecialidade(especialidadeSelecionada.getId());
 
-        repository.excluirEspecialidade(especialidadeId);
-        System.out.println("Especialidade excluída com sucesso.");
+        // Excluir a especialidade
+        repository.excluirEspecialidade(especialidadeSelecionada.getId());
+        System.out.println("Especialidade excluída com sucesso!");
     }
+
 }

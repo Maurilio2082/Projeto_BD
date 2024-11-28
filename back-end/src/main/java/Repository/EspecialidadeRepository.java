@@ -74,9 +74,14 @@ public class EspecialidadeRepository {
     }
 
     public void excluirEspecialidade(String id) {
-        Bson filtro = eq("_id", id);
-        colecao.deleteOne(filtro);
-        System.out.println("Especialidade excluída com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id));
+            colecao.deleteOne(filtro);
+            System.out.println("Especialidade excluída com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir especialidade: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public Especialidade buscarEspecialidadePorId(String id) {

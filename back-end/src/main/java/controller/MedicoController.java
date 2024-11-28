@@ -50,7 +50,7 @@ public class MedicoController {
         String conselho = scanner.nextLine();
 
         // Cria e insere o médico
-        Medico medico = new Medico(null, nome, conselho, null); 
+        Medico medico = new Medico(null, nome, conselho, null);
         medicoRepository.inserirMedico(medico);
         System.out.println("Médico cadastrado com sucesso!");
     }
@@ -123,13 +123,47 @@ public class MedicoController {
     }
 
     public void deletarMedico() {
-        System.out.print("Digite o ID do médico que deseja excluir: ");
-        String medicoId = scanner.nextLine();
-
-        System.out.println("Excluindo dependências relacionadas ao médico...");
-        RemoverDependencia.removerDependenciasMedico(medicoId);
-
-        medicoRepository.excluirMedico(medicoId);
-        System.out.println("Médico excluído com sucesso.");
+        // Listar todos os médicos
+        List<Medico> medicos = medicoRepository.buscarTodosMedicos();
+        if (medicos.isEmpty()) {
+            System.out.println("Nenhum médico encontrado para exclusão.");
+            return;
+        }
+    
+        // Exibir a lista de médicos
+        System.out.println("Selecione o médico que deseja excluir:");
+        for (int i = 0; i < medicos.size(); i++) {
+            Medico medico = medicos.get(i);
+            System.out.println((i + 1) + " - " + medico.getNome() + " (Conselho: " + medico.getConselho() + ")");
+        }
+    
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + medicos.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= medicos.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+    
+        // Selecionar o médico
+        Medico medicoSelecionado = medicos.get(escolha - 1);
+    
+        // Excluir associações relacionadas ao médico
+        System.out.println("Excluindo associações relacionadas ao médico...");
+        medicoRepository.removerDependenciasMedico(medicoSelecionado.getId());
+    
+        // Excluir o médico
+        medicoRepository.excluirMedico(medicoSelecionado.getId());
+        System.out.println("Médico excluído com sucesso!");
     }
+    
+
 }
