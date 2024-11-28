@@ -135,13 +135,43 @@ public class EspecialidadeMedicoController {
     }
 
     public void deletarEspecialidadeXMedico() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o ID da relação especialidade-médico que deseja excluir: ");
-        String idRelacao = scanner.nextLine();
-
-        Document filtro = new Document("_id", new ObjectId(idRelacao));
-        especialidadeMedicoCollection.deleteOne(filtro);
-        System.out.println("Relação especialidade-médico excluída com sucesso.");
+        // Buscar todas as relações de especialidades com médicos
+        List<EspecialidadeMedico> relacoes = especialidadeMedicoRepository.buscarTodasRelacoes();
+        if (relacoes.isEmpty()) {
+            System.out.println("Nenhuma relação entre médicos e especialidades encontrada para exclusão.");
+            return;
+        }
+    
+        // Exibir as relações disponíveis
+        System.out.println("Selecione a relação que deseja excluir:");
+        for (int i = 0; i < relacoes.size(); i++) {
+            EspecialidadeMedico relacao = relacoes.get(i);
+            System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +
+                    ", Especialidade: " + relacao.getEspecialidade().getNomeEspecialidade());
+        }
+    
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + relacoes.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= relacoes.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+    
+        // Selecionar a relação
+        EspecialidadeMedico relacaoSelecionada = relacoes.get(escolha - 1);
+    
+        // Excluir a relação do repositório
+        especialidadeMedicoRepository.excluirRelacao(relacaoSelecionada.getId());
+        System.out.println("Relação entre médico e especialidade excluída com sucesso!");
     }
+    
 }

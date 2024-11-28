@@ -35,12 +35,25 @@ public class EspecialidadeMedicoRepository {
         while (cursor.hasNext()) {
             Document doc = cursor.next();
 
-            Medico medico = medicoRepository.buscarPorNome(doc.getObjectId("nome").toString());
-            Especialidade especialidade = especialidadeRepository
-                    .buscarPorId(doc.getObjectId("especialidadeId").toString());
+            // Obter IDs de médico e especialidade do documento
+            ObjectId medicoId = doc.getObjectId("medicoId");
+            ObjectId especialidadeId = doc.getObjectId("especialidadeId");
 
-            if (medico != null && especialidade != null) {
-                relacoes.add(new EspecialidadeMedico(doc.getObjectId("_id").toString(), medico, especialidade));
+            if (medicoId != null && especialidadeId != null) {
+                // Buscar médico pelo ID
+                Medico medico = medicoRepository.buscarPorId(medicoId.toString());
+                // Buscar especialidade pelo ID
+                Especialidade especialidade = especialidadeRepository.buscarPorId(especialidadeId.toString());
+
+                // Adicionar à lista se ambos forem encontrados
+                if (medico != null && especialidade != null) {
+                    relacoes.add(new EspecialidadeMedico(doc.getObjectId("_id").toString(), medico, especialidade));
+                } else {
+                    System.err.println(
+                            "Erro ao buscar médico ou especialidade para a relação: " + doc.getObjectId("_id"));
+                }
+            } else {
+                System.err.println("Relação inválida encontrada na coleção: " + doc.toJson());
             }
         }
         cursor.close();
@@ -70,8 +83,14 @@ public class EspecialidadeMedicoRepository {
     }
 
     public void excluirRelacao(String id) {
-        Bson filtro = eq("_id", id);
-        colecao.deleteOne(filtro);
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Certifique-se de usar ObjectId
+            colecao.deleteOne(filtro);
+            System.out.println("Relação excluída com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir relação: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public List<Especialidade> buscarEspecialidadesPorMedico(String medicoId) {

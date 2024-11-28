@@ -37,13 +37,17 @@ public class EspecialidadeRepository {
     }
 
     public Especialidade buscarPorId(String id) {
-        Bson filtro = eq("_id", id);
-        Document doc = colecao.find(filtro).first();
+        try {
+            Bson filtro = eq("_id", new ObjectId(id));
+            Document doc = colecao.find(filtro).first();
 
-        if (doc != null) {
-            return new Especialidade(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("nomeEspecialidade"));
+            if (doc != null) {
+                return new Especialidade(
+                        doc.getObjectId("_id").toString(),
+                        doc.getString("nomeEspecialidade"));
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar especialidade por ID: " + e.getMessage());
         }
         return null;
     }
