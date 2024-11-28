@@ -39,25 +39,48 @@ public class EspecialidadeMedicoRepository {
             ObjectId medicoId = doc.getObjectId("medicoId");
             ObjectId especialidadeId = doc.getObjectId("especialidadeId");
 
-            if (medicoId != null && especialidadeId != null) {
-                // Buscar médico pelo ID
-                Medico medico = medicoRepository.buscarPorId(medicoId.toString());
-                // Buscar especialidade pelo ID
-                Especialidade especialidade = especialidadeRepository.buscarPorId(especialidadeId.toString());
+            // Verificar se ambos IDs existem
+            if (medicoId == null) {
+                System.err.println("Relação inválida: ID do médico está ausente.");
+                continue;
+            }
 
-                // Adicionar à lista se ambos forem encontrados
-                if (medico != null && especialidade != null) {
-                    relacoes.add(new EspecialidadeMedico(doc.getObjectId("_id").toString(), medico, especialidade));
-                } else {
-                    System.err.println(
-                            "Erro ao buscar médico ou especialidade para a relação: " + doc.getObjectId("_id"));
-                }
+            if (especialidadeId == null) {
+                System.err.println("Relação inválida: ID da especialidade está ausente.");
+                continue;
+            }
+
+            // Buscar médico e especialidade pelo ID
+            Medico medico = medicoRepository.buscarPorId(medicoId.toString());
+            Especialidade especialidade = especialidadeRepository.buscarPorId(especialidadeId.toString());
+
+            // Adicionar à lista se ambos forem encontrados
+            if (medico != null && especialidade != null) {
+                relacoes.add(new EspecialidadeMedico(doc.getObjectId("_id").toString(), medico, especialidade));
             } else {
-                System.err.println("Relação inválida encontrada na coleção: " + doc.toJson());
+                System.err.println("Erro ao buscar médico ou especialidade para a relação: " + doc.getObjectId("_id"));
             }
         }
         cursor.close();
         return relacoes;
+    }
+
+    public void atualizarRelacao(EspecialidadeMedico relacaoAtualizada) {
+        try {
+            Bson filtro = eq("_id", new ObjectId(relacaoAtualizada.getId())); // Certifique-se de usar ObjectId
+
+            // Criar documento de atualização
+            Document atualizacao = new Document("$set", new Document()
+                    .append("medicoId", new ObjectId(relacaoAtualizada.getMedico().getId()))
+                    .append("especialidadeId", new ObjectId(relacaoAtualizada.getEspecialidade().getId())));
+
+            // Atualizar no banco de dados
+            colecao.updateOne(filtro, atualizacao);
+            System.out.println("Relação atualizada com sucesso no banco de dados!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar a relação: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public EspecialidadeMedico buscarPorMedicoId(String medicoId) {

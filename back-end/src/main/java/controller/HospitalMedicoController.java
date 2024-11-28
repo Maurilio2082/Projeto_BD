@@ -100,40 +100,83 @@ public class HospitalMedicoController {
     }
 
     public void atualizarMedicoXHospital() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o ID da relação médico-hospital que deseja atualizar: ");
-        String idRelacao = scanner.nextLine();
-
-        Document filtro = new Document("_id", new ObjectId(idRelacao));
-        Document relacaoAtual = hospitalMedicoCollection.find(filtro).first();
-
-        if (relacaoAtual == null) {
-            System.out.println("Relação não encontrada.");
+        // Buscar todas as relações de médicos com hospitais
+        List<HospitalMedico> relacoes = hospitalMedicoRepository.buscarTodasRelacoes();
+        if (relacoes.isEmpty()) {
+            System.out.println("Nenhuma relação entre médicos e hospitais encontrada para atualização.");
             return;
         }
 
-        System.out.println("Deixe os campos em branco para não alterar o valor atual.");
-        System.out.print("Novo ID do hospital: ");
-        String novoHospitalId = scanner.nextLine();
-        System.out.print("Novo ID do médico: ");
-        String novoMedicoId = scanner.nextLine();
-
-        Document atualizacao = new Document();
-        if (!novoHospitalId.isBlank()) {
-            atualizacao.append("hospitalId", new ObjectId(novoHospitalId));
-        }
-        if (!novoMedicoId.isBlank()) {
-            atualizacao.append("medicoId", new ObjectId(novoMedicoId));
+        // Exibir as relações disponíveis
+        System.out.println("Selecione a relação que deseja atualizar:");
+        for (int i = 0; i < relacoes.size(); i++) {
+            HospitalMedico relacao = relacoes.get(i);
+            System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +
+                    ", Hospital: " + relacao.getHospital().getRazaoSocial());
         }
 
-        if (atualizacao.isEmpty()) {
-            System.out.println("Nenhuma alteração realizada.");
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + relacoes.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= relacoes.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        // Selecionar a relação
+        HospitalMedico relacaoSelecionada = relacoes.get(escolha - 1);
+
+        // Exibir o hospital atual
+        System.out.println("Hospital atual: " + relacaoSelecionada.getHospital().getRazaoSocial());
+
+        // Listar hospitais disponíveis
+        List<Hospital> hospitais = hospitalRepository.buscarTodosHospitais();
+        if (hospitais.isEmpty()) {
+            System.out.println("Nenhum hospital encontrado.");
             return;
         }
 
-        hospitalMedicoCollection.updateOne(filtro, new Document("$set", atualizacao));
-        System.out.println("Relação médico-hospital atualizada com sucesso.");
+        System.out.println("Selecione o novo hospital:");
+        for (int i = 0; i < hospitais.size(); i++) {
+            Hospital hospital = hospitais.get(i);
+            System.out.println((i + 1) + " - " + hospital.getRazaoSocial());
+        }
+
+        int escolhaHospital;
+        while (true) {
+            System.out.print("Escolha o número do hospital: ");
+            try {
+                escolhaHospital = Integer.parseInt(scanner.nextLine());
+                if (escolhaHospital >= 1 && escolhaHospital <= hospitais.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        Hospital hospitalAtualizado = hospitais.get(escolhaHospital - 1);
+
+        // Criar a relação atualizada
+        HospitalMedico relacaoAtualizada = new HospitalMedico(
+                relacaoSelecionada.getId(),
+                hospitalAtualizado,
+                relacaoSelecionada.getMedico() // Mantém o médico atual
+        );
+
+        // Atualizar no repositório
+        hospitalMedicoRepository.atualizarRelacao(relacaoAtualizada);
+        System.out.println("Relação médico-hospital atualizada com sucesso!");
     }
 
     public void deletarMedicoXHospital() {

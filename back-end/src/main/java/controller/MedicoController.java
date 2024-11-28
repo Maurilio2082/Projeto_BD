@@ -1,24 +1,19 @@
 package controller;
 
-import model.Especialidade;
 import model.Medico;
-import utils.RemoverDependencia;
 
 import java.util.List;
 import java.util.Scanner;
 
-import Repository.EspecialidadeRepository;
 import Repository.MedicoRepository;
 
 public class MedicoController {
 
     private final MedicoRepository medicoRepository;
-    private final EspecialidadeRepository especialidadeRepository;
     private final Scanner scanner;
 
     public MedicoController() {
         this.medicoRepository = new MedicoRepository();
-        this.especialidadeRepository = new EspecialidadeRepository();
         this.scanner = new Scanner(System.in);
     }
 

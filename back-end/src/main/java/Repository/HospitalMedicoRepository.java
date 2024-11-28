@@ -28,6 +28,24 @@ public class HospitalMedicoRepository {
         this.medicoRepository = new MedicoRepository();
     }
 
+    public void atualizarRelacao(HospitalMedico relacaoAtualizada) {
+        try {
+            Bson filtro = eq("_id", new ObjectId(relacaoAtualizada.getId())); // Certifique-se de usar ObjectId
+
+            // Criar documento de atualização
+            Document atualizacao = new Document("$set", new Document()
+                    .append("hospitalId", new ObjectId(relacaoAtualizada.getHospital().getId()))
+                    .append("medicoId", new ObjectId(relacaoAtualizada.getMedico().getId())));
+
+            // Atualizar no banco de dados
+            colecao.updateOne(filtro, atualizacao);
+            System.out.println("Relação médico-hospital atualizada com sucesso no banco de dados!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar a relação: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public List<HospitalMedico> buscarTodasRelacoes() {
         List<HospitalMedico> relacoes = new ArrayList<>();
         MongoCursor<Document> cursor = colecao.find().iterator();
