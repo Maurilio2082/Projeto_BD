@@ -137,13 +137,41 @@ public class HospitalMedicoController {
     }
 
     public void deletarMedicoXHospital() {
-        Scanner scanner = new Scanner(System.in);
+        // Buscar todas as relações
+        List<HospitalMedico> relacoes = hospitalMedicoRepository.buscarTodasRelacoes();
+        if (relacoes.isEmpty()) {
+            System.out.println("Nenhuma relação entre médicos e hospitais encontrada para exclusão.");
+            return;
+        }
 
-        System.out.print("Digite o ID da relação médico-hospital que deseja excluir: ");
-        String idRelacao = scanner.nextLine();
+        // Exibir as relações para o usuário
+        System.out.println("Selecione a relação médico-hospital que deseja excluir:");
+        for (int i = 0; i < relacoes.size(); i++) {
+            HospitalMedico relacao = relacoes.get(i);
+            System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +
+                    " | Hospital: " + relacao.getHospital().getRazaoSocial());
+        }
 
-        Document filtro = new Document("_id", new ObjectId(idRelacao));
-        hospitalMedicoCollection.deleteOne(filtro);
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + relacoes.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= relacoes.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        // Selecionar a relação e excluir
+        HospitalMedico relacaoSelecionada = relacoes.get(escolha - 1);
+        hospitalMedicoRepository.excluirRelacao(relacaoSelecionada.getId());
         System.out.println("Relação médico-hospital excluída com sucesso.");
     }
+
 }

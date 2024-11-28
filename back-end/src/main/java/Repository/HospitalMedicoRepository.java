@@ -34,11 +34,21 @@ public class HospitalMedicoRepository {
 
         while (cursor.hasNext()) {
             Document doc = cursor.next();
-            Hospital hospital = hospitalRepository.buscarPorCnpj(doc.getObjectId("cnpj").toString());
-            Medico medico = medicoRepository.buscarPorNome(doc.getObjectId("nome").toString());
 
-            if (hospital != null && medico != null) {
-                relacoes.add(new HospitalMedico(doc.getObjectId("_id").toString(), hospital, medico));
+            ObjectId hospitalId = doc.getObjectId("hospitalId");
+            ObjectId medicoId = doc.getObjectId("medicoId");
+
+            if (hospitalId != null && medicoId != null) {
+                Hospital hospital = hospitalRepository.buscarPorId(hospitalId.toString());
+                Medico medico = medicoRepository.buscarPorId(medicoId.toString());
+
+                if (hospital != null && medico != null) {
+                    relacoes.add(new HospitalMedico(doc.getObjectId("_id").toString(), hospital, medico));
+                } else {
+                    System.err.println("Erro ao buscar hospital ou médico para a relação: " + doc.getObjectId("_id"));
+                }
+            } else {
+                System.err.println("Relação inválida encontrada na coleção: " + doc.toJson());
             }
         }
         cursor.close();
@@ -66,13 +76,13 @@ public class HospitalMedicoRepository {
         System.out.println("Relação entre hospital e médico inserida com sucesso!");
     }
 
-    public void excluirMedico(String id) {
+    public void excluirRelacao(String id) {
         try {
-            Bson filtro = eq("_id", new ObjectId(id)); 
+            Bson filtro = eq("_id", new ObjectId(id));
             colecao.deleteOne(filtro);
-            System.out.println("Médico excluído com sucesso!");
+            System.out.println("Relação excluída com sucesso!");
         } catch (Exception e) {
-            System.err.println("Erro ao excluir médico: " + e.getMessage());
+            System.err.println("Erro ao excluir relação: " + e.getMessage());
             e.printStackTrace();
         }
     }

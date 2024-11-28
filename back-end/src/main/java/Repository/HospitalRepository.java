@@ -77,6 +77,30 @@ public class HospitalRepository {
         return null;
     }
 
+    public Hospital buscarPorId(String id) {
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Filtro para buscar pelo ID do hospital
+            Document doc = colecao.find(filtro).first();
+
+            if (doc != null) {
+                Endereco endereco = enderecoRepository.buscarPorId(doc.getString("enderecoId")); // Busca o endereço
+                                                                                                 // associado
+                return new Hospital(
+                        doc.getObjectId("_id").toString(),
+                        doc.getString("razaoSocial"),
+                        doc.getString("cnpj"),
+                        doc.getString("email"),
+                        doc.getString("telefone"),
+                        doc.getString("categoria"),
+                        endereco);
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar hospital por ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null; // Retorna null caso o hospital não seja encontrado
+    }
+
     public void inserirHospital(Hospital hospital) {
         Document documento = new Document("razaoSocial", hospital.getRazaoSocial())
                 .append("cnpj", hospital.getCnpj())
