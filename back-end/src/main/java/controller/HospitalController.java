@@ -3,6 +3,7 @@ package controller;
 import model.Hospital;
 import model.Endereco;
 
+import java.util.List;
 import java.util.Scanner;
 
 import Repository.HospitalRepository;
@@ -77,8 +78,57 @@ public class HospitalController {
     }
 
     public void deletarHospital() {
-        System.out.print("Digite o ID do hospital que deseja excluir: ");
-        String id = scanner.nextLine();
-        repository.excluirHospital(id);
+        // Listar todos os hospitais
+        List<Hospital> hospitais = repository.buscarTodosHospitais();
+        if (hospitais.isEmpty()) {
+            System.out.println("Nenhum hospital encontrado para exclusão.");
+            return;
+        }
+    
+        // Exibir a lista de hospitais
+        System.out.println("Selecione o hospital que deseja excluir:");
+        for (int i = 0; i < hospitais.size(); i++) {
+            Hospital hospital = hospitais.get(i);
+            System.out.println((i + 1) + " - " + hospital.getRazaoSocial() + " (CNPJ: " + hospital.getCnpj() + ")");
+        }
+    
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + hospitais.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= hospitais.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+    
+        // Selecionar o hospital
+        Hospital hospitalSelecionado = hospitais.get(escolha - 1);
+    
+        // Verificar e excluir o endereço associado
+        Endereco enderecoAssociado = hospitalSelecionado.getEndereco();
+        if (enderecoAssociado != null && enderecoAssociado.getId() != null
+                && enderecoAssociado.getId().length() == 24) {
+            try {
+                enderecoController.excluirEndereco(enderecoAssociado.getId());
+                System.out.println("Endereço associado excluído com sucesso.");
+            } catch (Exception e) {
+                System.err.println("Erro ao excluir o endereço associado: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Nenhum endereço válido associado encontrado para exclusão.");
+        }
+    
+        // Excluir o hospital
+        repository.excluirHospital(hospitalSelecionado.getId());
+        System.out.println("Hospital excluído com sucesso!");
     }
+    
+
 }

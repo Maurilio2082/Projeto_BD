@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,20 @@ public class HospitalRepository {
     public List<Hospital> buscarTodosHospitais() {
         MongoCursor<Document> cursor = colecao.find().iterator();
         List<Hospital> hospitais = new ArrayList<>();
+        EnderecoRepository enderecoRepository = new EnderecoRepository();
 
         while (cursor.hasNext()) {
             Document doc = cursor.next();
-            Endereco endereco = enderecoRepository.buscarPorId(doc.getString("endereco._id"));
+
+            String enderecoId = doc.getString("enderecoId");
+            Endereco endereco = null;
+
+            // Verificar se o enderecoId é válido antes de buscar o endereço
+            if (enderecoId != null && enderecoId.length() == 24) {
+                endereco = enderecoRepository.buscarPorId(enderecoId);
+            } else {
+                System.err.println("ID de endereço inválido ou ausente para hospital: " + doc.getString("razaoSocial"));
+            }
 
             hospitais.add(new Hospital(
                     doc.getObjectId("_id").toString(),
@@ -39,7 +50,7 @@ public class HospitalRepository {
                     doc.getString("email"),
                     doc.getString("telefone"),
                     doc.getString("categoria"),
-                    endereco // Passar o objeto Endereco
+                    endereco // Passar o objeto Endereco, pode ser nulo
             ));
         }
         cursor.close();
@@ -90,9 +101,14 @@ public class HospitalRepository {
     }
 
     public void excluirHospital(String id) {
-        Bson filtro = eq("_id", id);
-        colecao.deleteOne(filtro);
-        System.out.println("Hospital excluído com sucesso!");
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Certifique-se de usar ObjectId para IDs no MongoDB
+            colecao.deleteOne(filtro);
+            System.out.println("Hospital excluído com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir hospital: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
-    
+
 }
