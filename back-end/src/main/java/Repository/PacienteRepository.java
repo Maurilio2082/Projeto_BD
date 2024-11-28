@@ -119,4 +119,31 @@ public class PacienteRepository {
         }
     }
 
+    public Paciente buscarPorId(String id) {
+        try {
+            Bson filtro = eq("_id", new ObjectId(id)); // Filtro para buscar pelo ID do paciente
+            Document doc = colecao.find(filtro).first();
+
+            if (doc != null) {
+                EnderecoRepository enderecoRepository = new EnderecoRepository();
+                Endereco endereco = enderecoRepository.buscarPorId(doc.getString("enderecoId")); // Busca o endereço
+                                                                                                 // associado
+
+                return new Paciente(
+                        doc.getObjectId("_id").toString(),
+                        doc.getString("nome"),
+                        doc.getString("email"),
+                        doc.getString("telefone"),
+                        doc.getString("dataNascimento"),
+                        doc.getString("cpf"),
+                        endereco // Endereço associado ao paciente
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar paciente por ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null; // Retorna null caso o paciente não seja encontrado
+    }
+
 }

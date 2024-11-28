@@ -20,96 +20,139 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class HistoricoRepository {
 
-    private final MongoCollection<Document> colecao;
+        private final MongoCollection<Document> colecao;
 
-    public HistoricoRepository() {
-        this.colecao = DatabaseConfig.getDatabase().getCollection("historicos");
-    }
-
-    public List<Historico> buscarTodosHistoricos() {
-        MongoCursor<Document> cursor = colecao.find().iterator();
-        List<Historico> historicos = new ArrayList<>();
-
-        while (cursor.hasNext()) {
-            Document doc = cursor.next();
-
-            Paciente paciente = new Paciente(
-                    doc.getObjectId("pacienteId").toString(),
-                    null, null, null, null, null, null);
-
-            Hospital hospital = new Hospital(
-                    doc.getObjectId("hospitalId").toString(),
-                    null, null, null, null, null, null);
-
-            Medico medico = new Medico(
-                    doc.getObjectId("medicoId").toString(),
-                    null, null, null);
-
-            Especialidade especialidade = new Especialidade(
-                    doc.getObjectId("especialidadeId").toString(),
-                    null);
-
-            historicos.add(new Historico(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("dataConsulta"),
-                    doc.getString("observacao"),
-                    paciente,
-                    hospital,
-                    medico,
-                    especialidade));
+        public HistoricoRepository() {
+                this.colecao = DatabaseConfig.getDatabase().getCollection("historicos");
         }
-        cursor.close();
-        return historicos;
-    }
 
-    public Historico buscarPorId(String id) {
-        Bson filtro = eq("_id", new ObjectId(id));
-        Document doc = colecao.find(filtro).first();
+        public List<Historico> buscarTodosHistoricos() {
+                MongoCursor<Document> cursor = colecao.find().iterator();
+                List<Historico> historicos = new ArrayList<>();
 
-        if (doc != null) {
-            Paciente paciente = new Paciente(
-                    doc.getObjectId("pacienteId").toString(),
-                    null, null, null, null, null, null);
+                PacienteRepository pacienteRepository = new PacienteRepository();
+                HospitalRepository hospitalRepository = new HospitalRepository();
+                MedicoRepository medicoRepository = new MedicoRepository();
+                EspecialidadeRepository especialidadeRepository = new EspecialidadeRepository();
 
-            Hospital hospital = new Hospital(
-                    doc.getObjectId("hospitalId").toString(),
-                    null, null, null, null, null, null);
+                while (cursor.hasNext()) {
+                        Document doc = cursor.next();
 
-            Medico medico = new Medico(
-                    doc.getObjectId("medicoId").toString(),
-                    null, null, null);
+                        // Buscar paciente
+                        Paciente paciente = pacienteRepository.buscarPorId(doc.getObjectId("pacienteId").toString());
 
-            Especialidade especialidade = new Especialidade(
-                    doc.getObjectId("especialidadeId").toString(),
-                    null);
+                        // Buscar hospital
+                        Hospital hospital = hospitalRepository.buscarPorId(doc.getObjectId("hospitalId").toString());
 
-            return new Historico(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("dataConsulta"),
-                    doc.getString("observacao"),
-                    paciente,
-                    hospital,
-                    medico,
-                    especialidade);
+                        // Buscar médico
+                        Medico medico = medicoRepository.buscarPorId(doc.getObjectId("medicoId").toString());
+
+                        // Buscar especialidade
+                        Especialidade especialidade = especialidadeRepository
+                                        .buscarPorId(doc.getObjectId("especialidadeId").toString());
+
+                        if (paciente != null && hospital != null && medico != null && especialidade != null) {
+                                historicos.add(new Historico(
+                                                doc.getObjectId("_id").toString(),
+                                                doc.getString("dataConsulta"),
+                                                doc.getString("observacao"),
+                                                paciente,
+                                                hospital,
+                                                medico,
+                                                especialidade));
+                        } else {
+                                System.err.println("Erro ao buscar dados relacionados para o histórico ID: "
+                                                + doc.getObjectId("_id"));
+                        }
+                }
+                cursor.close();
+                return historicos;
         }
-        return null;
-    }
 
-    public void inserirHistorico(Historico historico) {
-        Document documento = new Document("dataConsulta", historico.getDataConsulta())
-                .append("observacao", historico.getObservacao())
-                .append("pacienteId", new ObjectId(historico.getPaciente().getId()))
-                .append("hospitalId", new ObjectId(historico.getHospital().getId()))
-                .append("medicoId", new ObjectId(historico.getMedico().getId()))
-                .append("especialidadeId", new ObjectId(historico.getEspecialidade().getId()));
+        public Historico buscarPorId(String id) {
+                Bson filtro = eq("_id", new ObjectId(id));
+                Document doc = colecao.find(filtro).first();
 
-        colecao.insertOne(documento);
-        System.out.println("Histórico inserido com sucesso!");
-    }
+                if (doc != null) {
+                        PacienteRepository pacienteRepository = new PacienteRepository();
+                        HospitalRepository hospitalRepository = new HospitalRepository();
+                        MedicoRepository medicoRepository = new MedicoRepository();
+                        EspecialidadeRepository especialidadeRepository = new EspecialidadeRepository();
 
-    public void excluirHistorico(String id) {
-        Bson filtro = eq("_id", id);
-        colecao.deleteOne(filtro);
-        System.out.println("Histórico excluído com sucesso!");
-    }
+                        // Buscar paciente
+                        Paciente paciente = pacienteRepository.buscarPorId(doc.getObjectId("pacienteId").toString());
+
+                        // Buscar hospital
+                        Hospital hospital = hospitalRepository.buscarPorId(doc.getObjectId("hospitalId").toString());
+
+                        // Buscar médico
+                        Medico medico = medicoRepository.buscarPorId(doc.getObjectId("medicoId").toString());
+
+                        // Buscar especialidade
+                        Especialidade especialidade = especialidadeRepository
+                                        .buscarPorId(doc.getObjectId("especialidadeId").toString());
+
+                        if (paciente != null && hospital != null && medico != null && especialidade != null) {
+                                return new Historico(
+                                                doc.getObjectId("_id").toString(),
+                                                doc.getString("dataConsulta"),
+                                                doc.getString("observacao"),
+                                                paciente,
+                                                hospital,
+                                                medico,
+                                                especialidade);
+                        } else {
+                                System.err.println("Erro ao buscar dados relacionados para o histórico ID: "
+                                                + doc.getObjectId("_id"));
+                        }
+                }
+                return null;
+        }
+
+        public void inserirHistorico(Historico historico) {
+                Document documento = new Document("dataConsulta", historico.getDataConsulta())
+                                .append("observacao", historico.getObservacao())
+                                .append("pacienteId", new ObjectId(historico.getPaciente().getId()))
+                                .append("hospitalId", new ObjectId(historico.getHospital().getId()))
+                                .append("medicoId", new ObjectId(historico.getMedico().getId()))
+                                .append("especialidadeId", new ObjectId(historico.getEspecialidade().getId()));
+
+                colecao.insertOne(documento);
+                System.out.println("Histórico inserido com sucesso!");
+        }
+
+        public void excluirHistorico(String id) {
+                try {
+                        Bson filtro = eq("_id", new ObjectId(id));
+                        colecao.deleteOne(filtro);
+                        System.out.println("Histórico excluído com sucesso!");
+                } catch (Exception e) {
+                        System.err.println("Erro ao excluir histórico: " + e.getMessage());
+                        e.printStackTrace();
+                }
+        }
+
+        public void atualizarHistorico(Historico historicoAtualizado) {
+                try {
+                        Bson filtro = eq("_id", new ObjectId(historicoAtualizado.getId()));
+
+                        // Criar o documento de atualização
+                        Document atualizacao = new Document("$set", new Document()
+                                        .append("dataConsulta", historicoAtualizado.getDataConsulta())
+                                        .append("observacao", historicoAtualizado.getObservacao())
+                                        .append("pacienteId", new ObjectId(historicoAtualizado.getPaciente().getId()))
+                                        .append("hospitalId", new ObjectId(historicoAtualizado.getHospital().getId()))
+                                        .append("medicoId", new ObjectId(historicoAtualizado.getMedico().getId()))
+                                        .append("especialidadeId",
+                                                        new ObjectId(historicoAtualizado.getEspecialidade().getId())));
+
+                        // Atualizar no banco de dados
+                        colecao.updateOne(filtro, atualizacao);
+                        System.out.println("Histórico atualizado com sucesso no banco de dados!");
+                } catch (Exception e) {
+                        System.err.println("Erro ao atualizar o histórico: " + e.getMessage());
+                        e.printStackTrace();
+                }
+        }
+
 }
