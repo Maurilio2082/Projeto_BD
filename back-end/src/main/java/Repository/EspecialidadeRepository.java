@@ -71,10 +71,20 @@ public class EspecialidadeRepository {
     }
 
     public void atualizarEspecialidade(String id, String novoNome) {
-        Bson filtro = eq("_id", id);
-        Document atualizacao = new Document("$set", new Document("nomeEspecialidade", novoNome));
-        colecao.updateOne(filtro, atualizacao);
-        System.out.println("Especialidade atualizada com sucesso!");
+        try {
+            // Converter o ID para ObjectId para o MongoDB
+            Bson filtro = eq("_id", new ObjectId(id));
+
+            // Definir os campos a serem atualizados
+            Document atualizacao = new Document("$set", new Document("nomeEspecialidade", novoNome));
+
+            // Executar a atualização
+            colecao.updateOne(filtro, atualizacao);
+            System.out.println("Especialidade atualizada com sucesso no banco de dados!");
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar a especialidade no banco de dados: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void excluirEspecialidade(String id) {

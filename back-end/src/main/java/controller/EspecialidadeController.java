@@ -56,20 +56,50 @@ public class EspecialidadeController {
     }
 
     public void atualizarEspecialidade() {
-        System.out.print("Digite o ID da especialidade: ");
-        String id = scanner.nextLine();
-        Especialidade especialidadeAtual = repository.buscarPorId(id);
-
-        if (especialidadeAtual == null) {
-            System.out.println("Especialidade não encontrada.");
+        // Listar todas as especialidades
+        List<Especialidade> especialidades = repository.buscarTodasEspecialidades();
+        if (especialidades.isEmpty()) {
+            System.out.println("Nenhuma especialidade encontrada para atualização.");
             return;
         }
 
-        System.out.print("Digite o novo nome da especialidade (ou deixe em branco para manter o atual): ");
+        // Exibir a lista de especialidades
+        System.out.println("Selecione a especialidade que deseja atualizar:");
+        for (int i = 0; i < especialidades.size(); i++) {
+            Especialidade especialidade = especialidades.get(i);
+            System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
+        }
+
+        // Obter a escolha do usuário
+        int escolha;
+        while (true) {
+            System.out.print("Escolha uma opção [1-" + especialidades.size() + "]: ");
+            try {
+                escolha = Integer.parseInt(scanner.nextLine());
+                if (escolha >= 1 && escolha <= especialidades.size()) {
+                    break;
+                } else {
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        // Selecionar a especialidade para atualizar
+        Especialidade especialidadeSelecionada = especialidades.get(escolha - 1);
+
+        // Solicitar os novos dados
+        System.out.println("Atualize os dados da especialidade selecionada (ou deixe em branco para manter o atual):");
+        System.out.print("Novo nome para a especialidade [" + especialidadeSelecionada.getNomeEspecialidade() + "]: ");
         String novoNome = scanner.nextLine();
 
-        String nomeAtualizado = novoNome.isEmpty() ? especialidadeAtual.getNomeEspecialidade() : novoNome;
-        repository.atualizarEspecialidade(id, nomeAtualizado);
+        // Atualizar somente os campos alterados
+        String nomeAtualizado = novoNome.isEmpty() ? especialidadeSelecionada.getNomeEspecialidade() : novoNome;
+
+        // Atualizar no repositório
+        repository.atualizarEspecialidade(especialidadeSelecionada.getId(), nomeAtualizado);
+        System.out.println("Especialidade atualizada com sucesso!");
     }
 
     public void deletarEspecialidade() {
