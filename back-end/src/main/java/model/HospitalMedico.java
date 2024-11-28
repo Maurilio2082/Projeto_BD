@@ -3,21 +3,21 @@ package model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "hospital_medico") // Nome da coleção no MongoDB
+@Document(collection = "hospitais_medicos")
 public class HospitalMedico {
 
     @Id
-    private String id; // Identificador único no MongoDB
-    private String hospitalId; // Referência ao ID do hospital no MongoDB
-    private String medicoId; // Referência ao ID do médico no MongoDB
+    private String id; 
+    private Hospital hospital; 
+    private Medico medico; 
 
     public HospitalMedico() {
     }
 
-    public HospitalMedico(String id, String hospitalId, String medicoId) {
+    public HospitalMedico(String id, Hospital hospital, Medico medico) {
         this.id = id;
-        this.hospitalId = hospitalId;
-        this.medicoId = medicoId;
+        this.hospital = hospital;
+        this.medico = medico;
     }
 
     public String getId() {
@@ -28,24 +28,24 @@ public class HospitalMedico {
         this.id = id;
     }
 
-    public String getHospitalId() {
-        return hospitalId;
+    public Hospital getHospital() {
+        return hospital;
     }
 
-    public void setHospitalId(String hospitalId) {
-        this.hospitalId = hospitalId;
+    public void setHospital(Hospital hospital) {
+        this.hospital = hospital;
     }
 
-    public String getMedicoId() {
-        return medicoId;
+    public Medico getMedico() {
+        return medico;
     }
 
-    public void setMedicoId(String medicoId) {
-        this.medicoId = medicoId;
+    public void setMedico(Medico medico) {
+        this.medico = medico;
     }
 
     @Override
     public String toString() {
-        return "HospitalMedico [id=" + id + ", hospitalId=" + hospitalId + ", medicoId=" + medicoId + "]";
+        return "HospitalMedico [id=" + id + ", hospital=" + hospital + ", medico=" + medico + "]";
     }
 }

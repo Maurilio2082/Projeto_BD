@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +63,7 @@ public class MedicoRepository {
 
     public void inserirMedico(Medico medico) {
         Document documento = new Document("nome", medico.getNome())
-                .append("conselho", medico.getConselho())
-                .append("especialidadeId", medico.getEspecialidade().getId()); // Salva apenas o ID da especialidade
+                .append("conselho", medico.getConselho());
         colecao.insertOne(documento);
         System.out.println("Médico inserido com sucesso!");
     }
@@ -83,4 +83,44 @@ public class MedicoRepository {
         colecao.deleteOne(filtro);
         System.out.println("Médico excluído com sucesso!");
     }
+
+    public List<Medico> buscarMedicosPorHospital(String hospitalId) {
+        MongoCollection<Document> colecaoHospitalMedico = DatabaseConfig.getDatabase()
+                .getCollection("hospitais_medicos");
+
+        // Busca os médicos associados ao hospital
+        List<Medico> medicos = new ArrayList<>();
+        Bson filtro = eq("hospitalId", new ObjectId(hospitalId));
+        MongoCursor<Document> cursor = colecaoHospitalMedico.find(filtro).iterator();
+
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            String medicoId = doc.getObjectId("medicoId").toString();
+
+            // Busca o médico pelo ID
+            Medico medico = buscarPorId(medicoId);
+            if (medico != null) {
+                medicos.add(medico);
+            }
+        }
+        cursor.close();
+        return medicos;
+    }
+
+    public Medico buscarPorId(String id) {
+        Bson filtro = eq("_id", new ObjectId(id));
+        Document doc = colecao.find(filtro).first();
+
+        if (doc != null) {
+            return new Medico(
+                    doc.getObjectId("_id").toString(),
+                    doc.getString("nome"),
+                    doc.getString("conselho"),
+                    null // Se necessário, passe null para especialidade, pois será configurada em outro
+                         // momento
+            );
+        }
+        return null;
+    }
+
 }

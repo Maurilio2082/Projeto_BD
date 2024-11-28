@@ -103,14 +103,18 @@ public class ImprimirRelatorios {
             System.out.println(linha);
 
             for (Document registro : hospitalMedicos) {
-                String medicoNome = registro.getString("medicoNome");
-                String hospitalNome = registro.getString("hospitalNome");
-                String categoria = registro.getString("categoria");
+                // Acessa diretamente os campos do documento principal
+                String medicoNome = registro.getString("medicoNome") != null ? registro.getString("medicoNome") : "N/A";
+                String hospitalNome = registro.getString("hospitalNome") != null ? registro.getString("hospitalNome")
+                        : "N/A";
+                String categoria = registro.getString("hospitalCategoria") != null
+                        ? registro.getString("hospitalCategoria")
+                        : "N/A";
 
                 System.out.format(formatarLinha,
-                        medicoNome != null ? medicoNome : "N/A",
-                        hospitalNome != null ? hospitalNome : "N/A",
-                        categoria != null ? categoria : "N/A");
+                        medicoNome,
+                        hospitalNome,
+                        categoria);
             }
 
             System.out.println(linha);
@@ -135,7 +139,7 @@ public class ImprimirRelatorios {
             System.out.println(linha);
 
             for (Document registro : agrupamentoEspecialidades) {
-                String especialidadeNome = registro.getString("especialidadeNome");
+                String especialidadeNome = registro.getString("nomeEspecialidade");
                 Integer quantidadeMedicos = registro.getInteger("quantidadeMedicos", 0);
 
                 System.out.format(formatarLinha,
@@ -289,19 +293,20 @@ public class ImprimirRelatorios {
                 String id = historico.getObjectId("_id").toString();
                 String dataConsulta = historico.getString("dataConsulta");
 
-                List<Document> pacienteInfo = getList(historico, "pacienteInfo");
-                List<Document> medicoInfo = getList(historico, "medicoInfo");
-                List<Document> especialidadeInfo = getList(historico, "especialidadeInfo");
-                List<Document> hospitalInfo = getList(historico, "hospitalInfo");
+                // Recupera as informações relacionadas como um único Document
+                Document paciente = historico.get("pacienteInfo", Document.class);
+                Document medico = historico.get("medicoInfo", Document.class);
+                Document especialidade = historico.get("especialidadeInfo", Document.class);
+                Document hospital = historico.get("hospitalInfo", Document.class);
 
                 System.out.format(formatarLinha,
                         id,
                         dataConsulta != null ? dataConsulta : "N/A",
-                        pacienteInfo.isEmpty() ? "N/A" : pacienteInfo.get(0).getString("nome"),
-                        medicoInfo.isEmpty() ? "N/A" : medicoInfo.get(0).getString("nome"),
-                        especialidadeInfo.isEmpty() ? "N/A" : especialidadeInfo.get(0).getString("nomeEspecialidade"),
-                        hospitalInfo.isEmpty() ? "N/A" : hospitalInfo.get(0).getString("razaoSocial"),
-                        hospitalInfo.isEmpty() ? "N/A" : hospitalInfo.get(0).getString("categoria"),
+                        paciente != null ? paciente.getString("nome") : "N/A",
+                        medico != null ? medico.getString("nome") : "N/A",
+                        especialidade != null ? especialidade.getString("nomeEspecialidade") : "N/A",
+                        hospital != null ? hospital.getString("razaoSocial") : "N/A",
+                        hospital != null ? hospital.getString("categoria") : "N/A",
                         historico.getString("observacao") != null ? historico.getString("observacao") : "N/A");
             }
 

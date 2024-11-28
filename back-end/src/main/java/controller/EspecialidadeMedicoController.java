@@ -2,32 +2,99 @@ package controller;
 
 import com.mongodb.client.MongoCollection;
 import conexion.DatabaseConfig;
+import model.Especialidade;
+import model.EspecialidadeMedico;
+import model.Medico;
+import Repository.EspecialidadeRepository;
+import Repository.MedicoRepository;
+import Repository.EspecialidadeMedicoRepository;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class EspecialidadeMedicoController {
 
+    private final EspecialidadeRepository especialidadeRepository;
+    private final MedicoRepository medicoRepository;
+    private final EspecialidadeMedicoRepository especialidadeMedicoRepository;
     private final MongoCollection<Document> especialidadeMedicoCollection;
+    private final Scanner scanner;
 
     public EspecialidadeMedicoController() {
-        this.especialidadeMedicoCollection = DatabaseConfig.getDatabase().getCollection("especialidade_medico");
+        this.especialidadeRepository = new EspecialidadeRepository();
+        this.medicoRepository = new MedicoRepository();
+        this.especialidadeMedicoRepository = new EspecialidadeMedicoRepository();
+        this.especialidadeMedicoCollection = DatabaseConfig.getDatabase().getCollection("especialidades_medicos");
+        this.scanner = new Scanner(System.in);
     }
 
     public void cadastrarEspecialidadeXMedico() {
-        Scanner scanner = new Scanner(System.in);
+        // Listar médicos disponíveis
+        List<Medico> medicos = medicoRepository.buscarTodosMedicos();
+        if (medicos.isEmpty()) {
+            System.out.println("Nenhum médico encontrado.");
+            return;
+        }
 
-        System.out.print("ID da especialidade: ");
-        String especialidadeId = scanner.nextLine();
-        System.out.print("ID do médico: ");
-        String medicoId = scanner.nextLine();
+        System.out.println("Selecione o médico:");
+        for (int i = 0; i < medicos.size(); i++) {
+            Medico medico = medicos.get(i);
+            System.out.println((i + 1) + " - " + medico.getNome());
+        }
 
-        Document relacao = new Document("especialidadeId", new ObjectId(especialidadeId))
-                .append("medicoId", new ObjectId(medicoId));
+        int escolhaMedico;
+        while (true) {
+            System.out.print("Escolha o número do médico: ");
+            try {
+                escolhaMedico = Integer.parseInt(scanner.nextLine());
+                if (escolhaMedico >= 1 && escolhaMedico <= medicos.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
 
-        especialidadeMedicoCollection.insertOne(relacao);
-        System.out.println("Relação especialidade-médico cadastrada com sucesso.");
+        Medico medicoEscolhido = medicos.get(escolhaMedico - 1);
+
+        // Listar especialidades disponíveis
+        List<Especialidade> especialidades = especialidadeRepository.buscarTodasEspecialidades();
+        if (especialidades.isEmpty()) {
+            System.out.println("Nenhuma especialidade encontrada.");
+            return;
+        }
+
+        System.out.println("Selecione a especialidade:");
+        for (int i = 0; i < especialidades.size(); i++) {
+            Especialidade especialidade = especialidades.get(i);
+            System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
+        }
+
+        int escolhaEspecialidade;
+        while (true) {
+            System.out.print("Escolha o número da especialidade: ");
+            try {
+                escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
+                if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        Especialidade especialidadeEscolhida = especialidades.get(escolhaEspecialidade - 1);
+
+        // Relacionar médico e especialidade
+        EspecialidadeMedico relacao = new EspecialidadeMedico(medicoEscolhido, especialidadeEscolhida);
+        especialidadeMedicoRepository.inserirRelacao(relacao);
+        System.out.println("Relacionamento entre médico e especialidade cadastrado com sucesso!");
     }
 
     public void atualizarEspecialidadeXMedico() {

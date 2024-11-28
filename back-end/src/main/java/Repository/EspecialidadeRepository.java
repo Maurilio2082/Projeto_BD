@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,35 +30,32 @@ public class EspecialidadeRepository {
             Document doc = cursor.next();
             especialidades.add(new Especialidade(
                     doc.getObjectId("_id").toString(),
-                    doc.getString("nomeEspecialidade")
-            ));
+                    doc.getString("nomeEspecialidade")));
         }
         cursor.close();
         return especialidades;
     }
 
     public Especialidade buscarPorId(String id) {
-        Bson filtro = eq("_id", id); 
+        Bson filtro = eq("_id", id);
         Document doc = colecao.find(filtro).first();
 
         if (doc != null) {
             return new Especialidade(
                     doc.getObjectId("_id").toString(),
-                    doc.getString("nomeEspecialidade")
-            );
+                    doc.getString("nomeEspecialidade"));
         }
         return null;
     }
 
     public Especialidade buscarPorNome(String nome) {
-        Bson filtro = eq("nomeEspecialidade", nome); 
+        Bson filtro = eq("nomeEspecialidade", nome);
         Document doc = colecao.find(filtro).first();
 
         if (doc != null) {
             return new Especialidade(
                     doc.getObjectId("_id").toString(),
-                    doc.getString("nomeEspecialidade")
-            );
+                    doc.getString("nomeEspecialidade"));
         }
         return null;
     }
@@ -69,15 +67,28 @@ public class EspecialidadeRepository {
     }
 
     public void atualizarEspecialidade(String id, String novoNome) {
-        Bson filtro = eq("_id", id); 
+        Bson filtro = eq("_id", id);
         Document atualizacao = new Document("$set", new Document("nomeEspecialidade", novoNome));
         colecao.updateOne(filtro, atualizacao);
         System.out.println("Especialidade atualizada com sucesso!");
     }
 
     public void excluirEspecialidade(String id) {
-        Bson filtro = eq("_id", id); 
+        Bson filtro = eq("_id", id);
         colecao.deleteOne(filtro);
         System.out.println("Especialidade excluída com sucesso!");
     }
+
+    public Especialidade buscarEspecialidadePorId(String id) {
+        Bson filtro = eq("_id", new ObjectId(id));
+        Document doc = colecao.find(filtro).first();
+
+        if (doc != null) {
+            return new Especialidade(
+                    doc.getObjectId("_id").toString(),
+                    doc.getString("nomeEspecialidade"));
+        }
+        return null;
+    }
+
 }

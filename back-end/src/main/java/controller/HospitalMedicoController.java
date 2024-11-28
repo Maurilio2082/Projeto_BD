@@ -1,33 +1,102 @@
 package controller;
 
 import com.mongodb.client.MongoCollection;
+
+import Repository.HospitalMedicoRepository;
+import Repository.HospitalRepository;
+import Repository.MedicoRepository;
 import conexion.DatabaseConfig;
+import model.Hospital;
+import model.HospitalMedico;
+import model.Medico;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class HospitalMedicoController {
 
     private final MongoCollection<Document> hospitalMedicoCollection;
+    private final HospitalMedicoRepository hospitalMedicoRepository;
+    private final HospitalRepository hospitalRepository;
+    private final MedicoRepository medicoRepository;
+    private final Scanner scanner;
 
     public HospitalMedicoController() {
-        this.hospitalMedicoCollection = DatabaseConfig.getDatabase().getCollection("hospital_medico");
+        this.hospitalMedicoCollection = DatabaseConfig.getDatabase().getCollection("hospitais_medico");
+        this.hospitalMedicoRepository = new HospitalMedicoRepository();
+        this.hospitalRepository = new HospitalRepository();
+        this.medicoRepository = new MedicoRepository();
+        this.scanner = new Scanner(System.in);
     }
 
     public void cadastrarMedicoXHospital() {
-        Scanner scanner = new Scanner(System.in);
+        // Listar médicos disponíveis
+        List<Medico> medicos = medicoRepository.buscarTodosMedicos();
+        if (medicos.isEmpty()) {
+            System.out.println("Nenhum médico encontrado.");
+            return;
+        }
 
-        System.out.print("ID do hospital: ");
-        String hospitalId = scanner.nextLine();
-        System.out.print("ID do médico: ");
-        String medicoId = scanner.nextLine();
+        System.out.println("Selecione o médico:");
+        for (int i = 0; i < medicos.size(); i++) {
+            Medico medico = medicos.get(i);
+            System.out.println((i + 1) + " - " + medico.getNome() + " (" + medico.getConselho() + ")");
+        }
 
-        Document relacao = new Document("hospitalId", new ObjectId(hospitalId))
-                .append("medicoId", new ObjectId(medicoId));
+        int escolhaMedico;
+        while (true) {
+            System.out.print("Escolha o número do médico: ");
+            try {
+                escolhaMedico = Integer.parseInt(scanner.nextLine());
+                if (escolhaMedico >= 1 && escolhaMedico <= medicos.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
 
-        hospitalMedicoCollection.insertOne(relacao);
-        System.out.println("Relação médico-hospital cadastrada com sucesso.");
+        Medico medicoEscolhido = medicos.get(escolhaMedico - 1);
+
+        // Listar hospitais disponíveis
+        List<Hospital> hospitais = hospitalRepository.buscarTodosHospitais();
+        if (hospitais.isEmpty()) {
+            System.out.println("Nenhum hospital encontrado.");
+            return;
+        }
+
+        System.out.println("Selecione o hospital:");
+        for (int i = 0; i < hospitais.size(); i++) {
+            Hospital hospital = hospitais.get(i);
+            System.out.println((i + 1) + " - " + hospital.getRazaoSocial() + " (" + hospital.getCategoria() + ")");
+        }
+
+        int escolhaHospital;
+        while (true) {
+            System.out.print("Escolha o número do hospital: ");
+            try {
+                escolhaHospital = Integer.parseInt(scanner.nextLine());
+                if (escolhaHospital >= 1 && escolhaHospital <= hospitais.size()) {
+                    break;
+                } else {
+                    System.out.println("Número inválido. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Digite um número.");
+            }
+        }
+
+        Hospital hospitalEscolhido = hospitais.get(escolhaHospital - 1);
+
+        // Relacionar médico e hospital
+        HospitalMedico relacao = new HospitalMedico(null, hospitalEscolhido, medicoEscolhido);
+        hospitalMedicoRepository.inserirRelacao(relacao);
+        System.out.println("Relacionamento entre médico e hospital cadastrado com sucesso!");
     }
 
     public void atualizarMedicoXHospital() {

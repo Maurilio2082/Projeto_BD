@@ -49,39 +49,10 @@ public class MedicoController {
         System.out.print("Conselho: ");
         String conselho = scanner.nextLine();
 
-        // Listar especialidades disponíveis
-        List<Especialidade> especialidades = especialidadeRepository.buscarTodasEspecialidades();
-        if (especialidades.isEmpty()) {
-            System.out.println("Nenhuma especialidade encontrada. Não é possível cadastrar o médico.");
-            return;
-        }
-
-        System.out.println("Selecione a especialidade:");
-        for (int i = 0; i < especialidades.size(); i++) {
-            Especialidade especialidade = especialidades.get(i);
-            System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
-        }
-
-        int escolhaEspecialidade;
-        while (true) {
-            System.out.print("Escolha o número da especialidade: ");
-            try {
-                escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
-                if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
-                    break;
-                } else {
-                    System.out.println("Número inválido. Tente novamente.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida. Digite um número.");
-            }
-        }
-
-        Especialidade especialidadeEscolhida = especialidades.get(escolhaEspecialidade - 1);
-
         // Cria e insere o médico
-        Medico medico = new Medico(null, nome, conselho, especialidadeEscolhida);
+        Medico medico = new Medico(null, nome, conselho, null); 
         medicoRepository.inserirMedico(medico);
+        System.out.println("Médico cadastrado com sucesso!");
     }
 
     public void atualizarMedico() {

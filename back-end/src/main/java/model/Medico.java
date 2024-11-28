@@ -19,7 +19,7 @@ public class Medico {
         this.id = id;
         this.nome = nome;
         this.conselho = conselho;
-        this.especialidade = especialidade;
+        this.especialidade = null;
     }
 
     public String getId() {

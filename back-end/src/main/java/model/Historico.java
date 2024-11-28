@@ -10,23 +10,23 @@ public class Historico {
     private String id; // Identificador único no MongoDB
     private String dataConsulta;
     private String observacao;
-    private String pacienteId; // Referência ao ID do paciente no MongoDB
-    private String hospitalId; // Referência ao ID do hospital no MongoDB
-    private String medicoId; // Referência ao ID do médico no MongoDB
-    private String especialidadeId; // Referência ao ID da especialidade no MongoDB
+    private Paciente paciente; // Associação ao paciente
+    private Hospital hospital; // Associação ao hospital
+    private Medico medico; // Associação ao médico
+    private Especialidade especialidade; // Associação à especialidade
 
     public Historico() {
     }
 
-    public Historico(String id, String dataConsulta, String observacao, String pacienteId, String hospitalId,
-            String medicoId, String especialidadeId) {
+    public Historico(String id, String dataConsulta, String observacao, Paciente paciente, Hospital hospital,
+            Medico medico, Especialidade especialidade) {
         this.id = id;
         this.dataConsulta = dataConsulta;
         this.observacao = observacao;
-        this.pacienteId = pacienteId;
-        this.hospitalId = hospitalId;
-        this.medicoId = medicoId;
-        this.especialidadeId = especialidadeId;
+        this.paciente = paciente;
+        this.hospital = hospital;
+        this.medico = medico;
+        this.especialidade = especialidade;
     }
 
     public String getId() {
@@ -53,42 +53,42 @@ public class Historico {
         this.observacao = observacao;
     }
 
-    public String getPacienteId() {
-        return pacienteId;
+    public Especialidade getEspecialidade() {
+        return especialidade;
     }
 
-    public void setPacienteId(String pacienteId) {
-        this.pacienteId = pacienteId;
+    public Hospital getHospital() {
+        return hospital;
     }
 
-    public String getHospitalId() {
-        return hospitalId;
+    public Medico getMedico() {
+        return medico;
     }
 
-    public void setHospitalId(String hospitalId) {
-        this.hospitalId = hospitalId;
+    public Paciente getPaciente() {
+        return paciente;
     }
 
-    public String getMedicoId() {
-        return medicoId;
+    public void setEspecialidade(Especialidade especialidade) {
+        this.especialidade = especialidade;
     }
 
-    public void setMedicoId(String medicoId) {
-        this.medicoId = medicoId;
+    public void setHospital(Hospital hospital) {
+        this.hospital = hospital;
     }
 
-    public String getEspecialidadeId() {
-        return especialidadeId;
+    public void setMedico(Medico medico) {
+        this.medico = medico;
     }
 
-    public void setEspecialidadeId(String especialidadeId) {
-        this.especialidadeId = especialidadeId;
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
     }
 
     @Override
     public String toString() {
         return "Historico [id=" + id + ", dataConsulta=" + dataConsulta + ", observacao=" + observacao +
-                ", pacienteId=" + pacienteId + ", hospitalId=" + hospitalId +
-                ", medicoId=" + medicoId + ", especialidadeId=" + especialidadeId + "]";
+                ", pacienteId=" + paciente + ", hospitalId=" + hospital +
+                ", medicoId=" + medico + ", especialidadeId=" + especialidade + "]";
     }
 }

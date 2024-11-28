@@ -94,4 +94,5 @@ public class HospitalRepository {
         colecao.deleteOne(filtro);
         System.out.println("Hospital excluído com sucesso!");
     }
+    
 }

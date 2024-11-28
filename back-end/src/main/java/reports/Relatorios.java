@@ -5,7 +5,6 @@ import com.mongodb.client.MongoCursor;
 
 import org.bson.Document;
 
-
 import conexion.DatabaseConfig;
 
 import java.io.BufferedReader;
@@ -94,8 +93,11 @@ public class Relatorios {
     }
 
     // Relatório 6: Médicos por Especialidade
+
     public List<Document> getRelatorioEspecialidadeMedicos() {
-        return executarConsulta(medicosCollection, queryRelatorioEspecialidadeMedicos);
+        MongoCollection<Document> especialidadesMedicosCollection = DatabaseConfig.getDatabase()
+                .getCollection("especialidades_medicos");
+        return executarConsulta(especialidadesMedicosCollection, queryRelatorioEspecialidadeMedicos);
     }
 
     // Relatório 7: Médicos por Hospital
