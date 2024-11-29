@@ -3,8 +3,8 @@ package controller;
 import java.util.List;
 import java.util.Scanner;
 
-import Repository.EspecialidadeRepository;
 import model.Especialidade;
+import repository.EspecialidadeRepository;
 import utils.RemoverDependencia;
 
 public class EspecialidadeController {

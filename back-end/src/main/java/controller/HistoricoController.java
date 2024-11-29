@@ -2,17 +2,17 @@ package controller;
 
 import com.mongodb.client.MongoCollection;
 
-import Repository.EspecialidadeMedicoRepository;
-import Repository.HistoricoRepository;
-import Repository.HospitalRepository;
-import Repository.MedicoRepository;
-import Repository.PacienteRepository;
 import conexion.DatabaseConfig;
 import model.Especialidade;
 import model.Historico;
 import model.Hospital;
 import model.Medico;
 import model.Paciente;
+import repository.EspecialidadeMedicoRepository;
+import repository.HistoricoRepository;
+import repository.HospitalRepository;
+import repository.MedicoRepository;
+import repository.PacienteRepository;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

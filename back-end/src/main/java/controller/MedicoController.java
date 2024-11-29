@@ -1,11 +1,10 @@
 package controller;
 
 import model.Medico;
+import repository.MedicoRepository;
 
 import java.util.List;
 import java.util.Scanner;
-
-import Repository.MedicoRepository;
 
 public class MedicoController {
 

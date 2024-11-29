@@ -1,6 +1,7 @@
 package controller;
 
 import model.Endereco;
+import repository.EnderecoRepository;
 
 import java.util.List;
 import java.util.Scanner;
@@ -9,7 +10,6 @@ import org.bson.Document;
 
 import com.mongodb.client.MongoCollection;
 
-import Repository.EnderecoRepository;
 import conexion.DatabaseConfig;
 
 public class EnderecoController {

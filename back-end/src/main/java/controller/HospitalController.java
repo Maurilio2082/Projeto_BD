@@ -1,12 +1,11 @@
 package controller;
 
 import model.Hospital;
+import repository.HospitalRepository;
 import model.Endereco;
 
 import java.util.List;
 import java.util.Scanner;
-
-import Repository.HospitalRepository;
 
 public class HospitalController {
 
