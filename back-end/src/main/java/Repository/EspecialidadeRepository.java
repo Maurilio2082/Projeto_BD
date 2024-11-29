@@ -76,7 +76,6 @@ public class EspecialidadeRepository {
     public void inserirEspecialidade(Especialidade especialidade) {
         Document documento = new Document("nomeEspecialidade", especialidade.getNomeEspecialidade());
         colecao.insertOne(documento);
-        System.out.println("Especialidade inserida com sucesso!");
     }
 
     public void atualizarEspecialidade(String id, String novoNome) {
@@ -89,7 +88,6 @@ public class EspecialidadeRepository {
 
             // Executar a atualização
             colecao.updateOne(filtro, atualizacao);
-            System.out.println("Especialidade atualizada com sucesso no banco de dados!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar a especialidade no banco de dados: " + e.getMessage());
             e.printStackTrace();
@@ -105,7 +103,6 @@ public class EspecialidadeRepository {
                 .getCollection("especialidades");
         especialidadeCollection.deleteOne(eq("_id", new ObjectId(especialidadeId)));
 
-        System.out.println("Especialidade excluída com sucesso!");
     }
 
     public Especialidade buscarEspecialidadePorId(String id) {

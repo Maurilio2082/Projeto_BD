@@ -127,16 +127,15 @@ public class HospitalRepository {
                 .append("categoria", hospital.getCategoria())
                 .append("enderecoId", hospital.getEndereco().getId()); // Salvar apenas o ID do endereço
         colecao.insertOne(documento);
-        System.out.println("Hospital inserido com sucesso!");
     }
 
     public void atualizarHospital(String id, Hospital hospitalAtualizado) {
         try {
             Bson filtro = eq("_id", new ObjectId(id)); // Certificar que o ID está no formato correto
-    
+
             // Garantir que o ID do endereço seja armazenado como ObjectId
             ObjectId enderecoObjectId = new ObjectId(hospitalAtualizado.getEndereco().getId());
-    
+
             // Construir o documento de atualização
             Document atualizacao = new Document("$set", new Document()
                     .append("razaoSocial", hospitalAtualizado.getRazaoSocial())
@@ -145,22 +144,19 @@ public class HospitalRepository {
                     .append("telefone", hospitalAtualizado.getTelefone())
                     .append("categoria", hospitalAtualizado.getCategoria())
                     .append("enderecoId", enderecoObjectId)); // Salva o ID do endereço no formato correto
-    
+
             // Atualizar no MongoDB
             colecao.updateOne(filtro, atualizacao);
-            System.out.println("Hospital atualizado com sucesso no banco de dados!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar hospital no banco de dados: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
 
     public void excluirHospital(String hospitalId) {
         try {
             Bson filtro = eq("_id", new ObjectId(hospitalId));
             colecao.deleteOne(filtro);
-            System.out.println("Hospital excluído com sucesso.");
         } catch (Exception e) {
             System.err.println("Erro ao excluir hospital: " + e.getMessage());
             e.printStackTrace();

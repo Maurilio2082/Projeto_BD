@@ -37,7 +37,7 @@ public class MedicoController {
     }
 
     public void cadastrarMedico() {
-        System.out.println("Digite os dados do novo médico:");
+        System.out.println("\nDigite os dados do novo médico:");
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
         System.out.print("Conselho: ");
@@ -46,7 +46,7 @@ public class MedicoController {
         // Cria e insere o médico
         Medico medico = new Medico(null, nome, conselho, null);
         medicoRepository.inserirMedico(medico);
-        System.out.println("Médico cadastrado com sucesso!");
+        System.out.println("\nMédico cadastrado com sucesso!");
     }
 
     public void atualizarMedico() {
@@ -58,7 +58,7 @@ public class MedicoController {
         }
 
         // Exibir a lista de médicos
-        System.out.println("Selecione o médico que deseja atualizar:");
+        System.out.println("\nSelecione o médico que deseja atualizar:");
         for (int i = 0; i < medicos.size(); i++) {
             Medico medico = medicos.get(i);
             System.out.println((i + 1) + " - " + medico.getNome() + " (Conselho: " + medico.getConselho() + ")");
@@ -84,7 +84,7 @@ public class MedicoController {
         Medico medicoAtual = medicos.get(escolha - 1);
 
         // Exibir os dados atuais e permitir a edição
-        System.out.println("Atualize os dados do médico (ou deixe em branco para manter o atual):");
+        System.out.println("\nAtualize os dados do médico (ou deixe em branco para manter o atual):");
 
         System.out.print("Nome [" + medicoAtual.getNome() + "]: ");
         String nome = scanner.nextLine();
@@ -101,7 +101,7 @@ public class MedicoController {
 
         // Atualizar no repositório
         medicoRepository.atualizarMedico(medicoAtual.getId(), medicoAtualizado);
-        System.out.println("Médico atualizado com sucesso!");
+        System.out.println("\nMédico atualizado com sucesso!");
     }
 
     public void deletarMedico() {
@@ -139,12 +139,12 @@ public class MedicoController {
         Medico medicoSelecionado = medicos.get(escolha - 1);
 
         // Excluir associações relacionadas ao médico
-        System.out.println("Excluindo associações relacionadas ao médico...");
+        System.out.println("\nExcluindo associações relacionadas ao médico...");
         medicoRepository.removerDependenciasMedico(medicoSelecionado.getId());
 
         // Excluir o médico
         medicoRepository.excluirMedico(medicoSelecionado.getId());
-        System.out.println("Médico excluído com sucesso!");
+        System.out.println("\nMédico excluído com sucesso!");
     }
 
 }

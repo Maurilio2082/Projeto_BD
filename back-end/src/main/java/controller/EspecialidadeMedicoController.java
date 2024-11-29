@@ -39,7 +39,7 @@ public class EspecialidadeMedicoController {
             return;
         }
 
-        System.out.println("Selecione o médico:");
+        System.out.println("\nSelecione o médico:");
         for (int i = 0; i < medicos.size(); i++) {
             Medico medico = medicos.get(i);
             System.out.println((i + 1) + " - " + medico.getNome());
@@ -47,7 +47,7 @@ public class EspecialidadeMedicoController {
 
         int escolhaMedico;
         while (true) {
-            System.out.print("Escolha o número do médico: ");
+            System.out.print("\nEscolha o número do médico: ");
             try {
                 escolhaMedico = Integer.parseInt(scanner.nextLine());
                 if (escolhaMedico >= 1 && escolhaMedico <= medicos.size()) {
@@ -69,7 +69,7 @@ public class EspecialidadeMedicoController {
             return;
         }
 
-        System.out.println("Selecione a especialidade:");
+        System.out.println("\nSelecione a especialidade:");
         for (int i = 0; i < especialidades.size(); i++) {
             Especialidade especialidade = especialidades.get(i);
             System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
@@ -77,7 +77,7 @@ public class EspecialidadeMedicoController {
 
         int escolhaEspecialidade;
         while (true) {
-            System.out.print("Escolha o número da especialidade: ");
+            System.out.print("\nEscolha o número da especialidade: ");
             try {
                 escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
                 if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
@@ -95,7 +95,7 @@ public class EspecialidadeMedicoController {
         // Relacionar médico e especialidade
         EspecialidadeMedico relacao = new EspecialidadeMedico(medicoEscolhido, especialidadeEscolhida);
         especialidadeMedicoRepository.inserirRelacao(relacao);
-        System.out.println("Relacionamento entre médico e especialidade cadastrado com sucesso!");
+        System.out.println("\nRelacionamento entre médico e especialidade cadastrado com sucesso!");
     }
 
     public void atualizarEspecialidadeXMedico() {
@@ -107,7 +107,7 @@ public class EspecialidadeMedicoController {
         }
 
         // Exibir as relações disponíveis
-        System.out.println("Selecione a relação que deseja atualizar:");
+        System.out.println("\nSelecione a relação que deseja atualizar:");
         for (int i = 0; i < relacoes.size(); i++) {
             EspecialidadeMedico relacao = relacoes.get(i);
             System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +
@@ -136,7 +136,7 @@ public class EspecialidadeMedicoController {
         EspecialidadeMedico relacaoSelecionada = relacoes.get(escolha - 1);
 
         // Exibir a especialidade atual
-        System.out.println("Especialidade atual: " +
+        System.out.println("\nEspecialidade atual: " +
                 (relacaoSelecionada.getEspecialidade() != null
                         ? relacaoSelecionada.getEspecialidade().getNomeEspecialidade()
                         : "Nenhuma"));
@@ -148,7 +148,7 @@ public class EspecialidadeMedicoController {
             return;
         }
 
-        System.out.println("Selecione a nova especialidade:");
+        System.out.println("\nSelecione a nova especialidade:");
         for (int i = 0; i < especialidades.size(); i++) {
             Especialidade especialidade = especialidades.get(i);
             System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
@@ -156,7 +156,7 @@ public class EspecialidadeMedicoController {
 
         int escolhaEspecialidade;
         while (true) {
-            System.out.print("Escolha o número da especialidade: ");
+            System.out.print("\nEscolha o número da especialidade: ");
             try {
                 escolhaEspecialidade = Integer.parseInt(scanner.nextLine());
                 if (escolhaEspecialidade >= 1 && escolhaEspecialidade <= especialidades.size()) {
@@ -179,7 +179,7 @@ public class EspecialidadeMedicoController {
 
         // Atualizar no repositório
         especialidadeMedicoRepository.atualizarRelacao(relacaoAtualizada);
-        System.out.println("Especialidade do médico atualizada com sucesso!");
+        System.out.println("\nEspecialidade do médico atualizada com sucesso!");
     }
 
     public void deletarEspecialidadeXMedico() {
@@ -191,7 +191,7 @@ public class EspecialidadeMedicoController {
         }
 
         // Exibir as relações disponíveis
-        System.out.println("Selecione a relação que deseja excluir:");
+        System.out.println("\nSelecione a relação que deseja excluir:");
         for (int i = 0; i < relacoes.size(); i++) {
             EspecialidadeMedico relacao = relacoes.get(i);
             System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +
@@ -219,7 +219,7 @@ public class EspecialidadeMedicoController {
 
         // Excluir a relação do repositório
         especialidadeMedicoRepository.excluirRelacao(relacaoSelecionada.getId());
-        System.out.println("Relação entre médico e especialidade excluída com sucesso!");
+        System.out.println("\nRelação entre médico e especialidade excluída com sucesso!");
     }
 
 }

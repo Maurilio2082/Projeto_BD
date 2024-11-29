@@ -49,7 +49,7 @@ public class HistoricoController {
             System.out.println("Nenhum paciente encontrado.");
             return;
         }
-        System.out.println("Selecione o paciente:");
+        System.out.println("\nSelecione o paciente:");
         for (int i = 0; i < pacientes.size(); i++) {
             System.out.println((i + 1) + " - " + pacientes.get(i).getNome());
         }
@@ -62,7 +62,7 @@ public class HistoricoController {
             System.out.println("Nenhum hospital encontrado.");
             return;
         }
-        System.out.println("Selecione o hospital:");
+        System.out.println("\nSelecione o hospital:");
         for (int i = 0; i < hospitais.size(); i++) {
             System.out.println((i + 1) + " - " + hospitais.get(i).getRazaoSocial());
         }
@@ -75,7 +75,7 @@ public class HistoricoController {
             System.out.println("Nenhum médico encontrado para este hospital.");
             return;
         }
-        System.out.println("Selecione o médico:");
+        System.out.println("\nSelecione o médico:");
         for (int i = 0; i < medicos.size(); i++) {
             System.out.println((i + 1) + " - " + medicos.get(i).getNome());
         }
@@ -89,7 +89,7 @@ public class HistoricoController {
             System.out.println("Nenhuma especialidade encontrada para este médico.");
             return;
         }
-        System.out.println("Selecione a especialidade:");
+        System.out.println("\nSelecione a especialidade:");
         for (int i = 0; i < especialidades.size(); i++) {
             System.out.println((i + 1) + " - " + especialidades.get(i).getNomeEspecialidade());
         }
@@ -106,7 +106,7 @@ public class HistoricoController {
         Historico historico = new Historico(null, dataConsulta, observacao, pacienteSelecionado, hospitalSelecionado,
                 medicoSelecionado, especialidadeSelecionada);
         historicoRepository.inserirHistorico(historico);
-        System.out.println("Histórico cadastrado com sucesso!");
+        System.out.println("\nHistórico cadastrado com sucesso!");
     }
 
     private int obterEscolha(int limite) {
@@ -136,7 +136,7 @@ public class HistoricoController {
         }
 
         // Exibir os históricos disponíveis
-        System.out.println("Selecione o histórico que deseja atualizar:");
+        System.out.println("\nSelecione o histórico que deseja atualizar:");
         for (int i = 0; i < historicos.size(); i++) {
             Historico historico = historicos.get(i);
             System.out.println((i + 1) + " - Data: " + historico.getDataConsulta() +
@@ -163,7 +163,7 @@ public class HistoricoController {
         Historico historicoSelecionado = historicos.get(escolha - 1);
 
         // Exibir os dados atuais e permitir atualização
-        System.out.println("Atualize os dados do histórico (ou deixe em branco para manter o atual):");
+        System.out.println("\nAtualize os dados do histórico (ou deixe em branco para manter o atual):");
 
         System.out.print("Data da consulta [" + historicoSelecionado.getDataConsulta() + "]: ");
         String novaDataConsulta = scanner.nextLine();
@@ -188,13 +188,13 @@ public class HistoricoController {
         Hospital hospitalAtualizado = hospitais.get(escolhaHospital - 1);
 
         // Atualizar o médico associado
-        System.out.println("Médico atual: " + historicoSelecionado.getMedico().getNome());
+        System.out.println("\nMédico atual: " + historicoSelecionado.getMedico().getNome());
         List<Medico> medicos = medicoRepository.buscarMedicosPorHospital(hospitalAtualizado.getId());
         if (medicos.isEmpty()) {
             System.out.println("Nenhum médico encontrado para este hospital.");
             return;
         }
-        System.out.println("Selecione o novo médico:");
+        System.out.println("\nSelecione o novo médico:");
         for (int i = 0; i < medicos.size(); i++) {
             Medico medico = medicos.get(i);
             System.out.println((i + 1) + " - " + medico.getNome());
@@ -211,7 +211,7 @@ public class HistoricoController {
             System.out.println("Nenhuma especialidade encontrada para este médico.");
             return;
         }
-        System.out.println("Selecione a nova especialidade:");
+        System.out.println("\nSelecione a nova especialidade:");
         for (int i = 0; i < especialidades.size(); i++) {
             Especialidade especialidade = especialidades.get(i);
             System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
@@ -232,7 +232,7 @@ public class HistoricoController {
 
         // Atualizar no repositório
         historicoRepository.atualizarHistorico(historicoAtualizado);
-        System.out.println("Histórico atualizado com sucesso!");
+        System.out.println("\nHistórico atualizado com sucesso!");
     }
 
     public void deletarHistorico() {
@@ -244,7 +244,7 @@ public class HistoricoController {
         }
 
         // Exibir a lista de históricos disponíveis
-        System.out.println("Selecione o histórico que deseja excluir:");
+        System.out.println("\nSelecione o histórico que deseja excluir:");
         for (int i = 0; i < historicos.size(); i++) {
             Historico historico = historicos.get(i);
             System.out.println((i + 1) + " - Paciente: " + historico.getPaciente().getNome() +
@@ -276,7 +276,7 @@ public class HistoricoController {
         System.out.println("Data da Consulta: " + historicoSelecionado.getDataConsulta());
         System.out.println("Observação: " + historicoSelecionado.getObservacao());
 
-        System.out.print("Deseja realmente excluir este histórico? (Sim/Não): ");
+        System.out.print("\nDeseja realmente excluir este histórico? (Sim/Não): ");
         String confirmacao = scanner.nextLine().trim().toLowerCase();
 
         if (confirmacao.equals("sim")) {

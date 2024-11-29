@@ -126,14 +126,12 @@ public class HistoricoRepository {
                                 .append("especialidadeId", new ObjectId(historico.getEspecialidade().getId()));
 
                 colecao.insertOne(documento);
-                System.out.println("Histórico inserido com sucesso!");
         }
 
         public void excluirHistorico(String id) {
                 try {
                         Bson filtro = eq("_id", new ObjectId(id));
                         colecao.deleteOne(filtro);
-                        System.out.println("Histórico excluído com sucesso!");
                 } catch (Exception e) {
                         System.err.println("Erro ao excluir histórico: " + e.getMessage());
                         e.printStackTrace();
@@ -156,7 +154,6 @@ public class HistoricoRepository {
 
                         // Atualizar no banco de dados
                         colecao.updateOne(filtro, atualizacao);
-                        System.out.println("Histórico atualizado com sucesso no banco de dados!");
                 } catch (Exception e) {
                         System.err.println("Erro ao atualizar o histórico: " + e.getMessage());
                         e.printStackTrace();

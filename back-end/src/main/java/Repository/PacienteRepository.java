@@ -82,7 +82,6 @@ public class PacienteRepository {
                 .append("cpf", paciente.getCpf())
                 .append("enderecoId", paciente.getEndereco().getId()); // Armazena o ID do endereço
         colecao.insertOne(documento);
-        System.out.println("Paciente inserido com sucesso!");
     }
 
     public void atualizarPaciente(String id, Paciente pacienteAtualizado) {
@@ -102,7 +101,6 @@ public class PacienteRepository {
 
             colecao.updateOne(filtro, atualizacao);
 
-            System.out.println("Paciente atualizado com sucesso no banco de dados!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar paciente no banco de dados: " + e.getMessage());
             e.printStackTrace();

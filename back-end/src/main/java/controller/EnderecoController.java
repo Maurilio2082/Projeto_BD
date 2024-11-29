@@ -61,7 +61,7 @@ public class EnderecoController {
     }
 
     public Endereco atualizarEndereco(Endereco enderecoAtual) {
-        System.out.println("Atualize os dados do endereço (ou deixe em branco para manter o atual):");
+        System.out.println("\nAtualize os dados do endereço (ou deixe em branco para manter o atual):");
     
         System.out.print("Logradouro [" + enderecoAtual.getLogradouro() + "]: ");
         String logradouro = scanner.nextLine();
@@ -95,7 +95,7 @@ public class EnderecoController {
         // Persistir alterações no banco de dados
         try {
             repository.atualizarEndereco(enderecoAtualizado.getId(), enderecoAtualizado);
-            System.out.println("Endereço atualizado com sucesso!");
+            System.out.println("\nEndereço atualizado com sucesso!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar o endereço no banco de dados: " + e.getMessage());
         }
@@ -106,7 +106,7 @@ public class EnderecoController {
 
     public void excluirEndereco(String enderecoId) {
         repository.excluirEndereco(enderecoId);
-        System.out.println("Endereço excluído com sucesso!");
+        System.out.println("\nEndereço excluído com sucesso!");
     }
 
 }

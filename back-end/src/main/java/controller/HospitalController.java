@@ -114,7 +114,7 @@ public class HospitalController {
 
         // Atualizar o hospital no banco de dados
         hospitalRepository.atualizarHospital(hospitalAtual.getId(), hospitalAtualizado);
-        System.out.println("Hospital atualizado com sucesso!");
+        System.out.println("\nHospital atualizado com sucesso!");
     }
 
     public void deletarHospital() {
@@ -126,7 +126,7 @@ public class HospitalController {
         }
 
         // Exibir a lista de hospitais
-        System.out.println("Selecione o hospital que deseja excluir:");
+        System.out.println("\nSelecione o hospital que deseja excluir:");
         for (int i = 0; i < hospitais.size(); i++) {
             Hospital hospital = hospitais.get(i);
             System.out.println((i + 1) + " - " + hospital.getRazaoSocial());
@@ -157,7 +157,7 @@ public class HospitalController {
 
         // Excluir o hospital
         hospitalRepository.excluirHospital(hospitalSelecionado.getId());
-        System.out.println("Hospital excluído com sucesso!");
+        System.out.println("\nHospital excluído com sucesso!");
     }
 
 }

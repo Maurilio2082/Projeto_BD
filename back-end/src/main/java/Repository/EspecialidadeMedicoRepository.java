@@ -76,7 +76,6 @@ public class EspecialidadeMedicoRepository {
 
             // Atualizar no banco de dados
             colecao.updateOne(filtro, atualizacao);
-            System.out.println("Relação atualizada com sucesso no banco de dados!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar a relação: " + e.getMessage());
             e.printStackTrace();
@@ -109,7 +108,6 @@ public class EspecialidadeMedicoRepository {
         try {
             Bson filtro = eq("_id", new ObjectId(id)); // Certifique-se de usar ObjectId
             colecao.deleteOne(filtro);
-            System.out.println("Relação excluída com sucesso!");
         } catch (Exception e) {
             System.err.println("Erro ao excluir relação: " + e.getMessage());
             e.printStackTrace();

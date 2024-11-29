@@ -39,7 +39,6 @@ public class HospitalMedicoRepository {
 
             // Atualizar no banco de dados
             colecao.updateOne(filtro, atualizacao);
-            System.out.println("Relação médico-hospital atualizada com sucesso no banco de dados!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar a relação: " + e.getMessage());
             e.printStackTrace();
@@ -92,14 +91,12 @@ public class HospitalMedicoRepository {
         Document documento = new Document("hospitalId", new ObjectId(relacao.getHospital().getId()))
                 .append("medicoId", new ObjectId(relacao.getMedico().getId()));
         colecao.insertOne(documento);
-        System.out.println("Relação entre hospital e médico inserida com sucesso!");
     }
 
     public void excluirRelacao(String id) {
         try {
             Bson filtro = eq("_id", new ObjectId(id));
             colecao.deleteOne(filtro);
-            System.out.println("Relação excluída com sucesso!");
         } catch (Exception e) {
             System.err.println("Erro ao excluir relação: " + e.getMessage());
             e.printStackTrace();

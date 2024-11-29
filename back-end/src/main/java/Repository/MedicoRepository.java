@@ -65,34 +65,30 @@ public class MedicoRepository {
         Document documento = new Document("nome", medico.getNome())
                 .append("conselho", medico.getConselho());
         colecao.insertOne(documento);
-        System.out.println("Médico inserido com sucesso!");
     }
 
     public void atualizarMedico(String id, Medico medicoAtualizado) {
         try {
             // Garantir que o ID seja tratado como ObjectId
             Bson filtro = eq("_id", new ObjectId(id));
-    
+
             // Construir o documento de atualização
             Document atualizacao = new Document("$set", new Document()
                     .append("nome", medicoAtualizado.getNome())
                     .append("conselho", medicoAtualizado.getConselho()));
-    
+
             // Atualizar no banco de dados
             colecao.updateOne(filtro, atualizacao);
-            System.out.println("Médico atualizado com sucesso no banco de dados!");
         } catch (Exception e) {
             System.err.println("Erro ao atualizar médico no banco de dados: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
 
     public void excluirMedico(String id) {
         try {
             Bson filtro = eq("_id", new ObjectId(id)); // Garantir que o ID seja tratado como ObjectId
             colecao.deleteOne(filtro);
-            System.out.println("Médico excluído com sucesso!");
         } catch (Exception e) {
             System.err.println("Erro ao excluir médico: " + e.getMessage());
             e.printStackTrace();
@@ -126,7 +122,7 @@ public class MedicoRepository {
         try {
             Bson filtro = eq("_id", new ObjectId(id));
             Document doc = colecao.find(filtro).first();
-    
+
             if (doc != null) {
                 return new Medico(
                         doc.getObjectId("_id").toHexString(),
@@ -144,7 +140,6 @@ public class MedicoRepository {
         }
         return null;
     }
-    
 
     public void removerDependenciasMedico(String medicoId) {
         System.out.println("Removendo dependências do médico com ID: " + medicoId);

@@ -40,7 +40,7 @@ public class HospitalMedicoController {
             return;
         }
 
-        System.out.println("Selecione o médico:");
+        System.out.println("\nSelecione o médico:");
         for (int i = 0; i < medicos.size(); i++) {
             Medico medico = medicos.get(i);
             System.out.println((i + 1) + " - " + medico.getNome() + " (" + medico.getConselho() + ")");
@@ -48,7 +48,7 @@ public class HospitalMedicoController {
 
         int escolhaMedico;
         while (true) {
-            System.out.print("Escolha o número do médico: ");
+            System.out.print("\nEscolha o número do médico: ");
             try {
                 escolhaMedico = Integer.parseInt(scanner.nextLine());
                 if (escolhaMedico >= 1 && escolhaMedico <= medicos.size()) {
@@ -78,7 +78,7 @@ public class HospitalMedicoController {
 
         int escolhaHospital;
         while (true) {
-            System.out.print("Escolha o número do hospital: ");
+            System.out.print("\nEscolha o número do hospital: ");
             try {
                 escolhaHospital = Integer.parseInt(scanner.nextLine());
                 if (escolhaHospital >= 1 && escolhaHospital <= hospitais.size()) {
@@ -96,7 +96,7 @@ public class HospitalMedicoController {
         // Relacionar médico e hospital
         HospitalMedico relacao = new HospitalMedico(null, hospitalEscolhido, medicoEscolhido);
         hospitalMedicoRepository.inserirRelacao(relacao);
-        System.out.println("Relacionamento entre médico e hospital cadastrado com sucesso!");
+        System.out.println("\nRelacionamento entre médico e hospital cadastrado com sucesso!");
     }
 
     public void atualizarMedicoXHospital() {
@@ -108,7 +108,7 @@ public class HospitalMedicoController {
         }
 
         // Exibir as relações disponíveis
-        System.out.println("Selecione a relação que deseja atualizar:");
+        System.out.println("\nSelecione a relação que deseja atualizar:");
         for (int i = 0; i < relacoes.size(); i++) {
             HospitalMedico relacao = relacoes.get(i);
             System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +
@@ -135,7 +135,7 @@ public class HospitalMedicoController {
         HospitalMedico relacaoSelecionada = relacoes.get(escolha - 1);
 
         // Exibir o hospital atual
-        System.out.println("Hospital atual: " + relacaoSelecionada.getHospital().getRazaoSocial());
+        System.out.println("\nHospital atual: " + relacaoSelecionada.getHospital().getRazaoSocial());
 
         // Listar hospitais disponíveis
         List<Hospital> hospitais = hospitalRepository.buscarTodosHospitais();
@@ -144,7 +144,7 @@ public class HospitalMedicoController {
             return;
         }
 
-        System.out.println("Selecione o novo hospital:");
+        System.out.println("\nSelecione o novo hospital:");
         for (int i = 0; i < hospitais.size(); i++) {
             Hospital hospital = hospitais.get(i);
             System.out.println((i + 1) + " - " + hospital.getRazaoSocial());
@@ -152,7 +152,7 @@ public class HospitalMedicoController {
 
         int escolhaHospital;
         while (true) {
-            System.out.print("Escolha o número do hospital: ");
+            System.out.print("\nEscolha o número do hospital: ");
             try {
                 escolhaHospital = Integer.parseInt(scanner.nextLine());
                 if (escolhaHospital >= 1 && escolhaHospital <= hospitais.size()) {
@@ -176,7 +176,7 @@ public class HospitalMedicoController {
 
         // Atualizar no repositório
         hospitalMedicoRepository.atualizarRelacao(relacaoAtualizada);
-        System.out.println("Relação médico-hospital atualizada com sucesso!");
+        System.out.println("\nRelação médico-hospital atualizada com sucesso!");
     }
 
     public void deletarMedicoXHospital() {
@@ -188,7 +188,7 @@ public class HospitalMedicoController {
         }
 
         // Exibir as relações para o usuário
-        System.out.println("Selecione a relação médico-hospital que deseja excluir:");
+        System.out.println("\nSelecione a relação médico-hospital que deseja excluir:");
         for (int i = 0; i < relacoes.size(); i++) {
             HospitalMedico relacao = relacoes.get(i);
             System.out.println((i + 1) + " - Médico: " + relacao.getMedico().getNome() +

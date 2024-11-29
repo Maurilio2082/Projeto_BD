@@ -27,7 +27,7 @@ public class EspecialidadeController {
     }
 
     public void buscarEspecialidadePorId() {
-        System.out.print("Digite o ID da especialidade: ");
+        System.out.print("\nDigite o ID da especialidade: ");
         String id = scanner.nextLine();
         Especialidade especialidade = repository.buscarPorId(id);
         if (especialidade == null) {
@@ -38,7 +38,7 @@ public class EspecialidadeController {
     }
 
     public void buscarEspecialidadePorNome() {
-        System.out.print("Digite o nome da especialidade: ");
+        System.out.print("\nDigite o nome da especialidade: ");
         String nome = scanner.nextLine();
         Especialidade especialidade = repository.buscarPorNome(nome);
         if (especialidade == null) {
@@ -49,7 +49,7 @@ public class EspecialidadeController {
     }
 
     public void cadastrarEspecialidade() {
-        System.out.print("Digite o nome da nova especialidade: ");
+        System.out.print("\nDigite o nome da nova especialidade: ");
         String nome = scanner.nextLine();
         Especialidade especialidade = new Especialidade(null, nome);
         repository.inserirEspecialidade(especialidade);
@@ -64,7 +64,7 @@ public class EspecialidadeController {
         }
 
         // Exibir a lista de especialidades
-        System.out.println("Selecione a especialidade que deseja atualizar:");
+        System.out.println("\nSelecione a especialidade que deseja atualizar:");
         for (int i = 0; i < especialidades.size(); i++) {
             Especialidade especialidade = especialidades.get(i);
             System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
@@ -73,7 +73,7 @@ public class EspecialidadeController {
         // Obter a escolha do usuário
         int escolha;
         while (true) {
-            System.out.print("Escolha uma opção [1-" + especialidades.size() + "]: ");
+            System.out.print("\nEscolha uma opção [1-" + especialidades.size() + "]: ");
             try {
                 escolha = Integer.parseInt(scanner.nextLine());
                 if (escolha >= 1 && escolha <= especialidades.size()) {
@@ -91,7 +91,8 @@ public class EspecialidadeController {
 
         // Solicitar os novos dados
         System.out.println("Atualize os dados da especialidade selecionada (ou deixe em branco para manter o atual):");
-        System.out.print("Novo nome para a especialidade [" + especialidadeSelecionada.getNomeEspecialidade() + "]: ");
+        System.out
+                .print("\nNovo nome para a especialidade [" + especialidadeSelecionada.getNomeEspecialidade() + "]: ");
         String novoNome = scanner.nextLine();
 
         // Atualizar somente os campos alterados
@@ -99,7 +100,7 @@ public class EspecialidadeController {
 
         // Atualizar no repositório
         repository.atualizarEspecialidade(especialidadeSelecionada.getId(), nomeAtualizado);
-        System.out.println("Especialidade atualizada com sucesso!");
+        System.out.println("\nEspecialidade atualizada com sucesso!");
     }
 
     public void deletarEspecialidade() {
@@ -111,7 +112,7 @@ public class EspecialidadeController {
         }
 
         // Exibir a lista de especialidades
-        System.out.println("Selecione a especialidade que deseja excluir:");
+        System.out.println("\nSelecione a especialidade que deseja excluir:");
         for (int i = 0; i < especialidades.size(); i++) {
             Especialidade especialidade = especialidades.get(i);
             System.out.println((i + 1) + " - " + especialidade.getNomeEspecialidade());
@@ -137,12 +138,12 @@ public class EspecialidadeController {
         Especialidade especialidadeSelecionada = especialidades.get(escolha - 1);
 
         // Remover dependências relacionadas à especialidade
-        System.out.println("Excluindo dependências relacionadas à especialidade...");
+        System.out.println("\nExcluindo dependências relacionadas à especialidade...");
         RemoverDependencia.removerDependenciasEspecialidade(especialidadeSelecionada.getId());
 
         // Excluir a especialidade
         repository.excluirEspecialidade(especialidadeSelecionada.getId());
-        System.out.println("Especialidade excluída com sucesso!");
+        System.out.println("\nEspecialidade excluída com sucesso!");
     }
 
 }

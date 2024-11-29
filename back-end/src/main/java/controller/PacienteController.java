@@ -55,7 +55,7 @@ public class PacienteController {
         String cpf = scanner.nextLine();
 
         // Cadastra o endereço
-        System.out.println("Digite os dados do endereço do paciente:");
+        System.out.println("\nDigite os dados do endereço do paciente:");
         Endereco endereco = enderecoController.cadastrarEndereco();
 
         // Cria o objeto paciente com o endereço associado
@@ -71,7 +71,7 @@ public class PacienteController {
             return;
         }
 
-        System.out.println("Selecione o paciente que deseja atualizar:");
+        System.out.println("\nSelecione o paciente que deseja atualizar:");
         for (int i = 0; i < pacientes.size(); i++) {
             Paciente paciente = pacientes.get(i);
             System.out.println((i + 1) + " - " + paciente.getNome() + " (CPF: " + paciente.getCpf() + ")");
@@ -94,7 +94,7 @@ public class PacienteController {
 
         Paciente pacienteAtual = pacientes.get(escolha - 1);
 
-        System.out.println("Atualize os dados do paciente (ou deixe em branco para manter o atual):");
+        System.out.println("\nAtualize os dados do paciente (ou deixe em branco para manter o atual):");
         System.out.print("Nome [" + pacienteAtual.getNome() + "]: ");
         String nome = scanner.nextLine();
 
@@ -111,7 +111,7 @@ public class PacienteController {
         String cpf = scanner.nextLine();
 
         // Atualizar o endereço associado
-        System.out.println("Atualize os dados do endereço associado:");
+        System.out.println("\nAtualize os dados do endereço associado:");
         Endereco enderecoAtualizado = enderecoController.atualizarEndereco(pacienteAtual.getEndereco());
 
         // Verificar e garantir que o ID do endereço esteja no formato ObjectId
@@ -132,7 +132,7 @@ public class PacienteController {
 
         // Atualizar no repositório
         repository.atualizarPaciente(pacienteAtual.getId(), pacienteAtualizado);
-        System.out.println("Paciente atualizado com sucesso!");
+        System.out.println("\nPaciente atualizado com sucesso!");
     }
 
     public void deletarPaciente() {
@@ -174,7 +174,7 @@ public class PacienteController {
         if (enderecoAssociado != null && enderecoAssociado.getId() != null) {
             try {
                 enderecoController.excluirEndereco(enderecoAssociado.getId());
-                System.out.println("Endereço associado excluído com sucesso.");
+                System.out.println("\nEndereço associado excluído com sucesso.");
             } catch (Exception e) {
                 System.err.println("Erro ao excluir endereço associado: " + e.getMessage());
             }
@@ -185,7 +185,7 @@ public class PacienteController {
         // Excluir o paciente
         try {
             repository.excluirPaciente(pacienteSelecionado.getId());
-            System.out.println("Paciente excluído com sucesso!");
+            System.out.println("\nPaciente excluído com sucesso!");
         } catch (Exception e) {
             System.err.println("Erro ao excluir paciente: " + e.getMessage());
         }
