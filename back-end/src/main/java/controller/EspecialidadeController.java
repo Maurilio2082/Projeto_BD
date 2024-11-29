@@ -136,7 +136,7 @@ public class EspecialidadeController {
         // Selecionar a especialidade
         Especialidade especialidadeSelecionada = especialidades.get(escolha - 1);
 
-        // Remover dependências relacionadas à especialidade (se aplicável)
+        // Remover dependências relacionadas à especialidade
         System.out.println("Excluindo dependências relacionadas à especialidade...");
         RemoverDependencia.removerDependenciasEspecialidade(especialidadeSelecionada.getId());
 

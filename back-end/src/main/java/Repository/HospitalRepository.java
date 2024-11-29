@@ -152,11 +152,11 @@ public class HospitalRepository {
         }
     }
 
-    public void excluirHospital(String id) {
+    public void excluirHospital(String hospitalId) {
         try {
-            Bson filtro = eq("_id", new ObjectId(id)); // Certifique-se de usar ObjectId para IDs no MongoDB
+            Bson filtro = eq("_id", new ObjectId(hospitalId));
             colecao.deleteOne(filtro);
-            System.out.println("Hospital excluído com sucesso!");
+            System.out.println("Hospital excluído com sucesso.");
         } catch (Exception e) {
             System.err.println("Erro ao excluir hospital: " + e.getMessage());
             e.printStackTrace();

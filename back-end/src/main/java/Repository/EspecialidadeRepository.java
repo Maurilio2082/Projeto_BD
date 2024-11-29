@@ -11,6 +11,7 @@ import java.util.List;
 
 import conexion.DatabaseConfig;
 import model.Especialidade;
+import utils.RemoverDependencia;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -87,15 +88,16 @@ public class EspecialidadeRepository {
         }
     }
 
-    public void excluirEspecialidade(String id) {
-        try {
-            Bson filtro = eq("_id", new ObjectId(id));
-            colecao.deleteOne(filtro);
-            System.out.println("Especialidade excluída com sucesso!");
-        } catch (Exception e) {
-            System.err.println("Erro ao excluir especialidade: " + e.getMessage());
-            e.printStackTrace();
-        }
+    public void excluirEspecialidade(String especialidadeId) {
+        // Remove todas as dependências da especialidade
+        RemoverDependencia.removerDependenciasEspecialidade(especialidadeId);
+
+        // Exclui a especialidade da coleção principal
+        MongoCollection<Document> especialidadeCollection = DatabaseConfig.getDatabase()
+                .getCollection("especialidades");
+        especialidadeCollection.deleteOne(eq("_id", new ObjectId(especialidadeId)));
+
+        System.out.println("Especialidade excluída com sucesso!");
     }
 
     public Especialidade buscarEspecialidadePorId(String id) {

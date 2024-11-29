@@ -2,6 +2,7 @@ package controller;
 
 import model.Hospital;
 import repository.HospitalRepository;
+import utils.RemoverDependencia;
 import model.Endereco;
 
 import java.util.List;
@@ -9,12 +10,14 @@ import java.util.Scanner;
 
 public class HospitalController {
 
-    private final HospitalRepository repository;
+    private final HospitalRepository hospitalRepository;
     private final EnderecoController enderecoController;
+
     private final Scanner scanner;
 
     public HospitalController() {
-        this.repository = new HospitalRepository();
+
+        this.hospitalRepository = new HospitalRepository();
         this.enderecoController = new EnderecoController();
         this.scanner = new Scanner(System.in);
     }
@@ -36,12 +39,12 @@ public class HospitalController {
         Endereco endereco = enderecoController.cadastrarEndereco();
 
         Hospital hospital = new Hospital(null, razaoSocial, cnpj, email, telefone, categoria, endereco);
-        repository.inserirHospital(hospital);
+        hospitalRepository.inserirHospital(hospital);
     }
 
     public void atualizarHospital() {
         // Listar hospitais disponíveis para seleção
-        List<Hospital> hospitais = repository.buscarTodosHospitais();
+        List<Hospital> hospitais = hospitalRepository.buscarTodosHospitais();
         if (hospitais.isEmpty()) {
             System.out.println("Nenhum hospital encontrado para atualização.");
             return;
@@ -102,12 +105,12 @@ public class HospitalController {
                 enderecoAtualizado);
 
         // Atualizar o hospital no banco de dados
-        repository.atualizarHospital(hospitalAtual.getId(), hospitalAtualizado);
+        hospitalRepository.atualizarHospital(hospitalAtual.getId(), hospitalAtualizado);
     }
 
     public void deletarHospital() {
         // Listar todos os hospitais
-        List<Hospital> hospitais = repository.buscarTodosHospitais();
+        List<Hospital> hospitais = hospitalRepository.buscarTodosHospitais();
         if (hospitais.isEmpty()) {
             System.out.println("Nenhum hospital encontrado para exclusão.");
             return;
@@ -117,7 +120,7 @@ public class HospitalController {
         System.out.println("Selecione o hospital que deseja excluir:");
         for (int i = 0; i < hospitais.size(); i++) {
             Hospital hospital = hospitais.get(i);
-            System.out.println((i + 1) + " - " + hospital.getRazaoSocial() + " (CNPJ: " + hospital.getCnpj() + ")");
+            System.out.println((i + 1) + " - " + hospital.getRazaoSocial());
         }
 
         // Obter a escolha do usuário
@@ -139,22 +142,12 @@ public class HospitalController {
         // Selecionar o hospital
         Hospital hospitalSelecionado = hospitais.get(escolha - 1);
 
-        // Verificar e excluir o endereço associado
-        Endereco enderecoAssociado = hospitalSelecionado.getEndereco();
-        if (enderecoAssociado != null && enderecoAssociado.getId() != null
-                && enderecoAssociado.getId().length() == 24) {
-            try {
-                enderecoController.excluirEndereco(enderecoAssociado.getId());
-                System.out.println("Endereço associado excluído com sucesso.");
-            } catch (Exception e) {
-                System.err.println("Erro ao excluir o endereço associado: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Nenhum endereço válido associado encontrado para exclusão.");
-        }
+        // Remover dependências do hospital
+        System.out.println("Removendo dependências relacionadas ao hospital...");
+        RemoverDependencia.removerDependenciasHospital(hospitalSelecionado.getId());
 
         // Excluir o hospital
-        repository.excluirHospital(hospitalSelecionado.getId());
+        hospitalRepository.excluirHospital(hospitalSelecionado.getId());
         System.out.println("Hospital excluído com sucesso!");
     }
 

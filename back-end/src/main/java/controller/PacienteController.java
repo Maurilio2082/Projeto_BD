@@ -163,17 +163,24 @@ public class PacienteController {
 
         // Verificar e excluir o endereço associado
         Endereco enderecoAssociado = pacienteSelecionado.getEndereco();
-        if (enderecoAssociado != null && enderecoAssociado.getId() != null
-                && enderecoAssociado.getId().length() == 24) {
-            enderecoController.excluirEndereco(enderecoAssociado.getId());
-            System.out.println("Endereço associado excluído com sucesso.");
+        if (enderecoAssociado != null && enderecoAssociado.getId() != null) {
+            try {
+                enderecoController.excluirEndereco(enderecoAssociado.getId());
+                System.out.println("Endereço associado excluído com sucesso.");
+            } catch (Exception e) {
+                System.err.println("Erro ao excluir endereço associado: " + e.getMessage());
+            }
         } else {
             System.out.println("Nenhum endereço válido associado encontrado para exclusão.");
         }
 
         // Excluir o paciente
-        repository.excluirPaciente(pacienteSelecionado.getId());
-        System.out.println("Paciente excluído com sucesso!");
+        try {
+            repository.excluirPaciente(pacienteSelecionado.getId());
+            System.out.println("Paciente excluído com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir paciente: " + e.getMessage());
+        }
     }
 
 }

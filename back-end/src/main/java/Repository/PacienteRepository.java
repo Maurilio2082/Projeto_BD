@@ -27,6 +27,7 @@ public class PacienteRepository {
     public List<Paciente> buscarTodosPacientes() {
         MongoCursor<Document> cursor = colecao.find().iterator();
         List<Paciente> pacientes = new ArrayList<>();
+        EnderecoRepository enderecoRepository = new EnderecoRepository();
 
         while (cursor.hasNext()) {
             Document doc = cursor.next();
@@ -38,15 +39,14 @@ public class PacienteRepository {
             String dataNascimento = doc.getString("dataNascimento");
             String cpf = doc.getString("cpf");
 
-            // Verifica o campo enderecoId
-            String enderecoId = null;
+            // Recuperar o endereço associado
+            Endereco endereco = null;
             if (doc.get("enderecoId") instanceof ObjectId) {
-                enderecoId = doc.getObjectId("enderecoId").toString();
-            } else if (doc.get("enderecoId") instanceof String) {
-                enderecoId = doc.getString("enderecoId");
+                String enderecoId = doc.getObjectId("enderecoId").toString();
+                endereco = enderecoRepository.buscarPorId(enderecoId);
             }
 
-            Paciente paciente = new Paciente(id, nome, email, telefone, dataNascimento, cpf, null);
+            Paciente paciente = new Paciente(id, nome, email, telefone, dataNascimento, cpf, endereco);
             pacientes.add(paciente);
         }
         cursor.close();
