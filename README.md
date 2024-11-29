@@ -1,75 +1,87 @@
-# Sistema em Java fazendo CRUD no MySQL
+# Sistema em Java fazendo CRUD no MongoDB
 
-Esse sistema é composto por um conjunto de tabelas que representam prontuário médico, contendo tabelas como: pacientes, hospitais, médicos, especialidades, endereços e histórico (prontuário).
+Este sistema é um projeto de gerenciamento de prontuários médicos utilizando o banco de dados NoSQL MongoDB. Ele abrange entidades como Pacientes, Hospitais, Médicos, Especialidades, Endereços e Histórico (prontuário médico).
 
-O sistema exige que as tabelas existam, então basta executar o script [SQL CREATE](back-end/sql/create_database.sql) para criação das tabelas e preenchimento dos dados com o [SQL INSERT](back-end/sql/insert_database.sql).
+O sistema é implementado em Java, utilizando uma interface de console, e oferece funcionalidades de inserção, atualização, consulta e exclusão para todas as entidades.
 
-O código é executado através do método main do Java, rodando em console. Entretanto, a estrutura do projeto foi desenvolvida para Spring Boot, possibilitando uma escalabilidade para desenvolver uma interface no futuro.
+## Requisitos
 
-Para executar o sistema, é necessário ter o [VS Code](https://code.visualstudio.com/download) instalado, com as seguintes extensões instaladas:
- - Extension Pack for Java
+- Java 11 ou superior
+- MongoDB instalado e em execução localmente ou em um servidor
+- [VS Code](https://code.visualstudio.com/download) ou outra IDE com suporte para Java
+- Em caso de [VS Code](https://code.visualstudio.com/download) instalar as extensões instaladas:
+  - Extension Pack for Java
 
-Na classe DatabaseConfig, dentro do módulo conexão, deve-se adicionar o nome da database e um usuário e senha com permissão para usar a base:
+## Configuração do Banco de Dados
+
+Certifique-se de que o MongoDB está instalado e em execução
+- No Linux:
+  ```shell
+  sudo systemctl start mongod
+  ```
+- No Windows, inicie o serviço `MongoDB`.
+
+- Configure as credenciais e o banco de dados na classe `DatabaseConfig`:
+
 
 ```java
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 public class DatabaseConfig {
+    private static final String CONNECTION_STRING = "mongodb://localhost:27017";
+    private static final String DATABASE_NAME = "database";
 
-    private static final String URL = "jdbc:mysql://localhost:3306/nomeDatabase";
-    private static final String USER = "usuario";
-    private static final String PASSWORD = "senha";
-
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public static MongoDatabase getDatabase() {
+        MongoClient client = MongoClients.create(CONNECTION_STRING);
+        return client.getDatabase(DATABASE_NAME);
     }
 }
+
 ```
 
-## Organização
-- [diagramas](back-end/diagramas): Nesse diretório está o [diagrama relacional](back-end/diagramas/DIAGRAMA_RELACIONAL_PRONTUARIO.pdf) (lógico) do sistema.
-    * O sistema possui oito entidades: ENDERECO, PACIENTE, HOSPITAL, MEDICO, ESPECIALIDADE, HISTORICO e as tabelas de relacionamento MEDICO_ESPECIALIDADE e MEDICO_HOSPITAL.
-- [sql](back-end/sql): Nesse diretório estão os scripts para criação das tabelas e inserção de dados fictícios para testes do sistema.
-    * Certifique-se de que o usuário do banco possui todos os privilégios antes de executar os scripts de criação. Caso ocorra erro, execute o comando a seguir com o superusuário via MySQL: `GRANT ALL PRIVILEGES ON NOMEDABASE.* TO 'usuario'@'localhost'; FLUSH PRIVILEGES;`
-    * [create_database.sql](back-end/sql/create_database.sql): script responsável pela criação das tabelas, relacionamentos e criação de permissão no esquema LabDatabase.
-    * [insert_database.sql](back-end/sql/insert_database.sql): script responsável pela inserção dos registros fictícios para testes do sistema.
-- [src/main/java](back-end/src/main/java): Nesse diretório estão os scripts do sistema.
-    * [conexion](back-end/src/main/java/conexion): Nesse repositório encontra-se o [módulo de conexão com o banco de dados MySQL](back-end/src/main/java/conexion/DatabaseConfig.java). Esse módulo possui a configuração para conexão no banco de dados.
-    * [controller](back-end/src/main/java/controller): Nesse diretório encontram-se as classes controladoras, responsáveis por realizar inserção, alteração e exclusão dos registros das tabelas.
-    * [model](back-end/src/main/java/model): Nesse diretório encontram-se as classes das entidades descritas no [diagrama relacional](back-end/diagramas/DIAGRAMA_RELACIONAL_PRONTUARIO.pdf).
-    * [reports](back-end/src/main/java/reports): Nesse diretório encontra-se a [Relatórios](back-end/src/main/java/reports/Relatorios.java) responsável por gerar todos os relatórios do sistema e [ImprimirRelatorios](back-end/src/main/java/reports/ImprimirRelatorios.java), responsável pela exibição de todos os relatórios.
-    * [sql](back-end/src/main/java/sql): Nesse diretório encontram-se os scripts utilizados para geração dos relatórios a partir da [classe relatórios](back-end/src/main/java/reports/Relatorios.java).
-    * [utils](back-end/src/main/java/utils): Nesse diretório encontram-se scripts de [configuração](back-end/src/main/java/utils/Config.java) e automatização da [tela de informações iniciais](back-end/src/main/java/utils/SplashScreen.java).
-    * [principal](back-end/src/main/java/principal): Script responsável por ser a interface entre o usuário e os módulos de acesso ao banco de dados. Deve ser executado após a criação das tabelas.
-        * Dentro dessa pasta também contém o [txt](back-end\src\main\java\principal\linkVideo.txt) com um link de um video no youtube com a explicação passo a passo de como execulta o projeto o teste de utilização do sistema.
-- Outros arquivos, como pom.xml e os wvnw, são de configuração do projeto Spring Boot.
+## Organização do Projeto
+    
+* [colecoes](back-end/colecoes): Contém arquivo com script para criar as coleções no MongoDB e insere registros nas mesma.
+* [conexion](back-end/src/main/java/conexion): Contém a classe DatabaseConfig, responsável por configurar a conexão com o MongoDB.
+* [controller](back-end/src/main/java/controller): Classes responsáveis pelo gerenciamento das entidades, como Pacientes, Hospitais, Médicos, etc.
+* [model](back-end/src/main/java/model): Contém as classes de modelo para as entidades do sistema, como Paciente, Hospital, Medico, entre outras
+* [repository](back-end/src/main/java/Repository):Classes responsáveis pela interação com o MongoDB para realizar as operações CRUD.
+* [utils](back-end/src/main/java/utils): Contém utilitários, como a classe RemoverDependencia, que gerencia as exclusões relacionadas às dependências entre entidades.
+* [principal](back-end/src/main/java/principal): A classe principal que executa o sistema e oferece a interface de console para o usuário.
+    * Dentro dessa pasta também contém o [LinkVideo](back-end/src/main/java/principal/linkVideo.txt) com um link de um video no youtube com a explicação passo a passo de como execulta o projeto o teste de utilização do sistema.
 
-### Instalando MySQL e MySQL Workbench no Linux (Debian/Ubuntu)
-- Para instalar o MySQL e o MySQL Workbench, siga os passos abaixo:
-**Atualize o sistema** para garantir que você tem a última versão dos pacotes:
+## Funcionamento
+
+- O sistema utiliza um modelo de repositório para interagir com o MongoDB.
+- As entidades possuem relacionamentos por meio de IDs armazenados como `ObjectId` no MongoDB.
+- O sistema oferece menus para gerenciar cada entidade, incluindo:
+  - Pacientes: Cadastro, atualização, exclusão e consulta.
+  - Hospitais: Cadastro, atualização, exclusão e consulta.
+  - Histórico Médico: Gerenciamento completo de prontuários médicos, com associações entre Pacientes, Hospitais, Médicos e Especialidades.
+
+## Instalando MongoDB no Linux (Debian/Ubuntu)
+
+- Atualize os pacotes do sistema:
+
 ```shell
 sudo apt update && sudo apt upgrade -y
 ```
-- Instale o MySQL Server:
+- Instale o MongoDB:
 ```shell
-sudo apt install mysql-server -y
+sudo apt install mongodb -y
 ```
-- Execute a configuração inicial do MySQL. Este comando iniciará um assistente para definir a senha root e outras configurações básicas de segurança:
+Inicie o serviço do MongoDB:
 ```shell
-sudo mysql_secure_installation
+sudo systemctl start mongod
 ```
-- Instale o MySQL Workbench:
+- Verifique o status do serviço:
 ```shell
-sudo apt install mysql-workbench -y
-```
-- Verifique o status do MySQL para garantir que está ativo:
-```shell
-sudo systemctl status mysql
+sudo systemctl status mongod
 ```
 
-### Configurando o Kit de Desenvolvedor Java (JDK)
+## Configurando o Kit de Desenvolvedor Java (JDK)
 
 - Instale o OpenJDK:
 ```shell
@@ -95,4 +107,4 @@ source ~/.bash_profile
 
 ## Contato
 - [LinkedIn](https://linkedin.com/in/maurilio-marques)
-- [E-Mail](mailto:mauriliomg8@gmail.com)
+
