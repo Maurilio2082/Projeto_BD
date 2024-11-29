@@ -8,11 +8,11 @@ import model.Historico;
 import model.Hospital;
 import model.Medico;
 import model.Paciente;
-import repository.EspecialidadeMedicoRepository;
-import repository.HistoricoRepository;
-import repository.HospitalRepository;
-import repository.MedicoRepository;
-import repository.PacienteRepository;
+import Repository.EspecialidadeMedicoRepository;
+import Repository.HistoricoRepository;
+import Repository.HospitalRepository;
+import Repository.MedicoRepository;
+import Repository.PacienteRepository;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

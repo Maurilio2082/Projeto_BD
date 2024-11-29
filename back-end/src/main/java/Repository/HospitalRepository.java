@@ -1,4 +1,4 @@
-package repository;
+package Repository;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;

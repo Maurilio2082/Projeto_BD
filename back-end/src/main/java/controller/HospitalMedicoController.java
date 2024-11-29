@@ -6,9 +6,9 @@ import conexion.DatabaseConfig;
 import model.Hospital;
 import model.HospitalMedico;
 import model.Medico;
-import repository.HospitalMedicoRepository;
-import repository.HospitalRepository;
-import repository.MedicoRepository;
+import Repository.HospitalMedicoRepository;
+import Repository.HospitalRepository;
+import Repository.MedicoRepository;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

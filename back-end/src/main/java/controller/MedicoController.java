@@ -1,7 +1,7 @@
 package controller;
 
 import model.Medico;
-import repository.MedicoRepository;
+import Repository.MedicoRepository;
 
 import java.util.List;
 import java.util.Scanner;

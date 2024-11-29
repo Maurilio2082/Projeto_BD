@@ -5,9 +5,9 @@ import conexion.DatabaseConfig;
 import model.Especialidade;
 import model.EspecialidadeMedico;
 import model.Medico;
-import repository.EspecialidadeMedicoRepository;
-import repository.EspecialidadeRepository;
-import repository.MedicoRepository;
+import Repository.EspecialidadeMedicoRepository;
+import Repository.EspecialidadeRepository;
+import Repository.MedicoRepository;
 
 import org.bson.Document;
 

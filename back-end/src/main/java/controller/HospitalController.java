@@ -1,7 +1,7 @@
 package controller;
 
 import model.Hospital;
-import repository.HospitalRepository;
+import Repository.HospitalRepository;
 import utils.RemoverDependencia;
 import model.Endereco;
 

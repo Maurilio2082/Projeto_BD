@@ -2,7 +2,7 @@ package controller;
 
 import model.Endereco;
 import model.Paciente;
-import repository.PacienteRepository;
+import Repository.PacienteRepository;
 
 import java.util.List;
 import java.util.Scanner;

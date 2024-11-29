@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import model.Especialidade;
-import repository.EspecialidadeRepository;
+import Repository.EspecialidadeRepository;
 import utils.RemoverDependencia;
 
 public class EspecialidadeController {

@@ -1,7 +1,7 @@
 package controller;
 
 import model.Endereco;
-import repository.EnderecoRepository;
+import Repository.EnderecoRepository;
 
 import java.util.List;
 import java.util.Scanner;
