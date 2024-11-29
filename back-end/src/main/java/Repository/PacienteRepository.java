@@ -27,30 +27,27 @@ public class PacienteRepository {
     public List<Paciente> buscarTodosPacientes() {
         MongoCursor<Document> cursor = colecao.find().iterator();
         List<Paciente> pacientes = new ArrayList<>();
-        EnderecoRepository enderecoRepository = new EnderecoRepository();
 
         while (cursor.hasNext()) {
             Document doc = cursor.next();
 
-            String enderecoId = doc.getString("enderecoId");
-            Endereco endereco = null;
+            String id = doc.getObjectId("_id").toString(); // ID principal
+            String nome = doc.getString("nome");
+            String email = doc.getString("email");
+            String telefone = doc.getString("telefone");
+            String dataNascimento = doc.getString("dataNascimento");
+            String cpf = doc.getString("cpf");
 
-            // Verificar se o enderecoId é válido antes de buscar o endereço
-            if (enderecoId != null && enderecoId.length() == 24) {
-                endereco = enderecoRepository.buscarPorId(enderecoId);
-            } else {
-                System.err.println("ID de endereço inválido ou ausente para paciente: " + doc.getString("nome"));
+            // Verifica o campo enderecoId
+            String enderecoId = null;
+            if (doc.get("enderecoId") instanceof ObjectId) {
+                enderecoId = doc.getObjectId("enderecoId").toString();
+            } else if (doc.get("enderecoId") instanceof String) {
+                enderecoId = doc.getString("enderecoId");
             }
 
-            pacientes.add(new Paciente(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("nome"),
-                    doc.getString("email"),
-                    doc.getString("telefone"),
-                    doc.getString("dataNascimento"),
-                    doc.getString("cpf"),
-                    endereco // Passar o objeto Endereco, pode ser nulo
-            ));
+            Paciente paciente = new Paciente(id, nome, email, telefone, dataNascimento, cpf, null);
+            pacientes.add(paciente);
         }
         cursor.close();
         return pacientes;

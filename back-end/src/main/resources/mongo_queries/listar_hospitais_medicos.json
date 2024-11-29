@@ -10,7 +10,7 @@
   {
     "$unwind": {
       "path": "$medicoInfo",
-      "preserveNullAndEmptyArrays": false
+      "preserveNullAndEmptyArrays": true
     }
   },
   {
@@ -24,12 +24,12 @@
   {
     "$unwind": {
       "path": "$hospitalInfo",
-      "preserveNullAndEmptyArrays": false
+      "preserveNullAndEmptyArrays": true
     }
   },
   {
     "$project": {
-      "_id": 0,
+      "_id": 1,
       "hospitalId": "$hospitalInfo._id",
       "hospitalNome": "$hospitalInfo.razaoSocial",
       "hospitalCategoria": "$hospitalInfo.categoria",

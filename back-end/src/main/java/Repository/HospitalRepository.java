@@ -33,25 +33,27 @@ public class HospitalRepository {
         while (cursor.hasNext()) {
             Document doc = cursor.next();
 
-            String enderecoId = doc.getString("enderecoId");
-            Endereco endereco = null;
+            String id = doc.getObjectId("_id").toString();
+            String razaoSocial = doc.getString("razaoSocial");
+            String cnpj = doc.getString("cnpj");
+            String email = doc.getString("email");
+            String telefone = doc.getString("telefone");
+            String categoria = doc.getString("categoria");
 
-            // Verificar se o enderecoId é válido antes de buscar o endereço
-            if (enderecoId != null && enderecoId.length() == 24) {
-                endereco = enderecoRepository.buscarPorId(enderecoId);
-            } else {
-                System.err.println("ID de endereço inválido ou ausente para hospital: " + doc.getString("razaoSocial"));
+            // Verificar o tipo de dado no campo enderecoId
+            String enderecoId = null;
+            if (doc.get("enderecoId") instanceof ObjectId) {
+                enderecoId = doc.getObjectId("enderecoId").toString();
+            } else if (doc.get("enderecoId") instanceof String) {
+                enderecoId = doc.getString("enderecoId");
             }
 
-            hospitais.add(new Hospital(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("razaoSocial"),
-                    doc.getString("cnpj"),
-                    doc.getString("email"),
-                    doc.getString("telefone"),
-                    doc.getString("categoria"),
-                    endereco // Passar o objeto Endereco, pode ser nulo
-            ));
+            Endereco endereco = null;
+            if (enderecoId != null) {
+                endereco = enderecoRepository.buscarPorId(enderecoId);
+            }
+
+            hospitais.add(new Hospital(id, razaoSocial, cnpj, email, telefone, categoria, endereco));
         }
         cursor.close();
         return hospitais;
@@ -79,26 +81,41 @@ public class HospitalRepository {
 
     public Hospital buscarPorId(String id) {
         try {
-            Bson filtro = eq("_id", new ObjectId(id)); // Filtro para buscar pelo ID do hospital
+            // Usa o ObjectId para buscar no MongoDB
+            Bson filtro = eq("_id", new ObjectId(id));
             Document doc = colecao.find(filtro).first();
 
             if (doc != null) {
-                Endereco endereco = enderecoRepository.buscarPorId(doc.getString("enderecoId")); // Busca o endereço
-                                                                                                 // associado
+                String razaoSocial = doc.getString("razaoSocial");
+                String cnpj = doc.getString("cnpj");
+                String email = doc.getString("email");
+                String telefone = doc.getString("telefone");
+                String categoria = doc.getString("categoria");
+
+                // Recupera o ID do endereço e converte
+                String enderecoId = doc.get("enderecoId") != null
+                        ? doc.get("enderecoId").toString()
+                        : null;
+
+                Endereco endereco = null;
+                if (enderecoId != null) {
+                    endereco = enderecoRepository.buscarPorId(enderecoId);
+                }
+
                 return new Hospital(
-                        doc.getObjectId("_id").toString(),
-                        doc.getString("razaoSocial"),
-                        doc.getString("cnpj"),
-                        doc.getString("email"),
-                        doc.getString("telefone"),
-                        doc.getString("categoria"),
+                        id,
+                        razaoSocial,
+                        cnpj,
+                        email,
+                        telefone,
+                        categoria,
                         endereco);
             }
-        } catch (Exception e) {
-            System.err.println("Erro ao buscar hospital por ID: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("ID do hospital inválido: " + id);
             e.printStackTrace();
         }
-        return null; // Retorna null caso o hospital não seja encontrado
+        return null;
     }
 
     public void inserirHospital(Hospital hospital) {

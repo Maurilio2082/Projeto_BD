@@ -102,7 +102,12 @@ public class Relatorios {
 
     // Relatório 7: Médicos por Hospital
     public List<Document> getRelatorioHospitaisMedicos() {
-        return executarConsulta(historicosCollection, queryRelatorioHospitaisMedicos);
+        // Obtendo a coleção correta
+        MongoCollection<Document> hospitaisMedicosCollection = DatabaseConfig.getDatabase()
+                .getCollection("hospitais_medicos");
+
+        // Executando a consulta
+        return executarConsulta(hospitaisMedicosCollection, queryRelatorioHospitaisMedicos);
     }
 
     // Relatório 8: Agrupamento de Especialidades

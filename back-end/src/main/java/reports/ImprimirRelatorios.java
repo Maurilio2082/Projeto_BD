@@ -1,7 +1,10 @@
 package reports;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+
 import org.bson.Document;
 import utils.Config;
 
@@ -128,7 +131,6 @@ public class ImprimirRelatorios {
 
     public void imprimirRelatorioHospitalMedicos(boolean esperarUsuario) {
         List<Document> hospitalMedicos = relatorios.getRelatorioHospitaisMedicos();
-
         String linha = "+--------------------------+--------------------------+--------------------------+";
         if (hospitalMedicos.isEmpty()) {
             System.out.println("Nenhum dado encontrado.");
@@ -143,18 +145,16 @@ public class ImprimirRelatorios {
 
             for (Document registro : hospitalMedicos) {
                 // Acessa diretamente os campos do documento principal
-                String medicoNome = registro.getString("medicoNome") != null ? registro.getString("medicoNome") : "N/A";
-                String hospitalNome = registro.getString("hospitalNome") != null ? registro.getString("hospitalNome")
-                        : "N/A";
-                String categoria = registro.getString("hospitalCategoria") != null
-                        ? registro.getString("hospitalCategoria")
-                        : "N/A";
+                String medicoNome = registro.getString("medicoNome");
+                String hospitalNome = registro.getString("hospitalNome");
+                String categoria = registro.getString("hospitalCategoria");
 
                 System.out.format(formatarLinha,
-                        medicoNome,
-                        hospitalNome,
-                        categoria);
+                        medicoNome != null ? medicoNome : "N/A",
+                        hospitalNome != null ? hospitalNome : "N/A",
+                        categoria != null ? categoria : "N/A");
             }
+
             System.out.println(linha);
             if (esperarUsuario) {
                 System.out.println("Aperte Enter para continuar...");

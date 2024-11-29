@@ -53,12 +53,13 @@ public class HospitalMedicoRepository {
         while (cursor.hasNext()) {
             Document doc = cursor.next();
 
-            ObjectId hospitalId = doc.getObjectId("hospitalId");
-            ObjectId medicoId = doc.getObjectId("medicoId");
+            // Recupera IDs de hospital e médico como String
+            String hospitalId = doc.get("hospitalId").toString();
+            String medicoId = doc.get("medicoId").toString();
 
             if (hospitalId != null && medicoId != null) {
-                Hospital hospital = hospitalRepository.buscarPorId(hospitalId.toString());
-                Medico medico = medicoRepository.buscarPorId(medicoId.toString());
+                Hospital hospital = hospitalRepository.buscarPorId(hospitalId);
+                Medico medico = medicoRepository.buscarPorId(medicoId);
 
                 if (hospital != null && medico != null) {
                     relacoes.add(new HospitalMedico(doc.getObjectId("_id").toString(), hospital, medico));
