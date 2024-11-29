@@ -38,31 +38,36 @@ public class HistoricoRepository {
                 while (cursor.hasNext()) {
                         Document doc = cursor.next();
 
-                        // Buscar paciente
-                        Paciente paciente = pacienteRepository.buscarPorId(doc.getObjectId("pacienteId").toString());
+                        try {
+                                // Extrair os IDs corretamente
+                                ObjectId pacienteId = doc.getObjectId("pacienteId");
+                                ObjectId hospitalId = doc.getObjectId("hospitalId");
+                                ObjectId medicoId = doc.getObjectId("medicoId");
+                                ObjectId especialidadeId = doc.getObjectId("especialidadeId");
 
-                        // Buscar hospital
-                        Hospital hospital = hospitalRepository.buscarPorId(doc.getObjectId("hospitalId").toString());
+                                // Buscar entidades relacionadas
+                                Paciente paciente = pacienteRepository.buscarPorId(pacienteId.toHexString());
+                                Hospital hospital = hospitalRepository.buscarPorId(hospitalId.toHexString());
+                                Medico medico = medicoRepository.buscarPorId(medicoId.toHexString());
+                                Especialidade especialidade = especialidadeRepository
+                                                .buscarPorId(especialidadeId.toHexString());
 
-                        // Buscar médico
-                        Medico medico = medicoRepository.buscarPorId(doc.getObjectId("medicoId").toString());
-
-                        // Buscar especialidade
-                        Especialidade especialidade = especialidadeRepository
-                                        .buscarPorId(doc.getObjectId("especialidadeId").toString());
-
-                        if (paciente != null && hospital != null && medico != null && especialidade != null) {
-                                historicos.add(new Historico(
-                                                doc.getObjectId("_id").toString(),
-                                                doc.getString("dataConsulta"),
-                                                doc.getString("observacao"),
-                                                paciente,
-                                                hospital,
-                                                medico,
-                                                especialidade));
-                        } else {
-                                System.err.println("Erro ao buscar dados relacionados para o histórico ID: "
-                                                + doc.getObjectId("_id"));
+                                if (paciente != null && hospital != null && medico != null && especialidade != null) {
+                                        historicos.add(new Historico(
+                                                        doc.getObjectId("_id").toHexString(),
+                                                        doc.getString("dataConsulta"),
+                                                        doc.getString("observacao"),
+                                                        paciente,
+                                                        hospital,
+                                                        medico,
+                                                        especialidade));
+                                } else {
+                                        System.err.println("Erro ao buscar dados relacionados para o histórico ID: "
+                                                        + doc.getObjectId("_id").toHexString());
+                                }
+                        } catch (Exception e) {
+                                System.err.println("Erro ao processar histórico: " + e.getMessage());
+                                e.printStackTrace();
                         }
                 }
                 cursor.close();
@@ -79,31 +84,34 @@ public class HistoricoRepository {
                         MedicoRepository medicoRepository = new MedicoRepository();
                         EspecialidadeRepository especialidadeRepository = new EspecialidadeRepository();
 
-                        // Buscar paciente
-                        Paciente paciente = pacienteRepository.buscarPorId(doc.getObjectId("pacienteId").toString());
+                        try {
+                                ObjectId pacienteId = doc.getObjectId("pacienteId");
+                                ObjectId hospitalId = doc.getObjectId("hospitalId");
+                                ObjectId medicoId = doc.getObjectId("medicoId");
+                                ObjectId especialidadeId = doc.getObjectId("especialidadeId");
 
-                        // Buscar hospital
-                        Hospital hospital = hospitalRepository.buscarPorId(doc.getObjectId("hospitalId").toString());
+                                Paciente paciente = pacienteRepository.buscarPorId(pacienteId.toHexString());
+                                Hospital hospital = hospitalRepository.buscarPorId(hospitalId.toHexString());
+                                Medico medico = medicoRepository.buscarPorId(medicoId.toHexString());
+                                Especialidade especialidade = especialidadeRepository
+                                                .buscarPorId(especialidadeId.toHexString());
 
-                        // Buscar médico
-                        Medico medico = medicoRepository.buscarPorId(doc.getObjectId("medicoId").toString());
-
-                        // Buscar especialidade
-                        Especialidade especialidade = especialidadeRepository
-                                        .buscarPorId(doc.getObjectId("especialidadeId").toString());
-
-                        if (paciente != null && hospital != null && medico != null && especialidade != null) {
-                                return new Historico(
-                                                doc.getObjectId("_id").toString(),
-                                                doc.getString("dataConsulta"),
-                                                doc.getString("observacao"),
-                                                paciente,
-                                                hospital,
-                                                medico,
-                                                especialidade);
-                        } else {
-                                System.err.println("Erro ao buscar dados relacionados para o histórico ID: "
-                                                + doc.getObjectId("_id"));
+                                if (paciente != null && hospital != null && medico != null && especialidade != null) {
+                                        return new Historico(
+                                                        doc.getObjectId("_id").toHexString(),
+                                                        doc.getString("dataConsulta"),
+                                                        doc.getString("observacao"),
+                                                        paciente,
+                                                        hospital,
+                                                        medico,
+                                                        especialidade);
+                                } else {
+                                        System.err.println("Erro ao buscar dados relacionados para o histórico ID: "
+                                                        + doc.getObjectId("_id").toHexString());
+                                }
+                        } catch (Exception e) {
+                                System.err.println("Erro ao processar histórico: " + e.getMessage());
+                                e.printStackTrace();
                         }
                 }
                 return null;
@@ -154,5 +162,4 @@ public class HistoricoRepository {
                         e.printStackTrace();
                 }
         }
-
 }

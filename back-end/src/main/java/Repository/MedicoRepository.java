@@ -123,20 +123,28 @@ public class MedicoRepository {
     }
 
     public Medico buscarPorId(String id) {
-        Bson filtro = eq("_id", new ObjectId(id));
-        Document doc = colecao.find(filtro).first();
-
-        if (doc != null) {
-            return new Medico(
-                    doc.getObjectId("_id").toString(),
-                    doc.getString("nome"),
-                    doc.getString("conselho"),
-                    null // Se necessário, passe null para especialidade, pois será configurada em outro
-                         // momento
-            );
+        try {
+            Bson filtro = eq("_id", new ObjectId(id));
+            Document doc = colecao.find(filtro).first();
+    
+            if (doc != null) {
+                return new Medico(
+                        doc.getObjectId("_id").toHexString(),
+                        doc.getString("nome"),
+                        doc.getString("conselho"),
+                        null // A especialidade será configurada posteriormente
+                );
+            }
+        } catch (IllegalArgumentException e) {
+            System.err.println("ID do médico inválido: " + id);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar médico por ID: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
+    
 
     public void removerDependenciasMedico(String medicoId) {
         System.out.println("Removendo dependências do médico com ID: " + medicoId);

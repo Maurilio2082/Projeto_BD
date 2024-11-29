@@ -81,7 +81,6 @@ public class HospitalRepository {
 
     public Hospital buscarPorId(String id) {
         try {
-            // Usa o ObjectId para buscar no MongoDB
             Bson filtro = eq("_id", new ObjectId(id));
             Document doc = colecao.find(filtro).first();
 
@@ -92,7 +91,6 @@ public class HospitalRepository {
                 String telefone = doc.getString("telefone");
                 String categoria = doc.getString("categoria");
 
-                // Recupera o ID do endereço e converte
                 String enderecoId = doc.get("enderecoId") != null
                         ? doc.get("enderecoId").toString()
                         : null;
@@ -103,7 +101,7 @@ public class HospitalRepository {
                 }
 
                 return new Hospital(
-                        id,
+                        doc.getObjectId("_id").toHexString(),
                         razaoSocial,
                         cnpj,
                         email,
@@ -113,6 +111,9 @@ public class HospitalRepository {
             }
         } catch (IllegalArgumentException e) {
             System.err.println("ID do hospital inválido: " + id);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar hospital por ID: " + e.getMessage());
             e.printStackTrace();
         }
         return null;

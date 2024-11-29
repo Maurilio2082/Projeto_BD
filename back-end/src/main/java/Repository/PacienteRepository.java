@@ -118,29 +118,37 @@ public class PacienteRepository {
 
     public Paciente buscarPorId(String id) {
         try {
-            Bson filtro = eq("_id", new ObjectId(id)); // Filtro para buscar pelo ID do paciente
+            Bson filtro = eq("_id", new ObjectId(id));
             Document doc = colecao.find(filtro).first();
+            EnderecoRepository enderecoRepository = new EnderecoRepository();
 
             if (doc != null) {
-                EnderecoRepository enderecoRepository = new EnderecoRepository();
-                Endereco endereco = enderecoRepository.buscarPorId(doc.getString("enderecoId")); // Busca o endereço
-                                                                                                 // associado
+                String enderecoId = doc.get("enderecoId") != null
+                        ? doc.get("enderecoId").toString()
+                        : null;
+
+                Endereco endereco = null;
+                if (enderecoId != null) {
+                    endereco = enderecoRepository.buscarPorId(enderecoId);
+                }
 
                 return new Paciente(
-                        doc.getObjectId("_id").toString(),
+                        doc.getObjectId("_id").toHexString(),
                         doc.getString("nome"),
                         doc.getString("email"),
                         doc.getString("telefone"),
                         doc.getString("dataNascimento"),
                         doc.getString("cpf"),
-                        endereco // Endereço associado ao paciente
-                );
+                        endereco);
             }
+        } catch (IllegalArgumentException e) {
+            System.err.println("ID do paciente inválido: " + id);
+            e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Erro ao buscar paciente por ID: " + e.getMessage());
             e.printStackTrace();
         }
-        return null; // Retorna null caso o paciente não seja encontrado
+        return null;
     }
 
 }
