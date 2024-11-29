@@ -120,14 +120,25 @@ public class HospitalRepository {
     }
 
     public void inserirHospital(Hospital hospital) {
-        Document documento = new Document("razaoSocial", hospital.getRazaoSocial())
-                .append("cnpj", hospital.getCnpj())
-                .append("email", hospital.getEmail())
-                .append("telefone", hospital.getTelefone())
-                .append("categoria", hospital.getCategoria())
-                .append("enderecoId", hospital.getEndereco().getId()); // Salvar apenas o ID do endereço
-        colecao.insertOne(documento);
+        try {
+            // Converter o ID do endereço para ObjectId
+            ObjectId enderecoObjectId = new ObjectId(hospital.getEndereco().getId());
+    
+            Document documento = new Document("razaoSocial", hospital.getRazaoSocial())
+                    .append("cnpj", hospital.getCnpj())
+                    .append("email", hospital.getEmail())
+                    .append("telefone", hospital.getTelefone())
+                    .append("categoria", hospital.getCategoria())
+                    .append("enderecoId", enderecoObjectId); // Salvar o ID do endereço no formato correto
+    
+            colecao.insertOne(documento);
+            System.out.println("Hospital inserido com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao inserir hospital: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+    
 
     public void atualizarHospital(String id, Hospital hospitalAtualizado) {
         try {

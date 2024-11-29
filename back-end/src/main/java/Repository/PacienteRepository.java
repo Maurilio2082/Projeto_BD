@@ -75,13 +75,23 @@ public class PacienteRepository {
     }
 
     public void inserirPaciente(Paciente paciente) {
-        Document documento = new Document("nome", paciente.getNome())
-                .append("email", paciente.getEmail())
-                .append("telefone", paciente.getTelefone())
-                .append("dataNascimento", paciente.getDataNascimento())
-                .append("cpf", paciente.getCpf())
-                .append("enderecoId", paciente.getEndereco().getId()); // Armazena o ID do endereço
-        colecao.insertOne(documento);
+        try {
+            // Converter o ID do endereço para ObjectId
+            ObjectId enderecoObjectId = new ObjectId(paciente.getEndereco().getId());
+
+            Document documento = new Document("nome", paciente.getNome())
+                    .append("email", paciente.getEmail())
+                    .append("telefone", paciente.getTelefone())
+                    .append("dataNascimento", paciente.getDataNascimento())
+                    .append("cpf", paciente.getCpf())
+                    .append("enderecoId", enderecoObjectId); // Armazena o ID do endereço no formato correto
+
+            colecao.insertOne(documento);
+            System.out.println("Paciente inserido com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao inserir paciente: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void atualizarPaciente(String id, Paciente pacienteAtualizado) {

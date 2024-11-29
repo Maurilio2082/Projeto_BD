@@ -49,18 +49,27 @@ public class PacienteController {
         String email = scanner.nextLine();
         System.out.print("Telefone: ");
         String telefone = scanner.nextLine();
-        System.out.print("Data de Nascimento: ");
+        System.out.print("Data de Nascimento (YYYY-MM-DD): ");
         String dataNascimento = scanner.nextLine();
         System.out.print("CPF: ");
         String cpf = scanner.nextLine();
 
         // Cadastra o endereço
-        System.out.println("\nDigite os dados do endereço do paciente:");
+        System.out.println("Digite os dados do endereço do paciente:");
         Endereco endereco = enderecoController.cadastrarEndereco();
+
+        // Garantir que o ID do endereço esteja no formato ObjectId
+        String enderecoId = endereco.getId();
+        if (enderecoId != null && enderecoId.length() == 24) {
+            endereco.setId(new ObjectId(enderecoId).toHexString());
+        }
 
         // Cria o objeto paciente com o endereço associado
         Paciente paciente = new Paciente(null, nome, email, telefone, dataNascimento, cpf, endereco);
+
+        // Inserir no repositório
         repository.inserirPaciente(paciente);
+        System.out.println("Paciente cadastrado com sucesso!");
     }
 
     public void atualizarPaciente() {
@@ -104,7 +113,7 @@ public class PacienteController {
         System.out.print("Telefone [" + pacienteAtual.getTelefone() + "]: ");
         String telefone = scanner.nextLine();
 
-        System.out.print("Data de Nascimento [" + pacienteAtual.getDataNascimento() + "]: ");
+        System.out.print("Data de Nascimento (YYYY-MM-DD) [" + pacienteAtual.getDataNascimento() + "]: ");
         String dataNascimento = scanner.nextLine();
 
         System.out.print("CPF [" + pacienteAtual.getCpf() + "]: ");

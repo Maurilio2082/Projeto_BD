@@ -165,7 +165,7 @@ public class HistoricoController {
         // Exibir os dados atuais e permitir atualização
         System.out.println("\nAtualize os dados do histórico (ou deixe em branco para manter o atual):");
 
-        System.out.print("Data da consulta [" + historicoSelecionado.getDataConsulta() + "]: ");
+        System.out.print("Data da consulta (YYYY-MM-DD) [" + historicoSelecionado.getDataConsulta() + "]: ");
         String novaDataConsulta = scanner.nextLine();
 
         System.out.print("Observação [" + historicoSelecionado.getObservacao() + "]: ");

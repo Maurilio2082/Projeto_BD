@@ -40,8 +40,18 @@ public class HospitalController {
         System.out.println("Digite os dados do endereço do hospital:");
         Endereco endereco = enderecoController.cadastrarEndereco();
 
+        // Garantir que o ID do endereço esteja no formato ObjectId
+        String enderecoId = endereco.getId();
+        if (enderecoId != null && enderecoId.length() == 24) {
+            endereco.setId(new ObjectId(enderecoId).toHexString());
+        }
+
+        // Cria o objeto hospital com o endereço associado
         Hospital hospital = new Hospital(null, razaoSocial, cnpj, email, telefone, categoria, endereco);
+
+        // Inserir no repositório
         hospitalRepository.inserirHospital(hospital);
+        System.out.println("Hospital cadastrado com sucesso!");
     }
 
     public void atualizarHospital() {
