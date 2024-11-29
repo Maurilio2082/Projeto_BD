@@ -38,15 +38,23 @@ public class EspecialidadeRepository {
     }
 
     public Especialidade buscarPorId(String id) {
+        if (id == null || id.isEmpty()) {
+          //  System.err.println("ID da especialidade é nulo ou vazio.");
+            return null; // Retorna null diretamente se o ID for inválido
+        }
         try {
+            // Usa o ObjectId para buscar no MongoDB
             Bson filtro = eq("_id", new ObjectId(id));
             Document doc = colecao.find(filtro).first();
 
             if (doc != null) {
                 return new Especialidade(
-                        doc.getObjectId("_id").toString(),
+                        doc.getObjectId("_id").toHexString(), // Garante que o ID seja convertido corretamente para
+                                                              // String
                         doc.getString("nomeEspecialidade"));
             }
+        } catch (IllegalArgumentException e) {
+            System.err.println("ID da especialidade inválido: " + id);
         } catch (Exception e) {
             System.err.println("Erro ao buscar especialidade por ID: " + e.getMessage());
         }

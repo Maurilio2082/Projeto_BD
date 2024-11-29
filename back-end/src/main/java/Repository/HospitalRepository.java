@@ -133,7 +133,10 @@ public class HospitalRepository {
     public void atualizarHospital(String id, Hospital hospitalAtualizado) {
         try {
             Bson filtro = eq("_id", new ObjectId(id)); // Certificar que o ID está no formato correto
-
+    
+            // Garantir que o ID do endereço seja armazenado como ObjectId
+            ObjectId enderecoObjectId = new ObjectId(hospitalAtualizado.getEndereco().getId());
+    
             // Construir o documento de atualização
             Document atualizacao = new Document("$set", new Document()
                     .append("razaoSocial", hospitalAtualizado.getRazaoSocial())
@@ -141,9 +144,8 @@ public class HospitalRepository {
                     .append("email", hospitalAtualizado.getEmail())
                     .append("telefone", hospitalAtualizado.getTelefone())
                     .append("categoria", hospitalAtualizado.getCategoria())
-                    .append("enderecoId", hospitalAtualizado.getEndereco().getId()) // Referenciar o ID do endereço
-            );
-
+                    .append("enderecoId", enderecoObjectId)); // Salva o ID do endereço no formato correto
+    
             // Atualizar no MongoDB
             colecao.updateOne(filtro, atualizacao);
             System.out.println("Hospital atualizado com sucesso no banco de dados!");
@@ -152,6 +154,7 @@ public class HospitalRepository {
             e.printStackTrace();
         }
     }
+    
 
     public void excluirHospital(String hospitalId) {
         try {

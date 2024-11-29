@@ -8,6 +8,8 @@ import model.Endereco;
 import java.util.List;
 import java.util.Scanner;
 
+import org.bson.types.ObjectId;
+
 public class HospitalController {
 
     private final HospitalRepository hospitalRepository;
@@ -94,6 +96,12 @@ public class HospitalController {
         // Atualizar endereço associado
         Endereco enderecoAtualizado = enderecoController.atualizarEndereco(hospitalAtual.getEndereco());
 
+        // Garantir que o ID do endereço esteja no formato correto (ObjectId)
+        String enderecoId = enderecoAtualizado.getId();
+        if (enderecoId != null && enderecoId.length() == 24) {
+            enderecoAtualizado.setId(new ObjectId(enderecoId).toHexString());
+        }
+
         // Criar objeto atualizado com os novos dados ou manter os existentes
         Hospital hospitalAtualizado = new Hospital(
                 hospitalAtual.getId(),
@@ -106,6 +114,7 @@ public class HospitalController {
 
         // Atualizar o hospital no banco de dados
         hospitalRepository.atualizarHospital(hospitalAtual.getId(), hospitalAtualizado);
+        System.out.println("Hospital atualizado com sucesso!");
     }
 
     public void deletarHospital() {

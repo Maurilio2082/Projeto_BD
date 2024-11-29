@@ -7,6 +7,8 @@ import repository.PacienteRepository;
 import java.util.List;
 import java.util.Scanner;
 
+import org.bson.types.ObjectId;
+
 public class PacienteController {
 
     private final PacienteRepository repository;
@@ -111,6 +113,12 @@ public class PacienteController {
         // Atualizar o endereço associado
         System.out.println("Atualize os dados do endereço associado:");
         Endereco enderecoAtualizado = enderecoController.atualizarEndereco(pacienteAtual.getEndereco());
+
+        // Verificar e garantir que o ID do endereço esteja no formato ObjectId
+        String enderecoId = enderecoAtualizado.getId();
+        if (enderecoId != null && enderecoId.length() == 24) { // Verifica se o ID é válido
+            enderecoAtualizado.setId(new ObjectId(enderecoId).toHexString());
+        }
 
         // Criar o objeto atualizado
         Paciente pacienteAtualizado = new Paciente(

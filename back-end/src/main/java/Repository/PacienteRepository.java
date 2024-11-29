@@ -88,14 +88,17 @@ public class PacienteRepository {
     public void atualizarPaciente(String id, Paciente pacienteAtualizado) {
         try {
             Bson filtro = eq("_id", new ObjectId(id)); // Garantir que o ID seja um ObjectId válido
+
+            // Garante que o endereço seja armazenado corretamente como ObjectId
+            ObjectId enderecoObjectId = new ObjectId(pacienteAtualizado.getEndereco().getId());
+
             Document atualizacao = new Document("$set", new Document()
                     .append("nome", pacienteAtualizado.getNome())
                     .append("email", pacienteAtualizado.getEmail())
                     .append("telefone", pacienteAtualizado.getTelefone())
                     .append("dataNascimento", pacienteAtualizado.getDataNascimento())
                     .append("cpf", pacienteAtualizado.getCpf())
-                    .append("enderecoId", pacienteAtualizado.getEndereco().getId())); // Atualiza apenas o ID do
-                                                                                      // endereço associado
+                    .append("enderecoId", enderecoObjectId)); // Garante que o ID do endereço seja salvo corretamente
 
             colecao.updateOne(filtro, atualizacao);
 
